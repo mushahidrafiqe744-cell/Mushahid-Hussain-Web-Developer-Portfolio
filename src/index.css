@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-cream-bg: #F8F5EE;
+    --color-cream-card: #F2EDE2;
+    --color-emerald-deep: #11261B;
+    --color-emerald-dark: #0D1F16;
+    --color-emerald-light: #1A3828;
+    --color-gold: #C5A059;
+    --color-gold-light: #DFC285;
+    --color-gold-dark: #A38038;
+    --color-text-main: #1C271E;
+    --color-text-muted: #5C6E61;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--color-cream-bg);
+    color: var(--color-text-main);
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .font-serif-cormorant {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .font-script {
+    font-family: 'Alex Brush', cursive;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom scrollbar and subtle animations */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F2EDE2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #11261B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C5A059;
+}
+
+/* Running line animation when hovering */
+@keyframes runLineGlow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(250%);
+    opacity: 0.3;
+  }
+}
+
+.running-line-beam {
+  animation: runLineGlow 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulseSubtle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
