@@ -18,6 +18,7 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     background-color: var(--color-cream-bg);
     color: var(--color-text-main);
+    overflow-x: hidden;
   }
 
   h1, h2, h3, .font-display {
@@ -37,7 +38,7 @@
   }
 }
 
-/* Custom scrollbar and subtle animations */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -55,7 +56,7 @@
   background: #C5A059;
 }
 
-/* Running line animation when hovering */
+/* Running line animation when hovering on skill bars */
 @keyframes runLineGlow {
   0% {
     transform: translateX(-100%);
@@ -74,11 +75,161 @@
   animation: runLineGlow 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-@keyframes pulseSubtle {
+/* Circular running dashed line for the emblem logo */
+@keyframes strokeDashRun {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -200;
+  }
+}
+
+.animate-dash-run {
+  animation: strokeDashRun 14s linear infinite;
+}
+
+.animate-dash-run-fast {
+  animation: strokeDashRun 3s linear infinite;
+}
+
+/* 360 Spin Keyframes */
+@keyframes spinClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinClockwise 18s linear infinite;
+}
+
+.animate-spin-fast {
+  animation: spinClockwise 5s linear infinite;
+}
+
+/* Smooth Float Animation */
+@keyframes floatUpAndDown {
   0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: floatUpAndDown 4s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatUpAndDown 4.5s ease-in-out 1.5s infinite;
+}
+
+.animate-float-slow {
+  animation: floatUpAndDown 6s ease-in-out infinite;
+}
+
+/* Subtle Pulse Glow */
+@keyframes pulseGlowGold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.4);
     transform: scale(1);
   }
   50% {
+    box-shadow: 0 0 15px 4px rgba(197, 160, 89, 0.25);
     transform: scale(1.02);
   }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlowGold 3s ease-in-out infinite;
+}
+
+/* Card Shimmer Reflection Beam */
+@keyframes shimmerPass {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: translateX(-150%) skewX(-20deg);
+  pointer-events: none;
+}
+
+.animate-shimmer:hover::after {
+  animation: shimmerPass 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Number Counter & Alphabet Letter Interactive Hover Float */
+.hover-letter-bounce {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
+}
+
+.hover-letter-bounce:hover {
+  transform: translateY(-4px) scale(1.1);
+  color: #C5A059;
+}
+
+/* Number badge lift & glow */
+.number-badge-glow {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.number-badge-glow:hover {
+  transform: scale(1.12) rotate(-3deg);
+  box-shadow: 0 8px 20px -4px rgba(197, 160, 89, 0.4);
+}
+
+/* Image Zoom & Lighting */
+.interactive-image-card {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.interactive-image-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 30px -10px rgba(17, 38, 27, 0.25);
+}
+
+/* Gradient text shimmer */
+@keyframes textShimmerFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.shimmer-text {
+  background-size: 200% auto;
+  animation: textShimmerFlow 4s ease infinite;
 }

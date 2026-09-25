@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles, Github, Linkedin, Mail, ArrowUp, Home } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
+import { EmblemLogo } from './EmblemLogo';
 
 interface FooterProps {
   profile: DeveloperProfile;
@@ -40,22 +41,22 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           
-          {/* Brand Lockup - Clicking goes to Hero */}
+          {/* Brand Lockup with Running Circular Line - Clicking goes to Hero */}
           <button
             onClick={() => onSelectSection('hero')}
-            className="flex flex-col items-center md:items-start text-center md:text-left cursor-pointer"
+            className="flex items-center gap-4 text-center md:text-left cursor-pointer group"
           >
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#C5A059] text-[#11261B] flex items-center justify-center font-display font-bold text-sm">
-                {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
-              </div>
-              <span className="font-display text-xl font-bold tracking-tight text-white">
+            <div className="shrink-0 transition-transform duration-300 group-hover:scale-105">
+              <EmblemLogo size="sm" showSubtitle={false} interactive={true} />
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="font-display text-xl font-bold tracking-tight text-white group-hover:text-[#DFC285] transition-colors">
                 {profile.name}
               </span>
+              <p className="text-xs text-[#A3B8A8] mt-0.5">
+                Full-Stack Web Developer · High Performance & Clean Architecture
+              </p>
             </div>
-            <p className="text-xs text-[#A3B8A8] mt-1">
-              Full-Stack Web Developer · High Performance & Clean Architecture
-            </p>
           </button>
 
           {/* Nav Links */}

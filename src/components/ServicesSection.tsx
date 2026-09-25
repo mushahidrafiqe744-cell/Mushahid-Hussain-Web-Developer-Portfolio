@@ -86,19 +86,30 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
     },
   ];
 
+  const titleLetters = 'My Services'.split('');
+
   return (
-    <section id="services" className="py-20 bg-[#F8F5EE] border-b border-[#11261B]/10 relative">
+    <section id="services" className="py-20 bg-[#F8F5EE] border-b border-[#11261B]/10 relative overflow-hidden">
+      
+      {/* Background Ambient Orbs */}
+      <div className="absolute top-1/2 right-0 w-80 h-80 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none -z-10" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
             <span>SPECIALIZED OFFERINGS</span>
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4">
-            My Services
+
+          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+            {titleLetters.map((char, index) => (
+              <span key={index} className="hover-letter-bounce cursor-pointer">
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}
           </h2>
           <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
           <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
@@ -106,18 +117,25 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
           </p>
         </div>
 
-        {/* Services Grid (8 dedicated cards) */}
+        {/* Services Grid (8 dedicated cards with animated numbers and icons) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {serviceDetails.map((service) => {
+          {serviceDetails.map((service, index) => {
             const Icon = service.icon;
+            const numberFormatted = String(index + 1).padStart(2, '0');
+
             return (
               <div
                 key={service.id}
-                className="group bg-[#F2EDE2] rounded-2xl p-6 border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between hover:translate-y-[-3px]"
+                className="group bg-[#F2EDE2] rounded-2xl p-6 border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 animate-shimmer relative overflow-hidden"
               >
+                {/* Number Watermark Badge at Top Right */}
+                <div className="absolute top-4 right-4 font-mono font-bold text-2xl text-[#11261B]/15 group-hover:text-[#C5A059] transition-all duration-300 group-hover:scale-110 number-badge-glow">
+                  {numberFormatted}
+                </div>
+
                 <div>
-                  {/* Service Icon */}
-                  <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center mb-5 shadow-sm group-hover:scale-105 group-hover:bg-[#1A3828] transition-all">
+                  {/* Service Icon with Hover Bounce & Shadow */}
+                  <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all duration-300">
                     <Icon className="w-6 h-6" />
                   </div>
 
@@ -131,14 +149,14 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
                     {service.description}
                   </p>
 
-                  {/* Deliverables List */}
+                  {/* Deliverables List with Checkmark Animations */}
                   <div className="space-y-1.5 mb-4 pt-3 border-t border-[#11261B]/10">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-[#11261B] mb-1">
                       Deliverables:
                     </div>
                     {service.deliverables.map((item, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-[#11261B]/80">
-                        <CheckCircle className="w-3 h-3 text-[#C5A059] shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-[#11261B]/80 group-hover:translate-x-0.5 transition-transform" style={{ transitionDelay: `${i * 30}ms` }}>
+                        <CheckCircle className="w-3 h-3 text-[#C5A059] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
                         <span className="leading-tight">{item}</span>
                       </div>
                     ))}
@@ -150,7 +168,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
                   {service.stack.map((t) => (
                     <span
                       key={t}
-                      className="text-[10px] font-medium text-[#11261B] bg-white px-2 py-0.5 rounded-md border border-[#11261B]/5"
+                      className="text-[10px] font-medium text-[#11261B] bg-white px-2 py-0.5 rounded-md border border-[#11261B]/5 hover:border-[#C5A059] hover:bg-[#11261B] hover:text-[#DFC285] transition-all duration-200 cursor-default hover:scale-105"
                     >
                       {t}
                     </span>
@@ -161,21 +179,24 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
           })}
         </div>
 
-        {/* Bottom CTA Bar */}
-        <div className="mt-12 p-6 rounded-2xl bg-[#11261B] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md border border-[#C5A059]/30">
+        {/* Bottom CTA Bar with Pulse & Magnetic Button */}
+        <div className="mt-12 p-6 rounded-2xl bg-[#11261B] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-[#C5A059]/30 animate-shimmer hover:scale-[1.01] transition-all">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping" />
             <div>
-              <div className="text-sm font-bold text-white">Need a custom solution or consultation?</div>
-              <div className="text-xs text-[#A3B8A8]">I am currently accepting new freelance and contract opportunities.</div>
+              <div className="text-sm font-bold text-white flex items-center gap-2">
+                <span>Need a custom solution or technical consultation?</span>
+                <span className="text-[10px] bg-[#C5A059] text-[#11261B] font-bold px-2 py-0.5 rounded-full uppercase">Open Now</span>
+              </div>
+              <div className="text-xs text-[#A3B8A8]">I am currently accepting new freelance, contract, and full-time opportunities.</div>
             </div>
           </div>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-colors shrink-0 shadow-sm"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-all duration-300 shrink-0 shadow-lg hover:scale-105 hover:shadow-2xl cursor-pointer"
           >
             <span>Request a Quote</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
 

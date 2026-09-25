@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles } from 'lucide-react';
+import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers } from 'lucide-react';
 import { Project } from '../types/portfolio';
 
 interface ProjectsSectionProps {
@@ -29,48 +29,59 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
     return matchesCategory && matchesSearch;
   });
 
+  const sectionTitleLetters = 'Featured Projects'.split('');
+
   return (
-    <section id="projects" className="py-16 bg-[#F8F5EE]">
+    <section id="projects" className="py-16 bg-[#F8F5EE] relative overflow-hidden">
+      
+      {/* Subtle background ambient light */}
+      <div className="absolute top-1/3 left-0 w-96 h-96 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none -z-10" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-[#11261B]/10">
           <div>
-            <div className="text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-1.5 flex items-center gap-1.5">
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-1.5 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
+              <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
               <span>SELECTED WORKS</span>
-              <Sparkles className="w-3.5 h-3.5" />
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B]">
-              Featured Projects
+            
+            <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] select-none">
+              {sectionTitleLetters.map((char, index) => (
+                <span key={index} className="hover-letter-bounce cursor-pointer">
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
             </h2>
             <p className="text-sm text-[#5C6E61] mt-1 max-w-xl">
               Explore recent web applications, production codebases, and architectural implementations with live previews and open-source GitHub repositories.
             </p>
           </div>
 
-          {/* Search Bar */}
+          {/* Search Bar with Focus Animation */}
           <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-[#5C6E61] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#5C6E61] absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-[#C5A059] transition-colors" />
             <input
               type="text"
               placeholder="Search tech, stack, or name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-xs bg-[#F2EDE2] border border-[#11261B]/15 rounded-xl text-[#11261B] placeholder-[#5C6E61] focus:outline-hidden focus:border-[#C5A059] focus:bg-white transition-all shadow-2xs"
+              className="w-full pl-9 pr-4 py-2.5 text-xs bg-[#F2EDE2] border border-[#11261B]/15 rounded-xl text-[#11261B] placeholder-[#5C6E61] focus:outline-hidden focus:border-[#C5A059] focus:bg-white transition-all shadow-xs focus:ring-2 focus:ring-[#C5A059]/20"
             />
           </div>
         </div>
 
         {/* Filter Segmented Buttons */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#F2EDE2] rounded-xl border border-[#11261B]/10 mb-8 overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1.5 bg-[#F2EDE2] rounded-xl border border-[#11261B]/10 mb-8 overflow-x-auto">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 ${
+              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 cursor-pointer ${
                 activeCategory === cat.id
-                  ? 'bg-[#11261B] text-[#F8F5EE] shadow-xs'
-                  : 'text-[#5C6E61] hover:text-[#11261B] hover:bg-white/50'
+                  ? 'bg-[#11261B] text-[#F8F5EE] shadow-md scale-[1.02] border border-[#C5A059]/40'
+                  : 'text-[#5C6E61] hover:text-[#11261B] hover:bg-white/60'
               }`}
             >
               {cat.label}
@@ -80,7 +91,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
 
         {/* Projects Grid */}
         {filteredProjects.length === 0 ? (
-          <div className="text-center py-16 bg-[#F2EDE2] rounded-2xl border border-dashed border-[#11261B]/20">
+          <div className="text-center py-16 bg-[#F2EDE2] rounded-2xl border border-dashed border-[#11261B]/20 animate-pulse">
             <Code className="w-10 h-10 text-[#5C6E61] mx-auto mb-2" />
             <p className="text-sm font-semibold text-[#11261B]">No projects found matching your search.</p>
             <button
@@ -88,135 +99,144 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
                 setActiveCategory('all');
                 setSearchQuery('');
               }}
-              className="mt-3 text-xs font-bold text-[#C5A059] hover:underline"
+              className="mt-3 text-xs font-bold text-[#C5A059] hover:underline cursor-pointer"
             >
               Clear filters
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between hover:translate-y-[-2px]"
-              >
-                <div>
-                  {/* Project Media Frame */}
-                  <div
-                    onClick={() => onSelectProject(project)}
-                    className="relative aspect-[16/10] overflow-hidden bg-[#11261B] cursor-pointer"
-                  >
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    />
-                    
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-[#11261B]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <div className="px-4 py-2 rounded-full bg-white/95 text-[#11261B] text-xs font-bold shadow-md transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                        View Architecture & Code →
+            {filteredProjects.map((project, index) => {
+              const projectNumber = String(index + 1).padStart(2, '0');
+
+              return (
+                <div
+                  key={project.id}
+                  className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5 animate-shimmer"
+                >
+                  <div>
+                    {/* Project Media Frame with Interactive Zoom & Overlay */}
+                    <div
+                      onClick={() => onSelectProject(project)}
+                      className="relative aspect-[16/10] overflow-hidden bg-[#11261B] cursor-pointer"
+                    >
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out"
+                      />
+                      
+                      {/* Hover Overlay with Spring Animation */}
+                      <div className="absolute inset-0 bg-[#11261B]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
+                        <div className="px-5 py-2.5 rounded-full bg-white text-[#11261B] text-xs font-bold shadow-xl transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
+                          <span>View Architecture & Code</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-[#C5A059]" />
+                        </div>
+                      </div>
+
+                      {/* Number Badge Index (#01, #02...) with Glow */}
+                      <div className="absolute top-3 right-3 bg-[#11261B]/90 text-[#DFC285] text-xs font-mono font-bold px-2.5 py-1 rounded-lg border border-[#C5A059]/40 shadow-md number-badge-glow">
+                        #{projectNumber}
+                      </div>
+
+                      {/* Category Label */}
+                      <div className="absolute top-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30">
+                        {project.categoryLabel}
                       </div>
                     </div>
 
-                    {/* Category Label */}
-                    <div className="absolute top-3 left-3 bg-[#11261B]/85 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30">
-                      {project.categoryLabel}
+                    {/* Card Content */}
+                    <div className="p-6">
+                      {/* Unboxed Metadata */}
+                      <div className="flex items-center gap-2 text-[11px] text-[#5C6E61] font-medium mb-2">
+                        <span className="font-semibold text-[#11261B]">{project.categoryLabel}</span>
+                        <span aria-hidden="true">·</span>
+                        <span className="font-mono">{project.year}</span>
+                        {project.metrics && (
+                          <>
+                            <span aria-hidden="true">·</span>
+                            <span className="text-[#C5A059] font-bold bg-[#11261B] px-2 py-0.5 rounded text-[10px]">{project.metrics}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Title */}
+                      <h3
+                        onClick={() => onSelectProject(project)}
+                        className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors cursor-pointer mb-2 leading-snug"
+                      >
+                        {project.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed line-clamp-2 mb-4">
+                        {project.description}
+                      </p>
+
+                      {/* Tech Stack Tags with Hover Bounce */}
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {project.technologies.slice(0, 5).map((tech) => (
+                          <span
+                            key={tech}
+                            className="text-[11px] font-medium text-[#11261B] bg-white px-2.5 py-1 rounded-lg border border-[#11261B]/10 hover:border-[#C5A059] hover:bg-[#11261B] hover:text-[#DFC285] transition-all duration-200 cursor-default hover:scale-105"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                        {project.technologies.length > 5 && (
+                          <span className="text-[11px] font-medium text-[#5C6E61] px-1.5 py-1">
+                            +{project.technologies.length - 5} more
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Card Content */}
-                  <div className="p-6">
-                    {/* Unboxed Metadata (Zero Pill Rule) */}
-                    <div className="flex items-center gap-2 text-[11px] text-[#5C6E61] font-medium mb-2">
-                      <span>{project.categoryLabel}</span>
-                      <span aria-hidden="true">·</span>
-                      <span>{project.year}</span>
-                      {project.metrics && (
-                        <>
-                          <span aria-hidden="true">·</span>
-                          <span className="text-[#11261B] font-semibold">{project.metrics}</span>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Title */}
-                    <h3
-                      onClick={() => onSelectProject(project)}
-                      className="font-display text-xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors cursor-pointer mb-2 leading-snug"
-                    >
-                      {project.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed line-clamp-2 mb-4">
-                      {project.description}
-                    </p>
-
-                    {/* Tech Stack Unboxed Tags */}
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {project.technologies.slice(0, 5).map((tech) => (
-                        <span
-                          key={tech}
-                          className="text-[11px] font-medium text-[#11261B]/80 bg-white px-2 py-0.5 rounded-md border border-[#11261B]/5"
+                  {/* Card Action Buttons */}
+                  <div className="px-6 py-4 bg-white/70 border-t border-[#11261B]/10 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="View GitHub Repository"
+                          className="p-2 rounded-lg bg-[#11261B] text-white hover:bg-[#1A3828] hover:text-[#C5A059] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
                         >
-                          {tech}
-                        </span>
-                      ))}
-                      {project.technologies.length > 5 && (
-                        <span className="text-[11px] font-medium text-[#5C6E61] px-1 py-0.5">
-                          +{project.technologies.length - 5} more
-                        </span>
+                          <Github className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">GitHub</span>
+                        </a>
+                      )}
+
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Open Live Preview"
+                          className="p-2 rounded-lg bg-white border border-[#11261B]/15 text-[#11261B] hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-[#C5A059]" />
+                          <span className="hidden sm:inline">Live Demo</span>
+                        </a>
                       )}
                     </div>
-                  </div>
-                </div>
 
-                {/* Card Action Buttons */}
-                <div className="px-6 py-4 bg-white/60 border-t border-[#11261B]/10 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="View GitHub Repository"
-                        className="p-2 rounded-lg bg-[#11261B] text-white hover:bg-[#1A3828] hover:text-[#C5A059] transition-all shadow-2xs flex items-center gap-1.5 text-xs font-semibold"
-                      >
-                        <Github className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">GitHub</span>
-                      </a>
-                    )}
-
-                    {project.liveUrl && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="Open Live Preview"
-                        className="p-2 rounded-lg bg-white border border-[#11261B]/15 text-[#11261B] hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-2xs flex items-center gap-1.5 text-xs font-semibold"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5 text-[#C5A059]" />
-                        <span className="hidden sm:inline">Live Demo</span>
-                      </a>
-                    )}
+                    <button
+                      onClick={() => onSelectProject(project)}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-[#11261B] group-hover:text-[#C5A059] transition-all hover:translate-x-1 cursor-pointer"
+                    >
+                      <span>Details</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
-                  <button
-                    onClick={() => onSelectProject(project)}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-[#11261B] hover:text-[#C5A059] transition-colors"
-                  >
-                    <span>Details</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </button>
                 </div>
-
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
-
       </div>
     </section>
   );

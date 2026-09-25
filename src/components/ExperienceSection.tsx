@@ -1,5 +1,5 @@
 import React from 'react';
-import { Briefcase, Calendar, MapPin, CheckCircle2, Award, Sparkles, Star, TrendingUp, Users, Clock } from 'lucide-react';
+import { Briefcase, Calendar, MapPin, CheckCircle2, Award, Sparkles, Star, TrendingUp, Users, Clock, ArrowUpRight } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
 
 interface ExperienceSectionProps {
@@ -59,19 +59,30 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
     { label: 'Code Quality Rating', value: '100%', icon: TrendingUp },
   ];
 
+  const titleChars = 'Experience & Journey'.split('');
+
   return (
-    <section id="experience" className="py-20 bg-[#F8F5EE] border-b border-[#11261B]/10 relative">
+    <section id="experience" className="py-20 bg-[#F8F5EE] border-b border-[#11261B]/10 relative overflow-hidden">
+      
+      {/* Background Glow */}
+      <div className="absolute bottom-10 left-10 w-80 h-80 bg-[#C5A059]/10 rounded-full blur-3xl pointer-events-none -z-10 animate-float" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2 px-3 py-1 rounded-full bg-white border border-[#C5A059]/30 animate-shimmer">
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
             <span>CAREER & TRACK RECORD</span>
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A059] animate-spin-slow" />
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4">
-            Experience & Journey
+
+          <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-[#11261B] mb-4 select-none">
+            {titleChars.map((char, index) => (
+              <span key={index} className="hover-letter-bounce cursor-pointer">
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}
           </h2>
           <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
           <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
@@ -79,20 +90,20 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
           </p>
         </div>
 
-        {/* Highlight Stats Row */}
+        {/* Highlight Stats Row with Number Bounce & Glowing Badges */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
             return (
               <div
                 key={idx}
-                className="bg-[#F2EDE2] p-6 rounded-2xl border border-[#11261B]/10 shadow-xs flex items-center gap-4 hover:border-[#C5A059] transition-all"
+                className="bg-[#F2EDE2] p-6 rounded-2xl border border-[#11261B]/10 shadow-xs flex items-center gap-4 hover:border-[#C5A059] hover:shadow-xl transition-all duration-500 group hover:-translate-y-1.5 animate-shimmer cursor-default"
               >
-                <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 shadow-xs">
+                <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all duration-300">
                   <Icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="font-display font-bold text-2xl sm:text-3xl text-[#11261B] tabular-nums leading-none mb-1">
+                  <div className="font-display font-bold text-2xl sm:text-3xl text-[#11261B] group-hover:text-[#C5A059] tabular-nums leading-none mb-1 transition-colors number-badge-glow inline-block">
                     {stat.value}
                   </div>
                   <div className="text-xs text-[#5C6E61] font-semibold">{stat.label}</div>
@@ -102,45 +113,40 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
           })}
         </div>
 
-        {/* Timeline Stack */}
+        {/* Timeline Stack with Connecting Pulse Node Line */}
         <div className="space-y-8 relative">
-          {/* Vertical connecting line */}
-          <div className="hidden md:block absolute left-8 top-6 bottom-6 w-0.5 bg-[#11261B]/15" />
+          <div className="hidden lg:block absolute left-8 top-6 bottom-6 w-0.5 bg-gradient-to-b from-[#C5A059] via-[#11261B]/30 to-transparent" />
 
-          {experiences.map((exp, index) => (
+          {experiences.map((exp, idx) => (
             <div
-              key={index}
-              className="relative md:pl-20 group"
+              key={idx}
+              className="relative lg:pl-16 group"
             >
-              {/* Timeline Marker Dot */}
-              <div className="hidden md:flex absolute left-5 top-6 w-6 h-6 rounded-full bg-[#11261B] text-[#C5A059] border-2 border-[#C5A059] items-center justify-center -translate-x-1/2 z-10 shadow-xs group-hover:scale-125 transition-transform">
-                <div className="w-2 h-2 rounded-full bg-[#C5A059]" />
+              {/* Timeline Node Point */}
+              <div className="hidden lg:flex absolute left-6 top-8 w-5 h-5 rounded-full bg-[#11261B] border-2 border-[#C5A059] items-center justify-center shadow-md group-hover:scale-125 transition-transform duration-300 group-hover:bg-[#C5A059]">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#DFC285] group-hover:bg-[#11261B]" />
               </div>
 
-              {/* Experience Card */}
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#11261B]/10 shadow-xs hover:shadow-lg hover:border-[#C5A059] transition-all">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-4 border-b border-[#11261B]/10">
+              {/* Timeline Card */}
+              <div className="bg-[#F2EDE2] p-6 sm:p-8 rounded-2xl border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-all duration-500 hover:-translate-y-1 animate-shimmer">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-[#11261B]/10">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#C5A059] bg-[#11261B] px-2.5 py-1 rounded-md inline-block mb-2">
-                      {exp.badge}
-                    </span>
-                    <h3 className="font-display text-2xl font-bold text-[#11261B]">
-                      {exp.role}
-                    </h3>
-                    <div className="text-sm font-semibold text-[#5C6E61] mt-0.5">
-                      {exp.company}
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors">
+                        {exp.role}
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-[#11261B] text-[#DFC285] px-2.5 py-0.5 rounded-full">
+                        {exp.badge}
+                      </span>
+                    </div>
+                    <div className="text-xs sm:text-sm font-semibold text-[#5C6E61]">
+                      {exp.company} · <span className="font-normal text-[#11261B]">{exp.location}</span>
                     </div>
                   </div>
 
-                  <div className="flex sm:flex-col items-start sm:items-end gap-3 sm:gap-1 text-xs text-[#5C6E61]">
-                    <div className="flex items-center gap-1.5 font-bold text-[#11261B]">
-                      <Calendar className="w-3.5 h-3.5 text-[#C5A059]" />
-                      <span>{exp.period}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#5C6E61]" />
-                      <span>{exp.location}</span>
-                    </div>
+                  <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#11261B] bg-white px-3 py-1.5 rounded-lg border border-[#11261B]/10 shrink-0">
+                    <Calendar className="w-3.5 h-3.5 text-[#C5A059]" />
+                    <span>{exp.period}</span>
                   </div>
                 </div>
 
@@ -148,28 +154,24 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
                   {exp.description}
                 </p>
 
-                {/* Key Accomplishments */}
+                {/* Achievements List */}
                 <div className="space-y-2 mb-6">
-                  <div className="text-xs font-bold uppercase tracking-wider text-[#11261B] mb-2">
-                    Key Achievements & Deliverables:
-                  </div>
-                  {exp.achievements.map((ach, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-[#11261B]/85">
-                      <CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5" />
-                      <span className="leading-snug">{ach}</span>
+                  {exp.achievements.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs sm:text-sm text-[#11261B]/85 group-hover:translate-x-1 transition-transform duration-300" style={{ transitionDelay: `${i * 30}ms` }}>
+                      <CheckCircle2 className="w-4 h-4 text-[#C5A059] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                      <span>{item}</span>
                     </div>
                   ))}
                 </div>
 
                 {/* Tech Stack Pills */}
-                <div className="pt-4 border-t border-[#11261B]/10 flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-[#5C6E61] mr-2">Technologies:</span>
-                  {exp.stack.map((tech) => (
+                <div className="flex flex-wrap gap-1.5 pt-4 border-t border-[#11261B]/10">
+                  {exp.stack.map((t) => (
                     <span
-                      key={tech}
-                      className="text-[11px] font-semibold text-[#11261B] bg-[#F2EDE2] px-2.5 py-1 rounded-lg border border-[#11261B]/5"
+                      key={t}
+                      className="text-[11px] font-medium text-[#11261B] bg-white px-2.5 py-1 rounded-md border border-[#11261B]/10 hover:border-[#C5A059] hover:bg-[#11261B] hover:text-[#DFC285] transition-all duration-200 cursor-default hover:scale-105"
                     >
-                      {tech}
+                      {t}
                     </span>
                   ))}
                 </div>

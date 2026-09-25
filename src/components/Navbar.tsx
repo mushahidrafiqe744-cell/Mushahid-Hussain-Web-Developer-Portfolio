@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, Send, SlidersHorizontal, Menu, X } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
+import { EmblemLogo } from './EmblemLogo';
 
 interface NavbarProps {
   profile: DeveloperProfile;
@@ -41,23 +42,21 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-50 bg-[#F8F5EE]/95 backdrop-blur-md border-b border-[#11261B]/10 transition-all shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
-        {/* Brand Logo - Clicking this opens the Hero Section */}
+        {/* Brand Logo with Running Circular Line - Clicking this opens the Hero Section */}
         <button
           onClick={() => handleNavClick('hero')}
-          className="flex items-center gap-2.5 group text-left cursor-pointer focus:outline-none"
+          className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
           title="Click to go to Hero Section"
         >
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-display font-bold text-lg shadow-sm border transition-all duration-300 group-hover:scale-105 ${
-            activeSection === 'hero'
-              ? 'bg-[#11261B] text-[#C5A059] border-[#C5A059] ring-2 ring-[#C5A059]/40'
-              : 'bg-[#11261B] text-[#C5A059] border-[#C5A059]/40 group-hover:border-[#C5A059]'
-          }`}>
-            {profile.firstName.charAt(0)}{profile.lastName.charAt(0)}
+          <div className="relative transition-transform duration-300 group-hover:scale-105">
+            <EmblemLogo size="sm" showSubtitle={false} interactive={true} />
           </div>
           <div className="flex flex-col">
-            <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#11261B] group-hover:text-[#C5A059] transition-colors leading-none">
-              {profile.name}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#11261B] group-hover:text-[#C5A059] transition-colors leading-none">
+                {profile.name}
+              </span>
+            </div>
             <span className="text-[10px] tracking-widest uppercase font-semibold text-[#5C6E61] mt-0.5">
               {profile.title}
             </span>
