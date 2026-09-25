@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Github, Linkedin, Mail, ArrowUp, Home } from 'lucide-react';
+import { Sparkles, Github, Linkedin, Mail, ArrowUp, Home, Phone } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 
@@ -98,6 +98,17 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
               aria-label="LinkedIn"
             >
               <Linkedin className="w-4 h-4" />
+            </a>
+
+            <a
+              href={`https://wa.me/92${profile.phone.replace(/^0+/, '')}`}
+              target="_blank"
+              rel="noreferrer"
+              className="w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:border-[#25D366] hover:bg-[#25D366] hover:text-white flex items-center justify-center text-white transition-colors"
+              aria-label="WhatsApp"
+              title="Chat on WhatsApp"
+            >
+              <Phone className="w-4 h-4" />
             </a>
 
             <button

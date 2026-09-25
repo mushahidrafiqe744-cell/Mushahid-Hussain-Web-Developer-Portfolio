@@ -3,6 +3,9 @@ import heroPortrait from '../assets/images/mushahid_hussain_hero_1790258485207.j
 import projectSaasImg from '../assets/images/project_saas_dashboard_1790256923327.jpg';
 import projectEcomImg from '../assets/images/project_ecommerce_luxury_1790256942358.jpg';
 import projectAiImg from '../assets/images/project_ai_platform_1790256957586.jpg';
+import mbaAcademyImg from '../assets/images/mba_academy_preview_1790339491378.jpg';
+import aqsaRamzanImg from '../assets/images/aqsa_ramzan_portfolio_1790343419861.jpg';
+import raheemRehabImg from '../assets/images/raheem_rehab_preview_1790343771657.jpg';
 
 export const initialProfile: DeveloperProfile = {
   name: 'Mushahid Hussain',
@@ -13,15 +16,16 @@ export const initialProfile: DeveloperProfile = {
   badge: 'CRAFTING SCALABLE & INTUITIVE WEB EXPERIENCES.',
   bioHero: 'I build high-performance web applications, responsive interfaces, and robust backend services that help businesses innovate and leave a lasting impression.',
   bioAbout: 'I am a passionate Full-Stack Web Developer specializing in modern React ecosystems, TypeScript, Node.js, Next.js, and high-converting responsive interfaces. My focus is writing clean, scalable, and maintainable code that delivers outstanding user experiences and business results.',
-  dob: '15th October 2001',
+  dob: '06th August 2016',
   location: 'Pakistan',
   email: 'mushahidrafiqe744@gmail.com',
-  phone: '+92 300 1234567',
+  phone: '03290725117',
+  whatsapp: '03290725117',
   github: 'https://github.com/mushahidhussain',
   linkedin: 'https://linkedin.com/in/mushahidhussain',
   twitter: 'https://twitter.com/mushahiddev',
   avatarUrl: heroPortrait,
-  yearsOfExperience: '3+ Years',
+  yearsOfExperience: '8+ Years',
   projectsCompleted: '30+',
   happyClients: '99%',
 };
@@ -108,87 +112,66 @@ export const initialSkillGroups: SkillGroup[] = [
 
 export const initialProjects: Project[] = [
   {
-    id: 'saas-metrics',
-    title: 'Aura Analytics & Cloud SaaS',
-    tagline: 'Real-time telemetry and revenue intelligence platform for digital businesses.',
-    category: 'saas',
-    categoryLabel: 'SaaS Platform',
-    year: '2025',
-    description: 'A full-stack analytics suite featuring multi-tenant dashboards, real-time event ingestion, customized reporting, and role-based access control.',
-    fullOverview: 'Built to handle high-frequency data streams with millisecond query speeds. Includes interactive charting, exportable PDF financial reports, team invitations, and automated Stripe billing webhooks.',
-    image: projectSaasImg,
-    technologies: ['React', 'TypeScript', 'Node.js', 'PostgreSQL', 'TailwindCSS', 'ChartJS', 'Express'],
-    githubUrl: 'https://github.com/mushahidhussain/aura-analytics-saas',
-    liveUrl: 'https://aura-analytics-demo.web.app',
-    features: [
-      'Sub-50ms query latency on multi-million row event logs',
-      'Real-time WebSocket data updates and live visitor heatmaps',
-      'Automated recurring billing and team permission matrix',
-      'Zero-latency dark/light mode with custom chart theming'
-    ],
-    metrics: 'Processed 2.4M monthly data points'
-  },
-  {
-    id: 'luxury-ecommerce',
-    title: 'Luxe Maison E-Commerce',
-    tagline: 'High-end responsive fashion and lifestyle flagship with seamless checkout.',
-    category: 'ecommerce',
-    categoryLabel: 'E-Commerce',
-    year: '2024',
-    description: 'A headless e-commerce store with instant client-side filtering, multi-currency support, dynamic inventory tracking, and one-click Stripe payments.',
-    fullOverview: 'Designed with editorial minimalism and high visual polish. Features interactive 3D product previews, wishlist persistence via local storage, animated sliding cart drawers, and Lighthouse 98 performance score.',
-    image: projectEcomImg,
-    technologies: ['Next.js', 'React', 'TailwindCSS', 'Stripe API', 'Zustand', 'Node.js'],
-    githubUrl: 'https://github.com/mushahidhussain/luxe-maison-storefront',
-    liveUrl: 'https://luxe-maison-store.vercel.app',
-    features: [
-      'Instant search and multi-facet filtering with zero layout shift',
-      'Integrated Stripe Checkout & Apple Pay / Google Pay',
-      'Optimized Next.js Image pipeline with responsive WebP delivery',
-      'Complete order history and automated email confirmations'
-    ],
-    metrics: '98/100 Lighthouse Performance & 3.2x faster checkout'
-  },
-  {
-    id: 'dev-collaboration',
-    title: 'CodeSync Collaborative IDE',
-    tagline: 'Browser-based live pair-programming and code execution playground.',
+    id: 'mba-academy',
+    title: 'MBA Academy Web Platform',
+    tagline: 'Modern educational portal and professional learning management system.',
     category: 'fullstack',
-    categoryLabel: 'Developer Tool',
-    year: '2024',
-    description: 'A web-based workspace enabling multiple developers to edit code simultaneously in real-time, execute snippets securely, and share reproducible dev snapshots.',
-    fullOverview: 'Leverages CRDT algorithm primitives and WebSockets for conflict-free real-time collaborative text editing, syntax highlighting across 40+ programming languages, and terminal emulator output.',
-    image: projectAiImg,
-    technologies: ['React', 'TypeScript', 'WebSockets', 'Node.js', 'Monaco Editor', 'Docker'],
-    githubUrl: 'https://github.com/mushahidhussain/codesync-live-ide',
-    liveUrl: 'https://codesync-playground.web.app',
+    categoryLabel: 'EdTech Platform',
+    year: '2025',
+    description: 'A comprehensive educational web platform featuring interactive course catalogs, student dashboard, dynamic curriculum tracking, and responsive learning interfaces.',
+    fullOverview: 'Developed with modern React tooling, responsive Tailwind CSS layouts, and fast client-side navigation. Designed for seamless student enrollment, course material access, and professional skill development.',
+    image: mbaAcademyImg,
+    technologies: ['React', 'TypeScript', 'TailwindCSS', 'Vite', 'Node.js'],
+    githubUrl: 'https://github.com/mushahidhussain/mba-academy',
+    liveUrl: 'https://mba-academy-6611-84sn.vercel.app/#home',
     features: [
-      'Multi-cursor live presence with low latency synchronization',
-      'Isolated sandbox container code execution engine',
-      'Instant link sharing with cryptographic project hashes',
-      'Integrated audio chat and code diff inspection'
+      'Interactive course catalog with instant filtering and search',
+      'Student dashboard for tracking learning progress and modules',
+      'Fully responsive mobile-first UI with lightning-fast load times',
+      'Direct enrollment and instructor consultation portals'
     ],
-    metrics: '15k+ snippets compiled and shared'
+    metrics: '100% responsive & accessible learning portal'
   },
   {
-    id: 'pulse-api-gateway',
-    title: 'Pulse Microservice API Engine',
-    tagline: 'High-throughput caching gateway and authentication proxy.',
-    category: 'api',
-    categoryLabel: 'Backend / API',
-    year: '2024',
-    description: 'A resilient microservice API proxy that manages token validation, distributed rate-limiting, and Redis caching for distributed microservices.',
-    fullOverview: 'Engineered in TypeScript and Express with comprehensive unit and integration test coverage. Handles rate limiting via sliding window Redis algorithms, HMAC signature verification, and automated OpenAPI documentation.',
-    image: projectSaasImg,
-    technologies: ['Node.js', 'TypeScript', 'Express', 'Redis', 'Docker', 'Swagger'],
-    githubUrl: 'https://github.com/mushahidhussain/pulse-api-gateway',
-    liveUrl: 'https://api-docs.pulse-gateway.dev',
+    id: 'aqsa-ramzan-portfolio',
+    title: 'Aqsa Ramzan — Graphic Designer Portfolio',
+    tagline: 'Stunning creative portfolio showcasing brand identity, illustration, and UI/UX design.',
+    category: 'ecommerce',
+    categoryLabel: 'Design Portfolio',
+    year: '2025',
+    description: 'A vibrant, creative portfolio website built for a professional graphic designer, featuring case studies, brand identity showcases, vector illustrations, and contact booking.',
+    fullOverview: 'Crafted with bold artistic typography, interactive project galleries, smooth image lightboxes, and responsive layouts that highlight creative design mastery and visual storytelling.',
+    image: aqsaRamzanImg,
+    technologies: ['React', 'TailwindCSS', 'TypeScript', 'Vite', 'Framer Motion'],
+    githubUrl: 'https://github.com/mushahidhussain/aqsa-ramzan-graphics-portfolio',
+    liveUrl: 'https://aqsa-ramzan-graphics-designer-portf-hazel.vercel.app/',
     features: [
-      'Distributed Redis sliding-window token bucket rate limiter',
-      'Automatic Swagger / OpenAPI spec generation from TypeScript types',
-      'JWT and API Key authentication with permission scopes',
-      'Comprehensive Jest test suite with 94% code coverage'
+      'Interactive visual project gallery with categorized filter tabs',
+      'High-resolution imagery showcase with lightbox zoom effects',
+      'Client testimonial slider and inquiry contact form',
+      'Fully responsive portfolio layout optimized for mobile and desktop'
     ],
-    metrics: 'Handles 10k+ req/sec with <8ms overhead'
+    metrics: 'Showcasing 40+ brand identity & design projects'
+  },
+  {
+    id: 'raheem-rehab',
+    title: 'Raheem Insdad-e-Manshiyat',
+    tagline: 'Pakistan leading addiction rehabilitation center and psychiatric care portal.',
+    category: 'fullstack',
+    categoryLabel: 'Healthcare Platform',
+    year: '2025',
+    description: 'A professional medical rehabilitation web platform featuring appointment booking, emergency care hotlines, specialist doctor directories, and patient care statistics.',
+    fullOverview: 'Engineered for compassionate care and seamless patient engagement. Includes interactive consultation scheduling, 24/7 emergency support channels, medical detox information, and psychiatric counseling resources.',
+    image: raheemRehabImg,
+    technologies: ['React', 'TypeScript', 'TailwindCSS', 'Vite', 'Node.js'],
+    githubUrl: 'https://github.com/mushahidhussain/raheem-rehab-center',
+    liveUrl: 'https://raheem-insdad-e-manshiyat-e9qy.vercel.app/',
+    features: [
+      '24/7 emergency care hotline and instant trauma response banner',
+      'Specialist doctor directory with US/UK board-certified profiles',
+      'Online appointment booking and consultation scheduling system',
+      'Patient success score and comprehensive medical department breakdown'
+    ],
+    metrics: '50,000+ Admitted & Cured with 99% Patient Score'
   }
 ];

@@ -67,6 +67,7 @@ export interface DeveloperProfile {
   dob?: string;
   email: string;
   phone: string;
+  whatsapp?: string;
   github: string;
   linkedin: string;
   twitter?: string;

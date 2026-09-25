@@ -1,7 +1,8 @@
-import React from 'react';
-import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, Award, Star, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, Award, Star, Zap, Phone, MessageCircle } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
+import { HoverCounter } from './HoverCounter';
 
 interface HeroProps {
   profile: DeveloperProfile;
@@ -12,6 +13,14 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume }) => {
   // Split name letters for interactive letter animation
   const nameLetters = profile.firstName.split('');
+
+  // Hover states for the 3 quick metric buttons
+  const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
+
+  // Extract numerical targets
+  const projectsCount = parseInt(profile.projectsCompleted.replace(/\D/g, ''), 10) || 30;
+  const experienceCount = parseInt(profile.yearsOfExperience.replace(/\D/g, ''), 10) || 3;
+  const satisfactionCount = parseInt(profile.happyClients.replace(/\D/g, ''), 10) || 99;
 
   return (
     <section className="relative pt-8 pb-14 md:pt-12 md:pb-20 overflow-hidden">
@@ -90,51 +99,74 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               </button>
             </div>
 
-            {/* Interactive Animated Metric Numbers Bar */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 mt-10 pt-8 border-t border-[#11261B]/10 w-full max-w-lg">
+            {/* Interactive Metric Numbers Bar with 0 -> Target Count-up on Cursor Hover */}
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 mt-10 pt-8 border-t border-[#11261B]/10 w-full max-w-lg">
               
-              {/* Stat 1: Projects Delivered */}
+              {/* Stat 1: Projects Delivered (0+ -> 30+) */}
               <button
                 onClick={() => onOpenSection('projects')}
-                className="text-left group cursor-pointer p-2 rounded-xl hover:bg-white/60 transition-all duration-300 number-badge-glow"
+                onMouseEnter={() => setHoveredMetric(1)}
+                onMouseLeave={() => setHoveredMetric(null)}
+                className={`text-left group cursor-pointer p-3 rounded-2xl transition-all duration-300 number-badge-glow border ${
+                  hoveredMetric === 1
+                    ? 'bg-white shadow-lg border-[#C5A059]'
+                    : 'bg-transparent border-transparent hover:bg-white/60'
+                }`}
               >
                 <div className="flex items-baseline gap-1">
                   <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
-                    {profile.projectsCompleted}
+                    <HoverCounter target={projectsCount} suffix="+" isParentHovered={hoveredMetric === 1} />
                   </span>
-                  <Award className="w-3.5 h-3.5 text-[#C5A059] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Award className={`w-3.5 h-3.5 text-[#C5A059] transition-opacity duration-300 ${hoveredMetric === 1 ? 'opacity-100 scale-110' : 'opacity-0'}`} />
                 </div>
                 <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-0.5 group-hover:text-[#11261B] transition-colors">
                   Projects Delivered ↗
                 </div>
               </button>
 
-              {/* Stat 2: Experience Years */}
+              {/* Stat 2: Experience (0+ Years -> 3+ Years) */}
               <button
                 onClick={() => onOpenSection('experience')}
-                className="text-left group cursor-pointer p-2 rounded-xl hover:bg-white/60 transition-all duration-300 number-badge-glow border-x border-[#11261B]/10"
+                onMouseEnter={() => setHoveredMetric(2)}
+                onMouseLeave={() => setHoveredMetric(null)}
+                className={`text-left group cursor-pointer p-3 rounded-2xl transition-all duration-300 number-badge-glow border ${
+                  hoveredMetric === 2
+                    ? 'bg-white shadow-lg border-[#C5A059]'
+                    : 'bg-transparent border-transparent hover:bg-white/60'
+                }`}
               >
-                <div className="flex items-baseline gap-1">
-                  <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
-                    {profile.yearsOfExperience}
+                <div className="flex flex-col leading-tight">
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
+                      <HoverCounter target={experienceCount} suffix="+" isParentHovered={hoveredMetric === 2} />
+                    </span>
+                    <Zap className={`w-3.5 h-3.5 text-[#C5A059] transition-opacity duration-300 ${hoveredMetric === 2 ? 'opacity-100 scale-110' : 'opacity-0'}`} />
+                  </div>
+                  <span className="font-display font-bold text-xl sm:text-2xl text-[#11261B] group-hover:text-[#C5A059] -mt-1 transition-colors">
+                    Years
                   </span>
-                  <Zap className="w-3.5 h-3.5 text-[#C5A059] opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-0.5 group-hover:text-[#11261B] transition-colors">
+                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1 group-hover:text-[#11261B] transition-colors">
                   Experience ↗
                 </div>
               </button>
 
-              {/* Stat 3: Satisfaction */}
+              {/* Stat 3: Satisfaction (0% -> 99%) */}
               <button
                 onClick={() => onOpenSection('why-choose-me')}
-                className="text-left group cursor-pointer p-2 rounded-xl hover:bg-white/60 transition-all duration-300 number-badge-glow"
+                onMouseEnter={() => setHoveredMetric(3)}
+                onMouseLeave={() => setHoveredMetric(null)}
+                className={`text-left group cursor-pointer p-3 rounded-2xl transition-all duration-300 number-badge-glow border ${
+                  hoveredMetric === 3
+                    ? 'bg-white shadow-lg border-[#C5A059]'
+                    : 'bg-transparent border-transparent hover:bg-white/60'
+                }`}
               >
                 <div className="flex items-baseline gap-1">
                   <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
-                    {profile.happyClients}
+                    <HoverCounter target={satisfactionCount} suffix="%" isParentHovered={hoveredMetric === 3} />
                   </span>
-                  <Star className="w-3.5 h-3.5 text-[#C5A059] fill-[#C5A059] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Star className={`w-3.5 h-3.5 text-[#C5A059] fill-[#C5A059] transition-opacity duration-300 ${hoveredMetric === 3 ? 'opacity-100 scale-110' : 'opacity-0'}`} />
                 </div>
                 <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-0.5 group-hover:text-[#11261B] transition-colors">
                   Satisfaction ↗
@@ -214,6 +246,25 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-[#11261B] leading-none">GitHub</span>
                   <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px]">@mushahidhussain</span>
+                </div>
+              </a>
+
+              {/* WhatsApp Link */}
+              <a
+                href={`https://wa.me/92${profile.phone.replace(/^0+/, '')}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
+              >
+                <div className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center group-hover:scale-110 transition-all shadow-2xs">
+                  <Phone className="w-3.5 h-3.5" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-[#11261B] leading-none flex items-center gap-1">
+                    <span>WhatsApp</span>
+                    <span className="text-[9px] text-[#25D366] font-bold">Online</span>
+                  </span>
+                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px] font-mono">{profile.phone}</span>
                 </div>
               </a>
 

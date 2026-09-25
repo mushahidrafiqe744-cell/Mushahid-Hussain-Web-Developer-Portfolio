@@ -11,7 +11,6 @@ import { ResumeSection } from './components/ResumeSection';
 import { ProjectModal } from './components/ProjectModal';
 import { ContactSection } from './components/ContactSection';
 import { ResumeModal } from './components/ResumeModal';
-import { EditProfileDrawer } from './components/EditProfileDrawer';
 import { Footer } from './components/Footer';
 import {
   initialProfile,
@@ -33,44 +32,17 @@ export default function App() {
   });
 
   const [projects, setProjects] = useState<Project[]>(() => {
-    try {
-      const saved = localStorage.getItem('developer_projects_data');
-      return saved ? JSON.parse(saved) : initialProjects;
-    } catch {
-      return initialProjects;
-    }
+    return initialProjects;
   });
 
   // Default active section is 'hero' (opened initially & when clicking the logo)
   const [activeSection, setActiveSection] = useState<SectionId>('hero');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeOpen, setIsResumeOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleSelectSection = (section: SectionId) => {
     setActiveSection(section);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleUpdateProfile = (newProfile: DeveloperProfile) => {
-    setProfile(newProfile);
-    try {
-      localStorage.setItem('developer_profile_data', JSON.stringify(newProfile));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleResetDefaults = () => {
-    setProfile(initialProfile);
-    setProjects(initialProjects);
-    try {
-      localStorage.removeItem('developer_profile_data');
-      localStorage.removeItem('developer_projects_data');
-    } catch (err) {
-      console.error(err);
-    }
-    setIsEditOpen(false);
   };
 
   return (
@@ -81,7 +53,6 @@ export default function App() {
         activeSection={activeSection}
         onSelectSection={handleSelectSection}
         onOpenResume={() => setIsResumeOpen(true)}
-        onOpenEdit={() => setIsEditOpen(true)}
       />
 
       {/* Main Section Area */}
@@ -180,15 +151,6 @@ export default function App() {
         profile={profile}
         projects={projects}
         skillGroups={initialSkillGroups}
-      />
-
-      {/* Profile Customizer Drawer */}
-      <EditProfileDrawer
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        profile={profile}
-        onUpdateProfile={handleUpdateProfile}
-        onResetDefaults={handleResetDefaults}
       />
     </div>
   );

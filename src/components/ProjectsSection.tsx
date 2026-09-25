@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers } from 'lucide-react';
 import { Project } from '../types/portfolio';
 
@@ -6,6 +6,177 @@ interface ProjectsSectionProps {
   projects: Project[];
   onSelectProject: (project: Project) => void;
 }
+
+const ProjectCard: React.FC<{
+  project: Project;
+  index: number;
+  onSelectProject: (project: Project) => void;
+}> = ({ project, index, onSelectProject }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentNum, setCurrentNum] = useState(0);
+  const targetNum = index + 1;
+
+  useEffect(() => {
+    let animationFrameId: number;
+    let startTime: number | null = null;
+    const duration = 500;
+
+    if (isHovered) {
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        setCurrentNum(Math.round(easeOut * targetNum));
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animate);
+        }
+      };
+      animationFrameId = requestAnimationFrame(animate);
+    } else {
+      setCurrentNum(0);
+    }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [isHovered, targetNum]);
+
+  const formattedNum = String(currentNum).padStart(2, '0');
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5 animate-shimmer"
+    >
+      <div>
+        {/* Project Media Frame with Interactive Zoom & Overlay */}
+        <div
+          onClick={() => onSelectProject(project)}
+          className="relative aspect-[16/10] overflow-hidden bg-[#11261B] cursor-pointer"
+        >
+          <img
+            src={project.image}
+            alt={project.title}
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out"
+          />
+          
+          {/* Hover Overlay with Spring Animation */}
+          <div className="absolute inset-0 bg-[#11261B]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
+            <div className="px-5 py-2.5 rounded-full bg-white text-[#11261B] text-xs font-bold shadow-xl transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
+              <span>View Architecture & Code</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#C5A059]" />
+            </div>
+          </div>
+
+          {/* Number Badge Index: #00 -> #01, #02 with Glow on Hover */}
+          <div
+            className={`absolute top-3 right-3 text-xs font-mono font-bold px-2.5 py-1 rounded-lg border shadow-md transition-all duration-300 select-none ${
+              isHovered
+                ? 'bg-[#C5A059] text-[#11261B] border-[#DFC285] scale-110 shadow-lg shadow-[#C5A059]/30'
+                : 'bg-[#11261B]/90 text-[#DFC285]/60 border-[#C5A059]/40'
+            }`}
+          >
+            #{formattedNum}
+          </div>
+
+          {/* Category Label */}
+          <div className="absolute top-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30">
+            {project.categoryLabel}
+          </div>
+        </div>
+
+        {/* Card Content */}
+        <div className="p-6">
+          {/* Unboxed Metadata */}
+          <div className="flex items-center gap-2 text-[11px] text-[#5C6E61] font-medium mb-2">
+            <span className="font-semibold text-[#11261B]">{project.categoryLabel}</span>
+            <span aria-hidden="true">·</span>
+            <span className="font-mono">{project.year}</span>
+            {project.metrics && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="text-[#C5A059] font-bold bg-[#11261B] px-2 py-0.5 rounded text-[10px]">{project.metrics}</span>
+              </>
+            )}
+          </div>
+
+          {/* Title */}
+          <h3
+            onClick={() => onSelectProject(project)}
+            className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors cursor-pointer mb-2 leading-snug"
+          >
+            {project.title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed line-clamp-2 mb-4">
+            {project.description}
+          </p>
+
+          {/* Tech Stack Tags with Hover Bounce */}
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {project.technologies.slice(0, 5).map((tech) => (
+              <span
+                key={tech}
+                className="text-[11px] font-medium text-[#11261B] bg-white px-2.5 py-1 rounded-lg border border-[#11261B]/10 hover:border-[#C5A059] hover:bg-[#11261B] hover:text-[#DFC285] transition-all duration-200 cursor-default hover:scale-105"
+              >
+                {tech}
+              </span>
+            ))}
+            {project.technologies.length > 5 && (
+              <span className="text-[11px] font-medium text-[#5C6E61] px-1.5 py-1">
+                +{project.technologies.length - 5} more
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Card Action Buttons */}
+      <div className="px-6 py-4 bg-white/70 border-t border-[#11261B]/10 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noreferrer"
+              title="View GitHub Repository"
+              className="p-2 rounded-lg bg-[#11261B] text-white hover:bg-[#1A3828] hover:text-[#C5A059] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
+            >
+              <Github className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">GitHub</span>
+            </a>
+          )}
+
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noreferrer"
+              title="Open Live Preview"
+              className="p-2 rounded-lg bg-white border border-[#11261B]/15 text-[#11261B] hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-[#C5A059]" />
+              <span className="hidden sm:inline">Live Demo</span>
+            </a>
+          )}
+        </div>
+
+        <button
+          onClick={() => onSelectProject(project)}
+          className="inline-flex items-center gap-1 text-xs font-bold text-[#11261B] group-hover:text-[#C5A059] transition-all hover:translate-x-1 cursor-pointer"
+        >
+          <span>Details</span>
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+    </div>
+  );
+};
 
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSelectProject }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -106,135 +277,14 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredProjects.map((project, index) => {
-              const projectNumber = String(index + 1).padStart(2, '0');
-
-              return (
-                <div
-                  key={project.id}
-                  className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5 animate-shimmer"
-                >
-                  <div>
-                    {/* Project Media Frame with Interactive Zoom & Overlay */}
-                    <div
-                      onClick={() => onSelectProject(project)}
-                      className="relative aspect-[16/10] overflow-hidden bg-[#11261B] cursor-pointer"
-                    >
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out"
-                      />
-                      
-                      {/* Hover Overlay with Spring Animation */}
-                      <div className="absolute inset-0 bg-[#11261B]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
-                        <div className="px-5 py-2.5 rounded-full bg-white text-[#11261B] text-xs font-bold shadow-xl transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
-                          <span>View Architecture & Code</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-[#C5A059]" />
-                        </div>
-                      </div>
-
-                      {/* Number Badge Index (#01, #02...) with Glow */}
-                      <div className="absolute top-3 right-3 bg-[#11261B]/90 text-[#DFC285] text-xs font-mono font-bold px-2.5 py-1 rounded-lg border border-[#C5A059]/40 shadow-md number-badge-glow">
-                        #{projectNumber}
-                      </div>
-
-                      {/* Category Label */}
-                      <div className="absolute top-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30">
-                        {project.categoryLabel}
-                      </div>
-                    </div>
-
-                    {/* Card Content */}
-                    <div className="p-6">
-                      {/* Unboxed Metadata */}
-                      <div className="flex items-center gap-2 text-[11px] text-[#5C6E61] font-medium mb-2">
-                        <span className="font-semibold text-[#11261B]">{project.categoryLabel}</span>
-                        <span aria-hidden="true">·</span>
-                        <span className="font-mono">{project.year}</span>
-                        {project.metrics && (
-                          <>
-                            <span aria-hidden="true">·</span>
-                            <span className="text-[#C5A059] font-bold bg-[#11261B] px-2 py-0.5 rounded text-[10px]">{project.metrics}</span>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Title */}
-                      <h3
-                        onClick={() => onSelectProject(project)}
-                        className="font-display text-xl sm:text-2xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors cursor-pointer mb-2 leading-snug"
-                      >
-                        {project.title}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-xs sm:text-sm text-[#5C6E61] leading-relaxed line-clamp-2 mb-4">
-                        {project.description}
-                      </p>
-
-                      {/* Tech Stack Tags with Hover Bounce */}
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        {project.technologies.slice(0, 5).map((tech) => (
-                          <span
-                            key={tech}
-                            className="text-[11px] font-medium text-[#11261B] bg-white px-2.5 py-1 rounded-lg border border-[#11261B]/10 hover:border-[#C5A059] hover:bg-[#11261B] hover:text-[#DFC285] transition-all duration-200 cursor-default hover:scale-105"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        {project.technologies.length > 5 && (
-                          <span className="text-[11px] font-medium text-[#5C6E61] px-1.5 py-1">
-                            +{project.technologies.length - 5} more
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Card Action Buttons */}
-                  <div className="px-6 py-4 bg-white/70 border-t border-[#11261B]/10 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      {project.githubUrl && (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          title="View GitHub Repository"
-                          className="p-2 rounded-lg bg-[#11261B] text-white hover:bg-[#1A3828] hover:text-[#C5A059] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
-                        >
-                          <Github className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">GitHub</span>
-                        </a>
-                      )}
-
-                      {project.liveUrl && (
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          title="Open Live Preview"
-                          className="p-2 rounded-lg bg-white border border-[#11261B]/15 text-[#11261B] hover:border-[#C5A059] hover:bg-[#F2EDE2] transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5 text-[#C5A059]" />
-                          <span className="hidden sm:inline">Live Demo</span>
-                        </a>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => onSelectProject(project)}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-[#11261B] group-hover:text-[#C5A059] transition-all hover:translate-x-1 cursor-pointer"
-                    >
-                      <span>Details</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                </div>
-              );
-            })}
+            {filteredProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                onSelectProject={onSelectProject}
+              />
+            ))}
           </div>
         )}
       </div>

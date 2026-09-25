@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Briefcase, Calendar, MapPin, CheckCircle2, Award, Sparkles, Star, TrendingUp, Users, Clock, ArrowUpRight } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
+import { HoverCounter } from './HoverCounter';
 
 interface ExperienceSectionProps {
   profile: DeveloperProfile;
 }
 
 export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile }) => {
+  const [hoveredStat, setHoveredStat] = useState<number | null>(null);
+
   const experiences = [
     {
       role: 'Full-Stack Web Developer',
@@ -39,24 +42,29 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
     },
     {
       role: 'Web Developer & Open Source Contributor',
-      company: 'Community & Academic Projects',
-      period: '2022 – 2023',
+      company: 'Community & Client Projects',
+      period: '2016 – 2022',
       location: 'Pakistan',
-      badge: 'Milestone',
-      description: 'Developed modern full-stack web applications, participated in hackathons, and contributed to developer tooling repositories on GitHub.',
+      badge: 'Foundation',
+      description: 'Started professional web engineering journey, building custom websites, dynamic web applications, and contributing to open-source developer tooling.',
       achievements: [
-        'Published 15+ open-source developer toolkits, starter templates, and UI components on GitHub.',
-        'Mentored aspiring web developers in JavaScript fundamentals and modern CSS techniques.',
+        'Commenced professional web development journey on 06th August 2016.',
+        'Published 20+ open-source developer toolkits, starter templates, and UI components on GitHub.',
+        'Mentored aspiring web developers in JavaScript fundamentals, responsive web design, and clean code.',
       ],
       stack: ['JavaScript (ES6+)', 'HTML5/CSS3', 'Node.js', 'Express', 'Git', 'MongoDB'],
     },
   ];
 
+  const projectsTarget = parseInt(profile.projectsCompleted.replace(/\D/g, ''), 10) || 30;
+  const expTarget = parseInt(profile.yearsOfExperience.replace(/\D/g, ''), 10) || 3;
+  const satTarget = parseInt(profile.happyClients.replace(/\D/g, ''), 10) || 99;
+
   const stats = [
-    { label: 'Completed Projects', value: profile.projectsCompleted, icon: Briefcase },
-    { label: 'Client Satisfaction', value: profile.happyClients, icon: Star },
-    { label: 'Years of Experience', value: profile.yearsOfExperience, icon: Clock },
-    { label: 'Code Quality Rating', value: '100%', icon: TrendingUp },
+    { label: 'Completed Projects', target: projectsTarget, suffix: '+', icon: Briefcase },
+    { label: 'Client Satisfaction', target: satTarget, suffix: '%', icon: Star },
+    { label: 'Years of Experience', target: expTarget, suffix: '+ Years', icon: Clock },
+    { label: 'Code Quality Rating', target: 100, suffix: '%', icon: TrendingUp },
   ];
 
   const titleChars = 'Experience & Journey'.split('');
@@ -90,21 +98,29 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
           </p>
         </div>
 
-        {/* Highlight Stats Row with Number Bounce & Glowing Badges */}
+        {/* Highlight Stats Row with Number Bounce & 0 -> Target Count-up on Cursor Hover */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-16">
           {stats.map((stat, idx) => {
             const Icon = stat.icon;
+            const isHovered = hoveredStat === idx;
+
             return (
               <div
                 key={idx}
-                className="bg-[#F2EDE2] p-6 rounded-2xl border border-[#11261B]/10 shadow-xs flex items-center gap-4 hover:border-[#C5A059] hover:shadow-xl transition-all duration-500 group hover:-translate-y-1.5 animate-shimmer cursor-default"
+                onMouseEnter={() => setHoveredStat(idx)}
+                onMouseLeave={() => setHoveredStat(null)}
+                className={`bg-[#F2EDE2] p-6 rounded-2xl border shadow-xs flex items-center gap-4 transition-all duration-500 group hover:-translate-y-1.5 animate-shimmer cursor-pointer ${
+                  isHovered ? 'border-[#C5A059] shadow-xl bg-white' : 'border-[#11261B]/10 hover:border-[#C5A059]'
+                }`}
               >
-                <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all duration-300">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-all duration-300 ${
+                  isHovered ? 'bg-[#C5A059] text-[#11261B] scale-110 rotate-6' : 'bg-[#11261B] text-[#C5A059]'
+                }`}>
                   <Icon className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="font-display font-bold text-2xl sm:text-3xl text-[#11261B] group-hover:text-[#C5A059] tabular-nums leading-none mb-1 transition-colors number-badge-glow inline-block">
-                    {stat.value}
+                    <HoverCounter target={stat.target} suffix={stat.suffix} isParentHovered={isHovered} />
                   </div>
                   <div className="text-xs text-[#5C6E61] font-semibold">{stat.label}</div>
                 </div>

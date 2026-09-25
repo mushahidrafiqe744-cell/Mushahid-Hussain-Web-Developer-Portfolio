@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Layout,
   Layers,
@@ -18,8 +18,143 @@ interface ServicesSectionProps {
   services: Service[];
 }
 
+interface ServiceItemData {
+  id: string;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  deliverables: string[];
+  stack: string[];
+  targetNum: number;
+}
+
+const ServiceCard: React.FC<{ service: ServiceItemData }> = ({ service }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentNum, setCurrentNum] = useState(0);
+  const Icon = service.icon;
+
+  // Smooth count-up animation from 00 to target on hover
+  useEffect(() => {
+    let animationFrameId: number;
+    let startTime: number | null = null;
+    const duration = 500; // 0.5s smooth count
+
+    if (isHovered) {
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const value = Math.round(easeOut * service.targetNum);
+        setCurrentNum(value);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(animate);
+        }
+      };
+      animationFrameId = requestAnimationFrame(animate);
+    } else {
+      setCurrentNum(0);
+    }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [isHovered, service.targetNum]);
+
+  const formattedNumber = String(currentNum).padStart(2, '0');
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group bg-[#F2EDE2] rounded-2xl p-6 border transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 animate-shimmer relative overflow-hidden cursor-pointer ${
+        isHovered
+          ? 'border-[#C5A059] shadow-xl bg-white/90'
+          : 'border-[#11261B]/10 shadow-xs hover:border-[#C5A059]'
+      }`}
+    >
+      {/* Dynamic Animated Number at Top Right: 00 -> 01, 02, 03... on hover */}
+      <div
+        className={`absolute top-4 right-4 font-mono font-black text-2xl transition-all duration-300 tabular-nums select-none ${
+          isHovered
+            ? 'text-[#C5A059] scale-125 drop-shadow-md'
+            : 'text-[#11261B]/15'
+        }`}
+      >
+        {formattedNumber}
+      </div>
+
+      <div>
+        {/* Service Icon with Hover Bounce & Shadow */}
+        <div
+          className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 shadow-sm transition-all duration-300 ${
+            isHovered
+              ? 'bg-[#C5A059] text-[#11261B] scale-110 rotate-6 shadow-md shadow-[#C5A059]/20'
+              : 'bg-[#11261B] text-[#C5A059]'
+          }`}
+        >
+          <Icon className="w-6 h-6" />
+        </div>
+
+        {/* Title */}
+        <h3
+          className={`font-display text-xl font-bold transition-colors mb-2.5 ${
+            isHovered ? 'text-[#C5A059]' : 'text-[#11261B]'
+          }`}
+        >
+          {service.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-xs text-[#5C6E61] leading-relaxed mb-4">
+          {service.description}
+        </p>
+
+        {/* Deliverables List with Checkmark Animations */}
+        <div className="space-y-1.5 mb-4 pt-3 border-t border-[#11261B]/10">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#11261B] mb-1">
+            Deliverables:
+          </div>
+          {service.deliverables.map((item, i) => (
+            <div
+              key={i}
+              className={`flex items-start gap-1.5 text-[11px] text-[#11261B]/80 transition-transform duration-200 ${
+                isHovered ? 'translate-x-1' : ''
+              }`}
+              style={{ transitionDelay: `${i * 25}ms` }}
+            >
+              <CheckCircle
+                className={`w-3 h-3 shrink-0 mt-0.5 transition-all duration-200 ${
+                  isHovered ? 'text-[#C5A059] scale-110' : 'text-[#C5A059]'
+                }`}
+              />
+              <span className="leading-tight">{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tech Tags */}
+      <div className="pt-3 border-t border-[#11261B]/10 flex flex-wrap gap-1">
+        {service.stack.map((t) => (
+          <span
+            key={t}
+            className={`text-[10px] font-medium px-2 py-0.5 rounded-md border transition-all duration-200 cursor-default ${
+              isHovered
+                ? 'bg-[#11261B] text-[#DFC285] border-[#C5A059]/40 scale-105'
+                : 'bg-white text-[#11261B] border-[#11261B]/5 hover:border-[#C5A059]'
+            }`}
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) => {
-  const serviceDetails = [
+  const serviceDetails: ServiceItemData[] = [
     {
       id: 'frontend',
       title: 'Frontend Engineering',
@@ -27,6 +162,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'Pixel-perfect, accessible, and ultra-fast web interfaces engineered using React, Next.js, and TypeScript with state-of-the-art responsiveness.',
       deliverables: ['Custom React/Next.js Applications', 'Tailwind CSS & Design Systems', 'Interactive Animations & Transitions', 'WCAG AA Accessibility Compliance'],
       stack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Motion'],
+      targetNum: 1,
     },
     {
       id: 'fullstack',
@@ -35,6 +171,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'End-to-end web applications architected with robust server-side logic, secure authentication, database persistence, and clean REST/GraphQL APIs.',
       deliverables: ['Single Page Apps (SPA) & SSR', 'Role-Based Access Control (RBAC)', 'State Management (Zustand/Redux)', 'Real-time WebSocket Sync'],
       stack: ['Node.js', 'Express', 'React', 'PostgreSQL', 'Prisma'],
+      targetNum: 2,
     },
     {
       id: 'api',
@@ -43,6 +180,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'High-throughput, enterprise-grade backend APIs with clean middleware, rate limiting, data validation, and comprehensive documentation.',
       deliverables: ['Microservice & Monolith Endpoints', 'JWT & OAuth Authentication', 'Swagger / OpenAPI Specs', 'Automated Jest Unit Tests'],
       stack: ['Node.js', 'Express', 'TypeScript', 'Redis', 'Swagger'],
+      targetNum: 3,
     },
     {
       id: 'database',
@@ -51,6 +189,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'Scalable data models, indexing, transaction safety, and caching strategies for relational (PostgreSQL) and NoSQL (MongoDB) databases.',
       deliverables: ['Schema Design & Migrations', 'Query Optimization & Indexing', 'Redis Caching Layers', 'Database Backups & Resilience'],
       stack: ['PostgreSQL', 'Supabase', 'MongoDB', 'Redis', 'Drizzle'],
+      targetNum: 4,
     },
     {
       id: 'performance',
@@ -59,6 +198,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'Auditing and re-architecting web apps to consistently score 95+ on Google Lighthouse, improve Core Web Vitals, and dominate search rankings.',
       deliverables: ['Core Web Vitals Optimization', 'Server-Side Rendering & SSG', 'Image & Bundle Minification', 'Dynamic OpenGraph & Schema.org'],
       stack: ['Lighthouse', 'Next.js', 'Web Vitals', 'Vercel Analytics'],
+      targetNum: 5,
     },
     {
       id: 'responsive',
@@ -67,6 +207,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'Seamless cross-device experiences ensuring your web product renders flawlessly on everything from smartphones to ultra-wide 4K monitors.',
       deliverables: ['Fluid Multi-Breakpoint Layouts', 'Touch-Friendly UI Components', 'Progressive Web App (PWA) Support', 'Cross-Browser Testing'],
       stack: ['CSS Grid/Flexbox', 'Tailwind CSS', 'PWA Manifests'],
+      targetNum: 6,
     },
     {
       id: 'ecommerce',
@@ -75,6 +216,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'Headless e-commerce stores with instant search, multi-currency cart systems, dynamic checkout workflows, and Stripe payment gateways.',
       deliverables: ['Custom Storefronts & Catalogs', 'Stripe / Apple Pay / Google Pay', 'Inventory & Order Tracking', 'Conversion-Rate Optimization'],
       stack: ['Next.js', 'Stripe API', 'Zustand', 'Tailwind CSS'],
+      targetNum: 7,
     },
     {
       id: 'ai-integration',
@@ -83,6 +225,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
       description: 'Integrating modern AI models (Gemini, OpenAI, Claude), LLM workflow automation, vector search, and cloud deployments on Vercel or AWS.',
       deliverables: ['Gemini / AI Agent Integration', 'Document & Text Embeddings', 'Automated CI/CD Deployment', 'Cloud Run & Docker Containers'],
       stack: ['Google GenAI SDK', 'Docker', 'Vercel', 'Cloud Run'],
+      targetNum: 8,
     },
   ];
 
@@ -117,66 +260,11 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
           </p>
         </div>
 
-        {/* Services Grid (8 dedicated cards with animated numbers and icons) */}
+        {/* Services Grid (8 dedicated cards with 00 -> 01/02/03/04/05/06/07/08 dynamic count-up on hover) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {serviceDetails.map((service, index) => {
-            const Icon = service.icon;
-            const numberFormatted = String(index + 1).padStart(2, '0');
-
-            return (
-              <div
-                key={service.id}
-                className="group bg-[#F2EDE2] rounded-2xl p-6 border border-[#11261B]/10 hover:border-[#C5A059] shadow-xs hover:shadow-xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 animate-shimmer relative overflow-hidden"
-              >
-                {/* Number Watermark Badge at Top Right */}
-                <div className="absolute top-4 right-4 font-mono font-bold text-2xl text-[#11261B]/15 group-hover:text-[#C5A059] transition-all duration-300 group-hover:scale-110 number-badge-glow">
-                  {numberFormatted}
-                </div>
-
-                <div>
-                  {/* Service Icon with Hover Bounce & Shadow */}
-                  <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center mb-5 shadow-sm group-hover:scale-110 group-hover:bg-[#1A3828] group-hover:rotate-6 transition-all duration-300">
-                    <Icon className="w-6 h-6" />
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="font-display text-xl font-bold text-[#11261B] group-hover:text-[#C5A059] transition-colors mb-2.5">
-                    {service.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-xs text-[#5C6E61] leading-relaxed mb-4">
-                    {service.description}
-                  </p>
-
-                  {/* Deliverables List with Checkmark Animations */}
-                  <div className="space-y-1.5 mb-4 pt-3 border-t border-[#11261B]/10">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-[#11261B] mb-1">
-                      Deliverables:
-                    </div>
-                    {service.deliverables.map((item, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-[#11261B]/80 group-hover:translate-x-0.5 transition-transform" style={{ transitionDelay: `${i * 30}ms` }}>
-                        <CheckCircle className="w-3 h-3 text-[#C5A059] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                        <span className="leading-tight">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tech Tags */}
-                <div className="pt-3 border-t border-[#11261B]/10 flex flex-wrap gap-1">
-                  {service.stack.map((t) => (
-                    <span
-                      key={t}
-                      className="text-[10px] font-medium text-[#11261B] bg-white px-2 py-0.5 rounded-md border border-[#11261B]/5 hover:border-[#C5A059] hover:bg-[#11261B] hover:text-[#DFC285] transition-all duration-200 cursor-default hover:scale-105"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+          {serviceDetails.map((service) => (
+            <ServiceCard key={service.id} service={service} />
+          ))}
         </div>
 
         {/* Bottom CTA Bar with Pulse & Magnetic Button */}

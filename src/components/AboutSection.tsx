@@ -97,15 +97,21 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
               </div>
             </div>
 
-            {/* Metadata Card 4: Phone */}
+            {/* Metadata Card 4: Phone & WhatsApp */}
             <div className="flex items-center gap-3.5 p-2 rounded-xl hover:bg-white/5 transition-all duration-300 group border border-transparent hover:border-[#C5A059]/20 animate-shimmer">
-              <div className="w-9 h-9 rounded-lg bg-white/5 border border-[#C5A059]/30 flex items-center justify-center shrink-0 group-hover:bg-[#C5A059] group-hover:text-[#11261B] group-hover:rotate-6 transition-all duration-300">
-                <Phone className="w-4 h-4 text-[#C5A059] group-hover:text-[#11261B]" />
+              <div className="w-9 h-9 rounded-lg bg-white/5 border border-[#C5A059]/30 flex items-center justify-center shrink-0 group-hover:bg-[#25D366] group-hover:text-white group-hover:rotate-6 transition-all duration-300">
+                <Phone className="w-4 h-4 text-[#C5A059] group-hover:text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] uppercase tracking-wider text-[#A3B8A8]">Phone / WhatsApp</span>
-                <a href={`tel:${profile.phone}`} className="text-sm font-semibold text-white hover:text-[#C5A059] transition-colors">
-                  {profile.phone}
+                <span className="text-[10px] uppercase tracking-wider text-[#A3B8A8]">WhatsApp / Phone</span>
+                <a
+                  href={`https://wa.me/92${profile.phone.replace(/^0+/, '')}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-semibold text-white hover:text-[#25D366] transition-colors flex items-center gap-1"
+                >
+                  <span>{profile.phone}</span>
+                  <span className="text-[10px] text-[#25D366] font-bold">↗</span>
                 </a>
               </div>
             </div>

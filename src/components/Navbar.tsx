@@ -8,7 +8,6 @@ interface NavbarProps {
   activeSection: SectionId;
   onSelectSection: (section: SectionId) => void;
   onOpenResume: () => void;
-  onOpenEdit: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -16,7 +15,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeSection,
   onSelectSection,
   onOpenResume,
-  onOpenEdit,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -88,14 +86,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={onOpenEdit}
-            title="Personalize Details"
-            className="p-2 text-[#11261B]/70 hover:text-[#11261B] hover:bg-[#11261B]/5 rounded-xl transition-colors cursor-pointer"
-            aria-label="Customize profile"
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-          </button>
 
           <button
             onClick={() => handleNavClick('resume')}
