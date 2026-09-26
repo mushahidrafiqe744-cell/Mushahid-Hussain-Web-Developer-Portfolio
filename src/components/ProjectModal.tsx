@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { X, Github, ExternalLink, Check, Layers, Zap, Calendar, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Github, ExternalLink, Check, Layers, Zap, Calendar, Sparkles, MessageCircle } from 'lucide-react';
 import { Project } from '../types/portfolio';
 
 interface ProjectModalProps {
@@ -8,6 +8,8 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  const [isImgHovered, setIsImgHovered] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -48,16 +50,48 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         {/* Modal Body */}
         <div className="p-6 sm:p-8 max-h-[80vh] overflow-y-auto">
           
-          {/* Project Image */}
-          <div className="relative rounded-xl overflow-hidden mb-6 aspect-[16/9] bg-[#11261B] border border-[#11261B]/10 shadow-sm">
-            <img
-              src={project.image}
-              alt={project.title}
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-center"
-            />
+          {/* Project Image with Interactive Browser Mockup & Full Webpage Scroll */}
+          <div
+            onMouseEnter={() => setIsImgHovered(true)}
+            onMouseLeave={() => setIsImgHovered(false)}
+            className="relative rounded-2xl overflow-hidden mb-6 h-80 sm:h-[460px] bg-[#0d1e13] border border-[#C5A059]/30 shadow-xl cursor-pointer group"
+          >
+            {/* Top Browser Bar */}
+            <div className="absolute top-0 left-0 right-0 h-7 bg-[#11261B]/95 backdrop-blur-md border-b border-[#C5A059]/20 z-20 flex items-center px-3.5 justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/90 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/90 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/90 inline-block" />
+              </div>
+              <div className="text-[10px] font-mono text-[#DFC285] truncate max-w-[240px]">
+                {project.liveUrl || project.title}
+              </div>
+              <div className="text-[9px] font-bold text-[#DFC285] bg-white/10 px-2 py-0.5 rounded tracking-wider uppercase flex items-center gap-1">
+                <span className={`w-1.5 h-1.5 rounded-full ${isImgHovered ? 'bg-emerald-400 animate-pulse' : 'bg-[#DFC285]'}`} />
+                <span>{isImgHovered ? 'Full Website Scrolling ▾' : 'Hover to Scroll Full Page'}</span>
+              </div>
+            </div>
+
+            {/* Scrolling Viewport (Whole Website from Header to Footer) */}
+            <div
+              className="w-full pt-7 will-change-transform"
+              style={{
+                transform: isImgHovered ? 'translateY(calc(-100% + 460px))' : 'translateY(0%)',
+                transition: isImgHovered
+                  ? 'transform 7.5s cubic-bezier(0.25, 0.1, 0.25, 1)'
+                  : 'transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              }}
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                referrerPolicy="no-referrer"
+                className="w-full h-auto block pointer-events-none select-none"
+              />
+            </div>
+
             {project.metrics && (
-              <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#C5A059]/40 flex items-center gap-1.5">
+              <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#C5A059]/40 flex items-center gap-1.5 z-20 shadow-md">
                 <Zap className="w-3.5 h-3.5" />
                 <span>{project.metrics}</span>
               </div>
@@ -150,10 +184,22 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-[#F2EDE2] border-t border-[#11261B]/10 flex items-center justify-end">
+        <div className="px-6 py-4 bg-[#F2EDE2] border-t border-[#11261B]/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <a
+            href={`https://wa.me/923290725117?text=${encodeURIComponent(
+              `Hi Mushahid! I saw your "${project.title}" (${project.categoryLabel || 'Web'}) project on your portfolio and I want to order a similar website for my business. Please share quotation and timeline.`
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/20 hover:scale-105 transition-all cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4 fill-white" />
+            <span>Order a Website Like This on WhatsApp</span>
+          </a>
+
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#11261B] hover:text-black transition-colors"
+            className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#11261B] hover:text-black transition-colors cursor-pointer"
           >
             Close
           </button>

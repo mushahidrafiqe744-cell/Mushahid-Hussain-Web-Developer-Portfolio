@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers } from 'lucide-react';
+import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers, MessageCircle } from 'lucide-react';
 import { Project } from '../types/portfolio';
 
 interface ProjectsSectionProps {
@@ -51,40 +51,59 @@ const ProjectCard: React.FC<{
       className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5 animate-shimmer"
     >
       <div>
-        {/* Project Media Frame with Interactive Zoom & Overlay */}
+        {/* Project Media Frame with Full Webpage Scroll on Hover */}
         <div
           onClick={() => onSelectProject(project)}
-          className="relative aspect-[16/10] overflow-hidden bg-[#11261B] cursor-pointer"
+          className="relative h-64 sm:h-72 overflow-hidden bg-[#0d1e13] cursor-pointer group/frame"
         >
-          <img
-            src={project.image}
-            alt={project.title}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-700 ease-out"
-          />
-          
-          {/* Hover Overlay with Spring Animation */}
-          <div className="absolute inset-0 bg-[#11261B]/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
-            <div className="px-5 py-2.5 rounded-full bg-white text-[#11261B] text-xs font-bold shadow-xl transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
-              <span>View Architecture & Code</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-[#C5A059]" />
+          {/* Realistic Browser Window Top Bar */}
+          <div className="absolute top-0 left-0 right-0 h-7 bg-[#11261B]/95 backdrop-blur-md border-b border-[#C5A059]/20 z-20 flex items-center px-3 justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-rose-500/90 inline-block" />
+              <span className="w-2 h-2 rounded-full bg-amber-500/90 inline-block" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500/90 inline-block" />
+            </div>
+            <div className="text-[9px] font-mono text-[#DFC285]/90 truncate max-w-[150px] sm:max-w-[200px]">
+              {project.liveUrl ? project.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') : project.title}
+            </div>
+            <div className="text-[8px] font-bold text-[#DFC285] bg-white/10 px-1.5 py-0.5 rounded tracking-wider uppercase flex items-center gap-1">
+              <span className={`w-1.5 h-1.5 rounded-full ${isHovered ? 'bg-emerald-400 animate-pulse' : 'bg-[#DFC285]'}`} />
+              <span>{isHovered ? 'Full Scroll ▾' : 'Hover to Scroll'}</span>
             </div>
           </div>
 
-          {/* Number Badge Index: #00 -> #01, #02 with Glow on Hover */}
+          {/* Scrolling Webpage Container (Whole Website Scroll from Top Header to Bottom Footer) */}
           <div
-            className={`absolute top-3 right-3 text-xs font-mono font-bold px-2.5 py-1 rounded-lg border shadow-md transition-all duration-300 select-none ${
+            className="w-full pt-7 will-change-transform"
+            style={{
+              transform: isHovered ? 'translateY(calc(-100% + 288px))' : 'translateY(0%)',
+              transition: isHovered
+                ? 'transform 6.5s cubic-bezier(0.25, 0.1, 0.25, 1)'
+                : 'transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
+            }}
+          >
+            <img
+              src={project.image}
+              alt={project.title}
+              referrerPolicy="no-referrer"
+              className="w-full h-auto block select-none pointer-events-none"
+            />
+          </div>
+
+          {/* Category Label at bottom-left */}
+          <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30 z-20 shadow-md">
+            {project.categoryLabel}
+          </div>
+
+          {/* Number Badge Index at bottom-right */}
+          <div
+            className={`absolute bottom-3 right-3 text-xs font-mono font-bold px-2 py-0.5 rounded-lg border shadow-md transition-all duration-300 select-none z-20 ${
               isHovered
-                ? 'bg-[#C5A059] text-[#11261B] border-[#DFC285] scale-110 shadow-lg shadow-[#C5A059]/30'
-                : 'bg-[#11261B]/90 text-[#DFC285]/60 border-[#C5A059]/40'
+                ? 'bg-[#C5A059] text-[#11261B] border-[#DFC285] scale-105 shadow-lg shadow-[#C5A059]/30'
+                : 'bg-[#11261B]/90 text-[#DFC285]/80 border-[#C5A059]/40'
             }`}
           >
             #{formattedNum}
-          </div>
-
-          {/* Category Label */}
-          <div className="absolute top-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30">
-            {project.categoryLabel}
           </div>
         </div>
 
@@ -163,6 +182,19 @@ const ProjectCard: React.FC<{
               <span className="hidden sm:inline">Live Demo</span>
             </a>
           )}
+
+          <a
+            href={`https://wa.me/923290725117?text=${encodeURIComponent(
+              `Hi Mushahid! I saw your "${project.title}" project on your portfolio and I would like to order a similar website. Please share quotation and timeline.`
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            title="Order a website like this on WhatsApp"
+            className="p-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-xs flex items-center gap-1.5 text-xs font-semibold hover:scale-105"
+          >
+            <MessageCircle className="w-3.5 h-3.5 fill-white" />
+            <span className="hidden md:inline">Order Web</span>
+          </a>
         </div>
 
         <button

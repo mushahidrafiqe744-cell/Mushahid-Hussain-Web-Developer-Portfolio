@@ -11,24 +11,20 @@ import {
   Sparkles,
   CheckCircle,
   ArrowRight,
+  MessageCircle,
 } from 'lucide-react';
 import { Service } from '../types/portfolio';
+import { ServiceOrderModal, ServiceItemData } from './ServiceOrderModal';
 
 interface ServicesSectionProps {
   services: Service[];
+  adminPhone?: string;
 }
 
-interface ServiceItemData {
-  id: string;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  description: string;
-  deliverables: string[];
-  stack: string[];
-  targetNum: number;
-}
-
-const ServiceCard: React.FC<{ service: ServiceItemData }> = ({ service }) => {
+const ServiceCard: React.FC<{
+  service: ServiceItemData;
+  onOrder: (service: ServiceItemData) => void;
+}> = ({ service, onOrder }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [currentNum, setCurrentNum] = useState(0);
   const Icon = service.icon;
@@ -65,11 +61,12 @@ const ServiceCard: React.FC<{ service: ServiceItemData }> = ({ service }) => {
 
   return (
     <div
+      onClick={() => onOrder(service)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`group bg-[#F2EDE2] rounded-2xl p-6 border transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 animate-shimmer relative overflow-hidden cursor-pointer ${
         isHovered
-          ? 'border-[#C5A059] shadow-xl bg-white/90'
+          ? 'border-[#C5A059] shadow-xl bg-white/95 ring-2 ring-[#C5A059]/30'
           : 'border-[#11261B]/10 shadow-xs hover:border-[#C5A059]'
       }`}
     >
@@ -124,7 +121,7 @@ const ServiceCard: React.FC<{ service: ServiceItemData }> = ({ service }) => {
               style={{ transitionDelay: `${i * 25}ms` }}
             >
               <CheckCircle
-                className={`w-3 h-3 shrink-0 mt-0.5 transition-all duration-200 ${
+                className={`w-3.5 h-3.5 shrink-0 mt-0.5 transition-all duration-200 ${
                   isHovered ? 'text-[#C5A059] scale-110' : 'text-[#C5A059]'
                 }`}
               />
@@ -134,26 +131,52 @@ const ServiceCard: React.FC<{ service: ServiceItemData }> = ({ service }) => {
         </div>
       </div>
 
-      {/* Tech Tags */}
-      <div className="pt-3 border-t border-[#11261B]/10 flex flex-wrap gap-1">
-        {service.stack.map((t) => (
-          <span
-            key={t}
-            className={`text-[10px] font-medium px-2 py-0.5 rounded-md border transition-all duration-200 cursor-default ${
-              isHovered
-                ? 'bg-[#11261B] text-[#DFC285] border-[#C5A059]/40 scale-105'
-                : 'bg-white text-[#11261B] border-[#11261B]/5 hover:border-[#C5A059]'
-            }`}
-          >
-            {t}
+      {/* Tech Tags & Dedicated WhatsApp Order CTA */}
+      <div className="pt-3 border-t border-[#11261B]/10">
+        <div className="flex flex-wrap gap-1 mb-3">
+          {service.stack.map((t) => (
+            <span
+              key={t}
+              className={`text-[10px] font-medium px-2 py-0.5 rounded-md border transition-all duration-200 cursor-default ${
+                isHovered
+                  ? 'bg-[#11261B] text-[#DFC285] border-[#C5A059]/40 scale-105'
+                  : 'bg-white text-[#11261B] border-[#11261B]/5 hover:border-[#C5A059]'
+              }`}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+
+        {/* Prominent WhatsApp Order Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOrder(service);
+          }}
+          className={`w-full py-2.5 px-3 rounded-xl flex items-center justify-between text-xs font-bold transition-all duration-300 shadow-xs cursor-pointer group/btn ${
+            isHovered
+              ? 'bg-[#25D366] text-white shadow-md shadow-[#25D366]/25 hover:bg-[#20ba59]'
+              : 'bg-[#11261B] text-[#DFC285] hover:bg-[#1A3828] hover:text-white border border-[#C5A059]/40'
+          }`}
+          title="Click to place order via WhatsApp"
+        >
+          <span className="flex items-center gap-1.5">
+            <MessageCircle className={`w-3.5 h-3.5 ${isHovered ? 'fill-white text-[#25D366]' : 'text-emerald-400'}`} />
+            <span>Order on WhatsApp</span>
           </span>
-        ))}
+          <span className="text-[10px] font-semibold opacity-90 flex items-center gap-0.5 group-hover/btn:translate-x-1 transition-transform">
+            Book Website ↗
+          </span>
+        </button>
       </div>
     </div>
   );
 };
 
-export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) => {
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, adminPhone = '923290725117' }) => {
+  const [selectedServiceForOrder, setSelectedServiceForOrder] = useState<ServiceItemData | null>(null);
   const serviceDetails: ServiceItemData[] = [
     {
       id: 'frontend',
@@ -263,32 +286,49 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) =>
         {/* Services Grid (8 dedicated cards with 00 -> 01/02/03/04/05/06/07/08 dynamic count-up on hover) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {serviceDetails.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              onOrder={(srv) => setSelectedServiceForOrder(srv)}
+            />
           ))}
         </div>
 
-        {/* Bottom CTA Bar with Pulse & Magnetic Button */}
+        {/* Bottom CTA Bar with Pulse & Direct WhatsApp Order Action */}
         <div className="mt-12 p-6 rounded-2xl bg-[#11261B] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl border border-[#C5A059]/30 animate-shimmer hover:scale-[1.01] transition-all">
           <div className="flex items-center gap-3">
             <div className="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping" />
             <div>
               <div className="text-sm font-bold text-white flex items-center gap-2">
-                <span>Need a custom solution or technical consultation?</span>
-                <span className="text-[10px] bg-[#C5A059] text-[#11261B] font-bold px-2 py-0.5 rounded-full uppercase">Open Now</span>
+                <span>Want to build a custom website or application?</span>
+                <span className="text-[10px] bg-[#25D366] text-white font-bold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1">
+                  <MessageCircle className="w-3 h-3 fill-white" />
+                  WhatsApp Direct
+                </span>
               </div>
-              <div className="text-xs text-[#A3B8A8]">I am currently accepting new freelance, contract, and full-time opportunities.</div>
+              <div className="text-xs text-[#A3B8A8]">Click any card above to place an order, or discuss directly with the developer.</div>
             </div>
           </div>
-          <a
-            href="#contact"
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#C5A059] hover:bg-[#DFC285] text-[#11261B] text-xs font-bold uppercase tracking-wider transition-all duration-300 shrink-0 shadow-lg hover:scale-105 hover:shadow-2xl cursor-pointer"
+          <button
+            type="button"
+            onClick={() => setSelectedServiceForOrder(serviceDetails[0])}
+            className="group inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shrink-0 shadow-lg shadow-[#25D366]/25 hover:scale-105 hover:shadow-2xl cursor-pointer"
           >
-            <span>Request a Quote</span>
+            <MessageCircle className="w-4 h-4 fill-white" />
+            <span>Order Website on WhatsApp</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </a>
+          </button>
         </div>
 
       </div>
+
+      {/* WhatsApp Order Modal */}
+      <ServiceOrderModal
+        service={selectedServiceForOrder}
+        isOpen={!!selectedServiceForOrder}
+        onClose={() => setSelectedServiceForOrder(null)}
+        adminPhone={adminPhone}
+      />
     </section>
   );
 };

@@ -23,25 +23,8 @@ import { Home } from 'lucide-react';
 
 export default function App() {
   const [profile, setProfile] = useState<DeveloperProfile>(() => {
-    try {
-      const customAvatar = localStorage.getItem('developer_custom_avatar');
-      if (customAvatar) {
-        return { ...initialProfile, avatarUrl: customAvatar };
-      }
-    } catch {
-      // fallback
-    }
     return initialProfile;
   });
-
-  const handleUpdateAvatar = (newAvatarUrl: string) => {
-    setProfile((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
-    try {
-      localStorage.setItem('developer_custom_avatar', newAvatarUrl);
-    } catch (e) {
-      console.error('Failed to save avatar to localStorage:', e);
-    }
-  };
 
   const [projects, setProjects] = useState<Project[]>(() => {
     return initialProjects;
@@ -76,7 +59,6 @@ export default function App() {
             profile={profile}
             onOpenSection={handleSelectSection}
             onOpenResume={() => setIsResumeOpen(true)}
-            onUpdateAvatar={handleUpdateAvatar}
           />
         )}
 
@@ -87,7 +69,10 @@ export default function App() {
 
         {/* 3. Services Section */}
         {activeSection === 'services' && (
-          <ServicesSection services={initialServices} />
+          <ServicesSection
+            services={initialServices}
+            adminPhone={profile.whatsapp || profile.phone}
+          />
         )}
 
         {/* 4. Skills Section */}
