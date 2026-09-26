@@ -14,7 +14,9 @@ import {
   Clock,
   ShieldCheck,
   ArrowRight,
-  SendHorizontal
+  SendHorizontal,
+  Linkedin,
+  Github
 } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
@@ -234,7 +236,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
                   </button>
                 </div>
 
-                {/* Location Card */}
+                {/* Base Location Card */}
                 <div className="p-4 rounded-xl bg-white border border-[#11261B]/10 shadow-xs flex items-center gap-3 hover:border-[#C5A059] hover:shadow-xl transition-all duration-300 animate-shimmer group hover:-translate-y-1">
                   <div className="w-11 h-11 rounded-full bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 group-hover:bg-[#1A3828] transition-transform duration-300">
                     <MapPin className="w-5 h-5" />
@@ -244,6 +246,54 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
                     <div className="text-xs sm:text-sm font-bold text-[#11261B]">
                       {profile.location} (Open to Global Remote Projects)
                     </div>
+                  </div>
+                </div>
+
+                {/* Social Profiles: LinkedIn & TikTok Card */}
+                <div className="p-4 rounded-xl bg-white border border-[#11261B]/10 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 hover:border-[#C5A059] hover:shadow-xl transition-all duration-300 animate-shimmer">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-bold text-[#5C6E61] tracking-wider">Social Channels:</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {/* LinkedIn */}
+                    <a
+                      href={profile.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2] hover:bg-[#084e96] text-white text-xs font-bold transition-all shadow-2xs hover:scale-105"
+                      title="Connect on LinkedIn"
+                    >
+                      <Linkedin className="w-3.5 h-3.5" />
+                      <span>LinkedIn</span>
+                    </a>
+
+                    {/* TikTok */}
+                    {profile.tiktok && (
+                      <a
+                        href={profile.tiktok}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-2xs hover:scale-105"
+                        title="Follow on TikTok"
+                      >
+                        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.27 6.27 0 0 0 1.86-4.49V8.5a8.27 8.27 0 0 0 4.84 1.56V6.69z" />
+                        </svg>
+                        <span>TikTok</span>
+                      </a>
+                    )}
+
+                    {/* GitHub */}
+                    <a
+                      href={profile.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#11261B] hover:bg-[#1A3828] text-white text-xs font-bold transition-all shadow-2xs hover:scale-105"
+                      title="View GitHub"
+                    >
+                      <Github className="w-3.5 h-3.5" />
+                      <span>GitHub</span>
+                    </a>
                   </div>
                 </div>
 

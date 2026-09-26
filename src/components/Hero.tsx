@@ -280,9 +280,29 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-[#11261B] leading-none">LinkedIn</span>
-                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px]">@mushahidhussain</span>
+                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px]">mushahid-rafiqe</span>
                 </div>
               </a>
+
+              {/* TikTok Link */}
+              {profile.tiktok && (
+                <a
+                  href={profile.tiktok}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
+                >
+                  <div className="w-7 h-7 rounded-full bg-[#000000] text-white flex items-center justify-center group-hover:scale-110 transition-all border border-[#11261B]/10">
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.49 6.27 6.27 0 0 0 1.86-4.49V8.5a8.27 8.27 0 0 0 4.84 1.56V6.69z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-[#11261B] leading-none">TikTok</span>
+                    <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px]">@mushahidrafiqe699</span>
+                  </div>
+                </a>
+              )}
 
               {/* Email Link */}
               <button

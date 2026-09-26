@@ -71,6 +71,7 @@ export interface DeveloperProfile {
   github: string;
   linkedin: string;
   twitter?: string;
+  tiktok?: string;
   avatarUrl: string;
   yearsOfExperience: string;
   projectsCompleted: string;
