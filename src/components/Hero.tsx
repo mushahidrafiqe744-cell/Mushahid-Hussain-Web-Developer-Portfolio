@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, Award, Star, Zap, Phone, MessageCircle } from 'lucide-react';
+import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, Award, Star, Zap, Phone, MessageCircle, Camera, Check, Upload } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
@@ -8,14 +8,32 @@ interface HeroProps {
   profile: DeveloperProfile;
   onOpenSection: (section: SectionId) => void;
   onOpenResume: () => void;
+  onUpdateAvatar?: (newAvatarUrl: string) => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume }) => {
+export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume, onUpdateAvatar }) => {
   // Split name letters for interactive letter animation
   const nameLetters = profile.firstName.split('');
 
   // Hover states for the 3 quick metric buttons
   const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && onUpdateAvatar) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        if (dataUrl) {
+          onUpdateAvatar(dataUrl);
+          setUploadSuccess(true);
+          setTimeout(() => setUploadSuccess(false), 4500);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Extract numerical targets
   const projectsCount = parseInt(profile.projectsCompleted.replace(/\D/g, ''), 10) || 30;
@@ -201,6 +219,34 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
 
                 {/* Subtle bottom gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#11261B]/85 via-transparent to-transparent pointer-events-none" />
+
+                {/* Quick Interactive Photo Upload Button */}
+                <div className="absolute bottom-3 right-3 z-30 pointer-events-auto">
+                  <label
+                    htmlFor="hero-avatar-file-input"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#11261B]/90 hover:bg-[#11261B] text-[#DFC285] border border-[#C5A059]/50 text-xs font-medium shadow-2xl cursor-pointer backdrop-blur-md hover:scale-105 transition-all duration-300 group/btn"
+                    title="Click to upload your original photo file directly"
+                  >
+                    {uploadSuccess ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400 font-bold text-[11px]">Photo Saved!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="w-3.5 h-3.5 text-[#DFC285] group-hover/btn:rotate-12 transition-transform" />
+                        <span className="text-[11px] font-semibold text-white/95">Change Photo</span>
+                      </>
+                    )}
+                    <input
+                      id="hero-avatar-file-input"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarFile}
+                    />
+                  </label>
+                </div>
               </div>
             </div>
 

@@ -24,12 +24,24 @@ import { Home } from 'lucide-react';
 export default function App() {
   const [profile, setProfile] = useState<DeveloperProfile>(() => {
     try {
-      const saved = localStorage.getItem('developer_profile_data');
-      return saved ? JSON.parse(saved) : initialProfile;
+      const customAvatar = localStorage.getItem('developer_custom_avatar');
+      if (customAvatar) {
+        return { ...initialProfile, avatarUrl: customAvatar };
+      }
     } catch {
-      return initialProfile;
+      // fallback
     }
+    return initialProfile;
   });
+
+  const handleUpdateAvatar = (newAvatarUrl: string) => {
+    setProfile((prev) => ({ ...prev, avatarUrl: newAvatarUrl }));
+    try {
+      localStorage.setItem('developer_custom_avatar', newAvatarUrl);
+    } catch (e) {
+      console.error('Failed to save avatar to localStorage:', e);
+    }
+  };
 
   const [projects, setProjects] = useState<Project[]>(() => {
     return initialProjects;
@@ -64,6 +76,7 @@ export default function App() {
             profile={profile}
             onOpenSection={handleSelectSection}
             onOpenResume={() => setIsResumeOpen(true)}
+            onUpdateAvatar={handleUpdateAvatar}
           />
         )}
 

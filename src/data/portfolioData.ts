@@ -1,5 +1,5 @@
 import { DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
-import heroPortrait from '../assets/images/mushahid_hussain_hero_1790258485207.jpg';
+import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
 import projectSaasImg from '../assets/images/project_saas_dashboard_1790256923327.jpg';
 import projectEcomImg from '../assets/images/project_ecommerce_luxury_1790256942358.jpg';
 import projectAiImg from '../assets/images/project_ai_platform_1790256957586.jpg';
