@@ -1,11 +1,12 @@
 import React from 'react';
-import { FileText, Download, Printer, ExternalLink, Sparkles, Check, GraduationCap, Award, Briefcase, Code2 } from 'lucide-react';
-import { DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
+import { FileText, Download, Printer, ExternalLink, Sparkles, Check, GraduationCap, Award, Briefcase, Code2, Globe, ArrowUpRight } from 'lucide-react';
+import { CourseCertification, DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
 
 interface ResumeSectionProps {
   profile: DeveloperProfile;
   projects: Project[];
   skillGroups: SkillGroup[];
+  courses?: CourseCertification[];
   onOpenFullModal: () => void;
 }
 
@@ -13,6 +14,7 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({
   profile,
   projects,
   skillGroups,
+  courses = [],
   onOpenFullModal,
 }) => {
   const handlePrint = () => {
@@ -20,6 +22,10 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({
   };
 
   const handleDownloadMarkdown = () => {
+    const courseLines = courses.map(
+      (c) => `- **${c.title}** — ${c.institution} (${c.period}) | Official: ${c.institutionUrl}`
+    ).join('\n');
+
     const content = `# ${profile.name} - ${profile.title}
 Email: ${profile.email} | Phone: ${profile.phone} | Location: ${profile.location}
 GitHub: ${profile.github} | LinkedIn: ${profile.linkedin}
@@ -46,8 +52,9 @@ ${profile.bioAbout}
 
 ---
 
-## EDUCATION
+## EDUCATION & VERIFIED COURSES / ACCREDITATIONS
 - **Bachelor of Science in Computer Science** (2020 – 2024)
+${courseLines}
 `;
 
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8;' });
@@ -193,19 +200,77 @@ ${profile.bioAbout}
               </div>
             </div>
 
-            {/* Education & Certs */}
+            {/* Education & Official Accreditations */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#11261B] border-b border-[#11261B]/15 pb-1.5 mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#C5A059]" />
-                <span>Education & Certifications</span>
-              </h4>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2">
-                <div>
-                  <span className="font-bold text-[#11261B]">Bachelor of Science in Computer Science</span>
-                  <div className="text-[#5C6E61]">Software Engineering & Web Systems (2020 – 2024)</div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#11261B] border-b border-[#11261B]/15 pb-1.5 mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#C5A059]" />
+                  <span>Education & Verified Accreditations</span>
                 </div>
-                <div className="text-xs text-[#5C6E61]">
-                  <span className="font-bold text-[#11261B]">Certifications:</span> Meta Certified Front-End Developer
+                <span className="text-[10px] text-[#5C6E61] font-mono">With Official Verification Links</span>
+              </h4>
+
+              {/* Formal Degree */}
+              <div className="p-3.5 bg-[#F8F5EE] rounded-xl border border-[#11261B]/10 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-[#C5A059]" />
+                    <span className="font-bold text-sm text-[#11261B]">Bachelor of Science in Computer Science</span>
+                  </div>
+                  <div className="text-xs text-[#5C6E61] ml-6">Software Engineering, Algorithms & Web Systems (2020 – 2024)</div>
+                </div>
+                <div className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 shrink-0 self-start sm:self-auto">
+                  Graduated with Honors
+                </div>
+              </div>
+
+              {/* Verified Courses List with Official Website Links */}
+              <div className="space-y-2.5">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#5C6E61] block">
+                  Completed Professional Courses & Certifications:
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {courses.map((course) => (
+                    <div
+                      key={course.id}
+                      className="p-3 rounded-xl bg-[#F8F5EE] border border-[#11261B]/10 hover:border-[#C5A059] transition-all flex flex-col justify-between group/c"
+                    >
+                      <div className="flex items-start gap-2.5 mb-2">
+                        {course.badgeImage && (
+                          <img
+                            src={course.badgeImage}
+                            alt=""
+                            className="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-[#C5A059]/40 shadow-xs"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1 mb-0.5">
+                            <span className="text-[10px] font-bold text-[#C5A059] uppercase truncate">
+                              {course.institution}
+                            </span>
+                            <span className="text-[9px] font-mono text-[#5C6E61] shrink-0">{course.period}</span>
+                          </div>
+                          <h5 className="font-bold text-xs text-[#11261B] group-hover/c:text-[#C5A059] transition-colors leading-tight">
+                            {course.title}
+                          </h5>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#11261B]/5 flex items-center justify-between">
+                        <span className="text-[9px] text-[#5C6E61]">{course.category}</span>
+                        <a
+                          href={course.badgeUrl || course.institutionUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-[10px] font-bold text-[#11261B] hover:text-[#C5A059] transition-colors"
+                          title={`Open ${course.badgeUrl ? 'verification badge' : 'official website'}`}
+                        >
+                          <span>{course.badgeUrl && course.badgeUrl.includes('academy.claude.com') ? 'Verify Badge' : 'Official Website'}</span>
+                          <ArrowUpRight className="w-3 h-3 text-[#C5A059]" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

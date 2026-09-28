@@ -196,6 +196,34 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ profile })
           ))}
         </div>
 
+        {/* Accredited Courses & Certifications Banner */}
+        <div className="mt-14 p-6 sm:p-8 rounded-2xl bg-white border border-[#11261B]/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 group hover:border-[#C5A059] transition-all">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 group-hover:bg-[#C5A059] group-hover:text-[#11261B] transition-all">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] block">
+                Continuous Professional Development
+              </span>
+              <h4 className="text-base sm:text-lg font-bold text-[#11261B] mt-0.5">
+                Verified Global Courses & Accreditations
+              </h4>
+              <p className="text-xs sm:text-sm text-[#5C6E61] mt-0.5">
+                Meta Front-End, Harvard CS50, freeCodeCamp, HKUST & Google Cloud — view all courses with official website links.
+              </p>
+            </div>
+          </div>
+
+          <a
+            href="#courses"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#11261B] hover:bg-[#C5A059] text-white hover:text-[#11261B] text-xs font-bold tracking-wider uppercase transition-all shadow-sm shrink-0 hover:scale-105 cursor-pointer"
+          >
+            <span>Explore Courses</span>
+            <ArrowUpRight className="w-4 h-4 text-[#C5A059] group-hover:text-[#11261B]" />
+          </a>
+        </div>
+
       </div>
     </section>
   );

@@ -11,12 +11,14 @@ import { ResumeSection } from './components/ResumeSection';
 import { ProjectModal } from './components/ProjectModal';
 import { ContactSection } from './components/ContactSection';
 import { ResumeModal } from './components/ResumeModal';
+import { CoursesSection } from './components/CoursesSection';
 import { Footer } from './components/Footer';
 import {
   initialProfile,
   initialServices,
   initialSkillGroups,
   initialProjects,
+  initialCourses,
 } from './data/portfolioData';
 import { DeveloperProfile, Project, SectionId } from './types/portfolio';
 import { Home } from 'lucide-react';
@@ -28,6 +30,8 @@ const VALID_SECTIONS: Record<string, SectionId> = {
   services: 'services',
   skills: 'skills',
   experience: 'experience',
+  courses: 'courses',
+  certifications: 'courses',
   'why-choose-me': 'why-choose-me',
   projects: 'projects',
   resume: 'resume',
@@ -40,6 +44,7 @@ const SECTION_TITLES: Record<SectionId, string> = {
   services: 'Services & Solutions',
   skills: 'Technical Skills & Stack',
   experience: 'Professional Experience',
+  courses: 'Verified Courses & Official Accreditations',
   'why-choose-me': 'Why Choose Me',
   projects: 'Featured Projects & Work',
   resume: 'Resume & Credentials',
@@ -155,12 +160,17 @@ export default function App() {
           <ExperienceSection profile={profile} />
         )}
 
-        {/* 6. Why Choose Me Section */}
+        {/* 6. Courses & Official Accreditations Section */}
+        {activeSection === 'courses' && (
+          <CoursesSection courses={initialCourses} />
+        )}
+
+        {/* 7. Why Choose Me Section */}
         {activeSection === 'why-choose-me' && (
           <WhyChooseMeSection />
         )}
 
-        {/* 7. Projects Section */}
+        {/* 8. Projects Section */}
         {activeSection === 'projects' && (
           <ProjectsSection
             projects={projects}
@@ -168,17 +178,18 @@ export default function App() {
           />
         )}
 
-        {/* 8. Resume Section */}
+        {/* 9. Resume Section */}
         {activeSection === 'resume' && (
           <ResumeSection
             profile={profile}
             projects={projects}
             skillGroups={initialSkillGroups}
+            courses={initialCourses}
             onOpenFullModal={() => setIsResumeOpen(true)}
           />
         )}
 
-        {/* 9. Contact Section */}
+        {/* 10. Contact Section */}
         {activeSection === 'contact' && (
           <ContactSection
             profile={profile}
@@ -223,6 +234,7 @@ export default function App() {
         profile={profile}
         projects={projects}
         skillGroups={initialSkillGroups}
+        courses={initialCourses}
       />
     </div>
   );

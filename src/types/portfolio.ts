@@ -4,6 +4,7 @@ export type SectionId =
   | 'services'
   | 'skills'
   | 'experience'
+  | 'courses'
   | 'why-choose-me'
   | 'projects'
   | 'resume'
@@ -52,6 +53,22 @@ export interface SkillGroup {
   category: string;
   skills?: SkillItem[];
   items?: SkillItem[];
+}
+
+export interface CourseCertification {
+  id: string;
+  title: string;
+  institution: string;
+  institutionUrl: string;
+  category: string;
+  period: string;
+  description: string;
+  skills: string[];
+  verified: boolean;
+  credentialBadge?: string;
+  badgeUrl?: string;
+  badgeImage?: string;
+  featured?: boolean;
 }
 
 export interface DeveloperProfile {

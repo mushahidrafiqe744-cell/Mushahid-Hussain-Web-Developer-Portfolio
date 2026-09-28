@@ -1,4 +1,4 @@
-import { DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
+import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
 import heroPortrait from '../assets/images/mushahid_hussain_hero_1790258485207.jpg';
 import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
 import aqsaRamzanImg from '../assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
@@ -8,6 +8,9 @@ import quaidTributeImg from '../assets/images/quaid_tribute_full_web_17904287729
 import alQuranImg from '../assets/images/al_quran_full_web_1790428789923.jpg';
 import novaraStoreImg from '../assets/images/novara_store_full_web_1790428808211.jpg';
 import alNoorTextileImg from '../assets/images/al_noor_textile_full_web_1790428824308.jpg';
+import claudeBadgeDevImg from '../assets/images/claude_badge_dev_1790595243034.jpg';
+import claudeBadgeAiImg from '../assets/images/claude_badge_ai_1790595259009.jpg';
+import weversityBadgeImg from '../assets/images/weversity_badge_1790595272249.jpg';
 
 export const initialProfile: DeveloperProfile = {
   name: 'Mushahid Hussain',
@@ -283,3 +286,91 @@ export const initialProjects: Project[] = [
     metrics: '50,000+ Admitted & Cured with 99% Patient Score'
   }
 ];
+
+export const initialCourses: CourseCertification[] = [
+  {
+    id: 'claude-badge-1',
+    title: 'Claude Certified Specialist — Developer Badge',
+    institution: 'Claude Academy (Anthropic)',
+    institutionUrl: 'https://academy.claude.com/',
+    badgeUrl: 'https://academy.claude.com/badges/d1e2bd09-af3b-449d-b5e0-efd601d1f64e',
+    badgeImage: claudeBadgeDevImg,
+    category: 'AI & Claude API Development',
+    period: '2025',
+    description: 'Official Anthropic Claude Academy certification verifying mastery in engineering with Claude, prompt optimization, API integrations, tool-use workflows, and building high-reliability AI-powered web systems.',
+    skills: ['Claude API', 'Prompt Engineering', 'AI Architecture', 'Tool Use', 'Structured Output', 'LLM Security'],
+    verified: true,
+    credentialBadge: 'Verified Anthropic Claude Badge',
+    featured: true
+  },
+  {
+    id: 'claude-badge-2',
+    title: 'Claude Academy Specialist — AI Engineering Badge',
+    institution: 'Claude Academy (Anthropic)',
+    institutionUrl: 'https://academy.claude.com/',
+    badgeUrl: 'https://academy.claude.com/badges/f9348716-8e62-4289-886c-2646e593c556',
+    badgeImage: claudeBadgeAiImg,
+    category: 'AI & Prompt Engineering',
+    period: '2025',
+    description: 'Official Anthropic Claude Academy credential demonstrating advanced proficiency in agentic design patterns, multi-turn reasoning, context management, and production-grade Claude integration.',
+    skills: ['Claude 3.5 Sonnet', 'Prompt Engineering', 'Agent Workflows', 'Context Caching', 'Evaluation', 'Safety'],
+    verified: true,
+    credentialBadge: 'Verified Anthropic Claude Badge',
+    featured: true
+  },
+  {
+    id: 'weversity-web-dev',
+    title: 'Full-Stack Web Development & Engineering Program',
+    institution: 'WeVersity',
+    institutionUrl: 'https://weversity.org/',
+    badgeUrl: 'https://weversity.org/',
+    badgeImage: weversityBadgeImg,
+    category: 'Full-Stack Web Engineering',
+    period: '2023 – 2024',
+    description: 'Comprehensive web development program completed through WeVersity, specializing in modern full-stack web engineering, frontend UI architecture, server-side development, database management, and hands-on production application development.',
+    skills: ['React', 'JavaScript', 'Node.js', 'Express', 'HTML5/CSS3', 'Database Management'],
+    verified: true,
+    credentialBadge: 'WeVersity Certified Web Engineer',
+    featured: true
+  },
+  {
+    id: 'meta-frontend-cert',
+    title: 'Meta Front-End Developer Professional Certificate',
+    institution: 'Meta (via Coursera)',
+    institutionUrl: 'https://www.coursera.org/professional-certificates/meta-front-end-developer',
+    badgeUrl: 'https://www.coursera.org/professional-certificates/meta-front-end-developer',
+    category: 'Frontend Engineering',
+    period: '2023 – 2024',
+    description: 'Comprehensive industry program authorized by Meta engineers covering React, JavaScript (ES6+), responsive design, UX/UI principles, Git version control, Jest unit testing, and full capstone front-end development.',
+    skills: ['React', 'JavaScript (ES6+)', 'Tailwind CSS', 'UI/UX Principles', 'Version Control / Git', 'Jest Testing'],
+    verified: true,
+    credentialBadge: 'Meta Certified Professional'
+  },
+  {
+    id: 'fcc-js-algorithms',
+    title: 'JavaScript Algorithms & Data Structures Certification',
+    institution: 'freeCodeCamp',
+    institutionUrl: 'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/',
+    badgeUrl: 'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/',
+    category: 'Core Computer Science',
+    period: '2022',
+    description: '300+ hours of verified hands-on curriculum solving complex algorithmic problems, implementing object-oriented programming (OOP), functional programming, and mastering JavaScript data structures.',
+    skills: ['JavaScript (ES6+)', 'Data Structures', 'Algorithms', 'OOP', 'Functional Programming'],
+    verified: true,
+    credentialBadge: 'freeCodeCamp Certified'
+  },
+  {
+    id: 'harvard-cs50',
+    title: 'CS50: Introduction to Computer Science',
+    institution: 'Harvard University (edX)',
+    institutionUrl: 'https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science',
+    badgeUrl: 'https://www.edx.org/learn/computer-science/harvard-university-cs50-s-introduction-to-computer-science',
+    category: 'Computer Science Fundamentals',
+    period: '2021 – 2022',
+    description: "Harvard University's flagship computer science program teaching algorithmic problem solving, memory safety, data structures, SQL databases, and robust software architecture.",
+    skills: ['Algorithms', 'Data Structures', 'Memory Safety', 'SQL', 'Web Security'],
+    verified: true,
+    credentialBadge: 'Harvard edX Verified'
+  }
+];
+

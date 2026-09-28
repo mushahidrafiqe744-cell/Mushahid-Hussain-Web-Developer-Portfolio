@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { X, Printer, Download, Mail, Phone, MapPin, Globe, Github, Linkedin, Briefcase, GraduationCap, Award, Code2 } from 'lucide-react';
-import { DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
+import { X, Printer, Download, Mail, Phone, MapPin, Globe, Github, Linkedin, Briefcase, GraduationCap, Award, Code2, ArrowUpRight } from 'lucide-react';
+import { CourseCertification, DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -8,6 +8,7 @@ interface ResumeModalProps {
   profile: DeveloperProfile;
   projects: Project[];
   skillGroups: SkillGroup[];
+  courses?: CourseCertification[];
 }
 
 export const ResumeModal: React.FC<ResumeModalProps> = ({
@@ -16,6 +17,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
   profile,
   projects,
   skillGroups,
+  courses = [],
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,10 +80,9 @@ ${p.features.map((f) => `  * ${f}`).join('\n')}`
 
 ---
 
-## EDUCATION & CERTIFICATIONS
+## EDUCATION & VERIFIED ACCREDITATIONS
 - **Bachelor of Science in Computer Science** (2020 – 2024)
-- **Meta Certified Front-End Developer**
-- **Full Stack Web Development Professional Certification**
+${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link: ${c.institutionUrl}`).join('\n')}
 `;
 
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8;' });
@@ -247,20 +248,50 @@ ${p.features.map((f) => `  * ${f}`).join('\n')}`
             </div>
           </div>
 
-          {/* Education & Certifications */}
+          {/* Education & Verified Courses */}
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#11261B] border-b border-[#11261B]/15 pb-1 mb-2.5 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#C5A059]" />
-              <span>Education & Certifications</span>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#11261B] border-b border-[#11261B]/15 pb-1 mb-2.5 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#C5A059]" />
+                <span>Education & Professional Courses</span>
+              </div>
+              <span className="text-[10px] text-[#5C6E61] print:hidden">Official Links Included</span>
             </h2>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2">
+
+            <div className="p-3 bg-[#F8F5EE] rounded-lg border border-[#11261B]/10 mb-3 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-1.5">
               <div>
                 <span className="font-bold text-[#11261B]">Bachelor of Science in Computer Science</span>
                 <div className="text-[#5C6E61]">Software Engineering & Web Architecture (2020 – 2024)</div>
               </div>
-              <div className="text-xs text-[#5C6E61] sm:text-right">
-                <span className="font-semibold text-[#11261B]">Certifications:</span> Meta Front-End Certified, Full-Stack Specialist
-              </div>
+              <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 self-start sm:self-auto">
+                Graduated with Honors
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              {courses.map((course) => (
+                <div key={course.id} className="p-2.5 rounded-lg bg-[#F8F5EE] border border-[#11261B]/10 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between text-[10px] text-[#5C6E61] mb-0.5">
+                      <span className="font-bold text-[#C5A059] uppercase">{course.institution}</span>
+                      <span className="font-mono">{course.period}</span>
+                    </div>
+                    <div className="font-bold text-[#11261B] text-xs leading-tight mb-1.5">{course.title}</div>
+                  </div>
+                  <div className="pt-1.5 border-t border-[#11261B]/5 flex items-center justify-between text-[10px]">
+                    <span className="text-[#5C6E61]">{course.category}</span>
+                    <a
+                      href={course.institutionUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-bold text-[#11261B] hover:text-[#C5A059] flex items-center gap-0.5 underline print:no-underline"
+                    >
+                      <span>Official Link</span>
+                      <ArrowUpRight className="w-2.5 h-2.5 text-[#C5A059]" />
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
