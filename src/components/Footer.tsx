@@ -42,8 +42,12 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           
           {/* Brand Lockup with Running Circular Line - Clicking goes to Hero */}
-          <button
-            onClick={() => onSelectSection('hero')}
+          <a
+            href="#home"
+            onClick={(e) => {
+              e.preventDefault();
+              onSelectSection('hero');
+            }}
             className="flex items-center gap-4 text-center md:text-left cursor-pointer group"
           >
             <div className="shrink-0 transition-transform duration-300 group-hover:scale-105">
@@ -57,24 +61,32 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
                 Full-Stack Web Developer · High Performance & Clean Architecture
               </p>
             </div>
-          </button>
+          </a>
 
           {/* Nav Links */}
           <nav className="flex flex-wrap items-center justify-center gap-5 text-xs font-semibold uppercase tracking-wider text-[#A3B8A8]">
-            <button
-              onClick={() => onSelectSection('hero')}
+            <a
+              href="#home"
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectSection('hero');
+              }}
               className="hover:text-[#C5A059] transition-colors cursor-pointer"
             >
               Home
-            </button>
+            </a>
             {navLinks.map((link) => (
-              <button
+              <a
                 key={link.id}
-                onClick={() => onSelectSection(link.id)}
+                href={`#${link.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSelectSection(link.id);
+                }}
                 className="hover:text-[#C5A059] transition-colors cursor-pointer"
               >
                 {link.label}
-              </button>
+              </a>
             ))}
           </nav>
 

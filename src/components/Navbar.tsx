@@ -41,10 +41,14 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         {/* Brand Logo with Running Circular Line - Clicking this opens the Hero Section */}
-        <button
-          onClick={() => handleNavClick('hero')}
+        <a
+          href="#home"
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavClick('hero');
+          }}
           className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
-          title="Click to go to Hero Section"
+          title="Click to go to Home Section"
         >
           <div className="relative transition-transform duration-300 group-hover:scale-105">
             <EmblemLogo size="sm" showSubtitle={false} interactive={true} />
@@ -59,16 +63,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               {profile.title}
             </span>
           </div>
-        </button>
+        </a>
 
         {/* Main Nav Links (Without ALL button) */}
         <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
-              <button
+              <a
                 key={link.id}
-                onClick={() => handleNavClick(link.id)}
+                href={`#${link.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(link.id);
+                }}
                 className={`relative px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                   isActive
                     ? 'bg-[#11261B] text-[#C5A059] shadow-xs'
@@ -79,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isActive && (
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#C5A059]" />
                 )}
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -87,8 +95,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
 
-          <button
-            onClick={() => handleNavClick('resume')}
+          <a
+            href="#resume"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick('resume');
+            }}
             className={`hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold tracking-wide rounded-xl border transition-all shadow-xs cursor-pointer ${
               activeSection === 'resume'
                 ? 'bg-[#11261B] text-[#C5A059] border-[#11261B]'
@@ -97,10 +109,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <FileText className="w-3.5 h-3.5 text-[#C5A059]" />
             <span>CV</span>
-          </button>
+          </a>
 
-          <button
-            onClick={() => handleNavClick('contact')}
+          <a
+            href="#contact"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick('contact');
+            }}
             className={`inline-flex items-center gap-1.5 sm:gap-2 px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition-all shadow-sm hover:scale-[1.02] cursor-pointer ${
               activeSection === 'contact'
                 ? 'bg-[#C5A059] text-[#11261B]'
@@ -109,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <span>Let's Talk</span>
             <Send className="w-3 h-3" />
-          </button>
+          </a>
 
           {/* Mobile Menu Hamburger Button */}
           <button
@@ -126,24 +142,32 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#F8F5EE] border-b border-[#11261B]/10 px-4 pt-3 pb-6 space-y-1.5 shadow-xl animate-fade-in">
-          <button
-            onClick={() => handleNavClick('hero')}
+          <a
+            href="#home"
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavClick('hero');
+            }}
             className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between ${
               activeSection === 'hero'
                 ? 'bg-[#11261B] text-[#C5A059]'
                 : 'text-[#11261B] hover:bg-[#F2EDE2]'
             }`}
           >
-            <span>Home / Hero</span>
+            <span>Home</span>
             {activeSection === 'hero' && <span className="w-2 h-2 rounded-full bg-[#C5A059]" />}
-          </button>
+          </a>
 
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
-              <button
+              <a
                 key={link.id}
-                onClick={() => handleNavClick(link.id)}
+                href={`#${link.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(link.id);
+                }}
                 className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between ${
                   isActive
                     ? 'bg-[#11261B] text-[#C5A059]'
@@ -152,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <span>{link.label}</span>
                 {isActive && <span className="w-2 h-2 rounded-full bg-[#C5A059]" />}
-              </button>
+              </a>
             );
           })}
 
