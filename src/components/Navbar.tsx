@@ -18,7 +18,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // 'ALL' has been removed as requested. Logo click now opens the Hero section.
   const navLinks: { id: SectionId; label: string }[] = [
     { id: 'about', label: 'About' },
     { id: 'services', label: 'Services' },

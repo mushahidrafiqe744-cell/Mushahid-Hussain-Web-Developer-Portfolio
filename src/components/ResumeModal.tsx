@@ -271,22 +271,31 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {courses.map((course) => (
                 <div key={course.id} className="p-2.5 rounded-lg bg-[#F8F5EE] border border-[#11261B]/10 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between text-[10px] text-[#5C6E61] mb-0.5">
-                      <span className="font-bold text-[#C5A059] uppercase">{course.institution}</span>
-                      <span className="font-mono">{course.period}</span>
+                  <div className="flex items-start gap-2 mb-1.5">
+                    {course.badgeImage && (
+                      <img
+                        src={course.badgeImage}
+                        alt=""
+                        className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-[#C5A059]/40 shadow-xs"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between text-[9px] text-[#5C6E61] mb-0.5">
+                        <span className="font-bold text-[#C5A059] uppercase truncate max-w-[120px]">{course.institution}</span>
+                        <span className="font-mono shrink-0">{course.period}</span>
+                      </div>
+                      <div className="font-bold text-[#11261B] text-xs leading-tight">{course.title}</div>
                     </div>
-                    <div className="font-bold text-[#11261B] text-xs leading-tight mb-1.5">{course.title}</div>
                   </div>
                   <div className="pt-1.5 border-t border-[#11261B]/5 flex items-center justify-between text-[10px]">
                     <span className="text-[#5C6E61]">{course.category}</span>
                     <a
-                      href={course.institutionUrl}
+                      href={course.badgeUrl || course.institutionUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="font-bold text-[#11261B] hover:text-[#C5A059] flex items-center gap-0.5 underline print:no-underline"
                     >
-                      <span>Official Link</span>
+                      <span>{course.badgeUrl && course.badgeUrl.includes('academy.claude.com') ? 'Verify Badge' : 'Official Link'}</span>
                       <ArrowUpRight className="w-2.5 h-2.5 text-[#C5A059]" />
                     </a>
                   </div>

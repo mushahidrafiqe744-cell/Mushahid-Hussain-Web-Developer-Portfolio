@@ -1,5 +1,5 @@
 import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
-import heroPortrait from '../assets/images/mushahid_hussain_hero_1790258485207.jpg';
+import heroPortrait from '../assets/images/mushahid_hussain_pinterest_1141451468122182249.jpg';
 import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
 import aqsaRamzanImg from '../assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
 import raheemRehabImg from '../assets/images/raheem_rehab_full_web_1790428879741.jpg';

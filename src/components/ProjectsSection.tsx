@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers, MessageCircle } from 'lucide-react';
+import { Github, ExternalLink, ArrowUpRight, Search, Code, Filter, Sparkles, Layers, MessageCircle, ChevronLeft, ChevronRight, LayoutGrid, Sliders, FolderGit2, Cpu, ShoppingCart, Terminal } from 'lucide-react';
 import { Project } from '../types/portfolio';
 
 interface ProjectsSectionProps {
@@ -213,13 +213,16 @@ const ProjectCard: React.FC<{
 export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSelectProject }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'grid' | 'slider'>('grid');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
-  const categories = [
-    { id: 'all', label: 'All Projects' },
-    { id: 'saas', label: 'SaaS & Web Apps' },
-    { id: 'ecommerce', label: 'E-Commerce' },
-    { id: 'fullstack', label: 'Full Stack' },
-    { id: 'api', label: 'APIs & Backend' },
+  const categories: { id: string; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { id: 'all', label: 'All Projects', icon: FolderGit2 },
+    { id: 'saas', label: 'SaaS & Web Apps', icon: Cpu },
+    { id: 'ecommerce', label: 'E-Commerce', icon: ShoppingCart },
+    { id: 'fullstack', label: 'Full Stack', icon: Layers },
+    { id: 'api', label: 'APIs & Backend', icon: Terminal },
   ];
 
   const filteredProjects = projects.filter((project) => {
@@ -231,6 +234,22 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
       project.technologies.some((tech) => tech.toLowerCase().includes(query));
     return matchesCategory && matchesSearch;
   });
+
+  // Autoplay effect for Slider View
+  useEffect(() => {
+    if (viewMode !== 'slider' || isAutoplayPaused || filteredProjects.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % filteredProjects.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [viewMode, isAutoplayPaused, filteredProjects.length]);
+
+  // Reset slider index when filters/searches change
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [activeCategory, searchQuery]);
 
   const sectionTitleLetters = 'Featured Projects'.split('');
 
@@ -262,37 +281,72 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
             </p>
           </div>
 
-          {/* Search Bar with Focus Animation */}
-          <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-[#5C6E61] absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-[#C5A059] transition-colors" />
-            <input
-              type="text"
-              placeholder="Search tech, stack, or name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-xs bg-[#F2EDE2] border border-[#11261B]/15 rounded-xl text-[#11261B] placeholder-[#5C6E61] focus:outline-hidden focus:border-[#C5A059] focus:bg-white transition-all shadow-xs focus:ring-2 focus:ring-[#C5A059]/20"
-            />
+          {/* Controls: Search and Layout Toggle */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            {/* View Mode Toggle */}
+            <div className="flex bg-[#F2EDE2] border border-[#11261B]/15 rounded-xl p-1 shrink-0">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-[#11261B] text-[#DFC285] shadow-xs'
+                    : 'text-[#5C6E61] hover:text-[#11261B]'
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Grid</span>
+              </button>
+              <button
+                onClick={() => setViewMode('slider')}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'slider'
+                    ? 'bg-[#11261B] text-[#DFC285] shadow-xs'
+                    : 'text-[#5C6E61] hover:text-[#11261B]'
+                }`}
+                title="Slider View"
+              >
+                <Sliders className="w-3.5 h-3.5 rotate-90" />
+                <span>Slider</span>
+              </button>
+            </div>
+
+            {/* Search Bar with Focus Animation */}
+            <div className="relative w-full md:w-64">
+              <Search className="w-4 h-4 text-[#5C6E61] absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-[#C5A059] transition-colors" />
+              <input
+                type="text"
+                placeholder="Search tech, stack, or name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 text-xs bg-[#F2EDE2] border border-[#11261B]/15 rounded-xl text-[#11261B] placeholder-[#5C6E61] focus:outline-hidden focus:border-[#C5A059] focus:bg-white transition-all shadow-xs focus:ring-2 focus:ring-[#C5A059]/20"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Filter Segmented Buttons */}
+        {/* Filter Segmented Buttons (Tabs with Icons) */}
         <div className="flex items-center gap-1.5 p-1.5 bg-[#F2EDE2] rounded-xl border border-[#11261B]/10 mb-8 overflow-x-auto">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 cursor-pointer ${
-                activeCategory === cat.id
-                  ? 'bg-[#11261B] text-[#F8F5EE] shadow-md scale-[1.02] border border-[#C5A059]/40'
-                  : 'text-[#5C6E61] hover:text-[#11261B] hover:bg-white/60'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-2.5 text-xs font-semibold rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-[#11261B] text-[#F8F5EE] shadow-md scale-[1.02] border border-[#C5A059]/40'
+                    : 'text-[#5C6E61] hover:text-[#11261B] hover:bg-white/60'
+                }`}
+              >
+                <cat.icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#C5A059]' : 'text-[#5C6E61]'}`} />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Projects Grid */}
+        {/* Projects Viewport (Grid vs Slider) */}
         {filteredProjects.length === 0 ? (
           <div className="text-center py-16 bg-[#F2EDE2] rounded-2xl border border-dashed border-[#11261B]/20 animate-pulse">
             <Code className="w-10 h-10 text-[#5C6E61] mx-auto mb-2" />
@@ -307,7 +361,79 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
               Clear filters
             </button>
           </div>
+        ) : viewMode === 'slider' ? (
+          /* Premium Interactive Carousel Slider */
+          <div 
+            className="relative select-none"
+            onMouseEnter={() => setIsAutoplayPaused(true)}
+            onMouseLeave={() => setIsAutoplayPaused(false)}
+          >
+            {/* Slider Viewport */}
+            <div className="overflow-hidden rounded-2xl">
+              <div 
+                className="flex transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {filteredProjects.map((project, index) => (
+                  <div key={project.id} className="w-full shrink-0 px-1">
+                    <div className="max-w-4xl mx-auto">
+                      <ProjectCard
+                        project={project}
+                        index={index}
+                        onSelectProject={onSelectProject}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Slider Navigation Chevrons */}
+            {filteredProjects.length > 1 && (
+              <>
+                <button
+                  onClick={() => setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length)}
+                  className="absolute -left-3 sm:-left-6 top-[35%] -translate-y-1/2 p-3 rounded-full bg-[#11261B] border border-[#C5A059]/30 text-[#DFC285] hover:bg-[#1A3828] hover:text-[#C5A059] shadow-xl hover:scale-105 active:scale-95 transition-all z-20 cursor-pointer"
+                  title="Previous Project"
+                >
+                  <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+                </button>
+                <button
+                  onClick={() => setCurrentIndex((prev) => (prev + 1) % filteredProjects.length)}
+                  className="absolute -right-3 sm:-right-6 top-[35%] -translate-y-1/2 p-3 rounded-full bg-[#11261B] border border-[#C5A059]/30 text-[#DFC285] hover:bg-[#1A3828] hover:text-[#C5A059] shadow-xl hover:scale-105 active:scale-95 transition-all z-20 cursor-pointer"
+                  title="Next Project"
+                >
+                  <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                </button>
+              </>
+            )}
+
+            {/* Premium Progress Indicators & Dots */}
+            {filteredProjects.length > 1 && (
+              <div className="flex flex-col items-center gap-3 mt-8">
+                {/* Dots */}
+                <div className="flex justify-center items-center gap-2">
+                  {filteredProjects.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                        currentIndex === idx 
+                          ? 'w-10 bg-[#11261B]' 
+                          : 'w-2 bg-[#11261B]/20 hover:bg-[#11261B]/40'
+                      }`}
+                    />
+                  ))}
+                </div>
+                {/* Visual Status Indicator */}
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[#5C6E61]">
+                  Project {currentIndex + 1} of {filteredProjects.length}
+                </span>
+              </div>
+            )}
+          </div>
         ) : (
+          /* Standard Projects Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredProjects.map((project, index) => (
               <ProjectCard
