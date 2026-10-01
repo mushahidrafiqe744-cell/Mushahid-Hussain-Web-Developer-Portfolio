@@ -60,10 +60,27 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               </div>
             </div>
 
-            {/* Dark Pill Motto with Shimmer Reflection */}
-            <div className="inline-flex items-center gap-2 bg-[#11261B] text-[#F8F5EE] text-xs sm:text-sm font-semibold tracking-wider uppercase px-5 py-2.5 rounded-full mb-6 shadow-md border border-[#C5A059]/30 animate-shimmer hover:scale-105 transition-all duration-300">
-              <Zap className="w-3.5 h-3.5 text-[#C5A059] animate-bounce" />
-              <span>{profile.badge}</span>
+            {/* Dark Pill Motto with Shimmer Reflection & Live Project Pill */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="inline-flex items-center gap-2 bg-[#11261B] text-[#F8F5EE] text-xs sm:text-sm font-semibold tracking-wider uppercase px-5 py-2.5 rounded-full shadow-md border border-[#C5A059]/30 animate-shimmer hover:scale-105 transition-all duration-300">
+                <Zap className="w-3.5 h-3.5 text-[#C5A059] animate-bounce" />
+                <span>{profile.badge}</span>
+              </div>
+
+              <a
+                href="https://biztop-modern-business-consulting-g.vercel.app/"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 bg-[#11261B] hover:bg-[#1A3828] text-[#DFC285] hover:text-white text-xs font-bold px-4 py-2 rounded-full border border-[#C5A059]/40 shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 group"
+                title="Open Biztop Modern Business Consulting"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#50E364] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#50E364]"></span>
+                </span>
+                <span>Featured: Biztop Consulting</span>
+                <span className="text-xs group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
+              </a>
             </div>
 
             {/* Bio Paragraph */}

@@ -1,5 +1,6 @@
 import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
 import heroPortrait from '../assets/images/mushahid_about_pinterest_1130333206525614062.jpg';
+import biztopFullImg from '../assets/images/biztop_full_web_1790852703068.jpg';
 import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
 import aqsaRamzanImg from '../assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
 import raheemRehabImg from '../assets/images/raheem_rehab_full_web_1790428879741.jpg';
@@ -117,6 +118,27 @@ export const initialSkillGroups: SkillGroup[] = [
 ];
 
 export const initialProjects: Project[] = [
+  {
+    id: 'biztop-consulting',
+    title: 'Biztop — Modern Business Consulting & Growth Agency',
+    tagline: 'Strategic business growth, custom web development, SEO, and marketing solutions for modern enterprises.',
+    category: 'fullstack',
+    categoryLabel: 'Business Consulting & Growth',
+    year: '2025',
+    description: 'A premium corporate business consulting web application featuring strategic growth roadmaps, enterprise UI/UX design, SEO performance tuning, interactive service packages, and direct client booking workflows.',
+    fullOverview: 'Developed with modern React tooling, elegant typography, interactive client ROI analytics, service pricing tiers, consultation scheduling, and mobile-optimized responsive architecture.',
+    image: biztopFullImg,
+    technologies: ['React', 'TypeScript', 'TailwindCSS', 'Vite', 'Lucide Icons', 'SEO Strategy'],
+    githubUrl: 'https://github.com/mushahidhussain/biztop-modern-business-consulting',
+    liveUrl: 'https://biztop-modern-business-consulting-g.vercel.app/',
+    features: [
+      'Strategic growth roadmap showcase & client consultation booking',
+      'Enterprise website development & SEO optimization services',
+      'Interactive pricing packages and ROI metrics calculator',
+      'High-converting lead capture with instant WhatsApp & email integration'
+    ],
+    metrics: '99% Client Satisfaction & 3.5x Traffic Growth'
+  },
   {
     id: 'the-grand-pavilion',
     title: 'The Grand Pavilion — Commercial Convention & Business Center',
