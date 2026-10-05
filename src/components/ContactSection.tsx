@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
+import { CountryCurrency, WORLD_COUNTRIES } from '../data/worldCountries';
+import { CountryCurrencyModal } from './CountryCurrencyModal';
 
 interface ContactSectionProps {
   profile: DeveloperProfile;
@@ -27,13 +29,57 @@ interface ContactSectionProps {
 }
 
 export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenResume }) => {
+  // Detect default country & currency based on visitor timezone
+  const [selectedCountry, setSelectedCountry] = useState<CountryCurrency>(() => {
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timeZone.includes('Karachi') || timeZone.includes('Pakistan')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'PKR') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('Dubai') || timeZone.includes('Muscat')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'AED') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('Riyadh')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'SAR') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('London')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'GBP') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('Europe') || timeZone.includes('Berlin') || timeZone.includes('Paris')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'EUR') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('Calcutta') || timeZone.includes('Kolkata') || timeZone.includes('India')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'INR') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('Toronto') || timeZone.includes('Vancouver')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'CAD') || WORLD_COUNTRIES[0];
+      }
+      if (timeZone.includes('Sydney') || timeZone.includes('Melbourne')) {
+        return WORLD_COUNTRIES.find((c) => c.code === 'AUD') || WORLD_COUNTRIES[0];
+      }
+    } catch (e) {}
+    // Default to USD or first
+    return WORLD_COUNTRIES.find((c) => c.code === 'USD') || WORLD_COUNTRIES[1] || WORLD_COUNTRIES[0];
+  });
+
+  const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     projectType: 'Full-Stack Web App',
-    budget: '$1,000 - $3,000',
+    budget: selectedCountry.defaultBudget,
     message: '',
   });
+
+  // Handle country selection
+  const handleSelectCountry = (country: CountryCurrency) => {
+    setSelectedCountry(country);
+    setFormData((prev) => ({
+      ...prev,
+      budget: country.defaultBudget,
+    }));
+  };
 
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,13 +95,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
     'REST/GraphQL API',
     'Performance & SEO',
     'Contract Role',
-  ];
-
-  const budgetOptions = [
-    '< $1,000',
-    '$1,000 - $3,000',
-    '$3,000 - $7,000',
-    '$7,000+',
   ];
 
   const handleCopyEmail = () => {
@@ -75,6 +114,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
       projectType: formData.projectType,
       budget: formData.budget,
       message: formData.message.trim(),
+      country: selectedCountry.country,
+      currency: selectedCountry.code,
     };
 
     // Format phone for WhatsApp (Pakistan code +92)
@@ -90,8 +131,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
 
 👤 *Name:* ${payload.name}
 📧 *Email:* ${payload.email}
+🌍 *Country:* ${selectedCountry.flag} ${selectedCountry.country}
 🛠️ *Project Type:* ${payload.projectType}
-💰 *Budget Range:* ${payload.budget}
+💰 *Budget Range:* ${payload.budget} (${selectedCountry.name})
 
 📝 *Project Details & Requirements:*
 ${payload.message}`;
@@ -124,7 +166,7 @@ ${payload.message}`;
         name: '',
         email: '',
         projectType: 'Full-Stack Web App',
-        budget: '$1,000 - $3,000',
+        budget: selectedCountry.defaultBudget,
         message: '',
       });
     }, 400);
@@ -482,13 +524,61 @@ ${payload.message}`;
                   </div>
                 </div>
 
-                {/* Estimated Budget Interactive Selector */}
+                {/* Estimated Budget Interactive Selector with Multi-Country Currency Switcher */}
                 <div>
-                  <label className="block text-xs font-bold text-[#11261B] uppercase tracking-wider mb-2">
-                    Estimated Budget Range
-                  </label>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+                    <div className="flex items-center gap-2">
+                      <label className="block text-xs font-bold text-[#11261B] uppercase tracking-wider">
+                        Estimated Budget Range
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setIsCountryModalOpen(true)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#11261B] text-[#DFC285] hover:bg-[#1A3828] text-[11px] font-bold transition-all shadow-2xs hover:scale-105 cursor-pointer border border-[#C5A059]/40"
+                        title="Click to view all countries with flags"
+                      >
+                        <span className="text-sm select-none">{selectedCountry.flag}</span>
+                        <span>{selectedCountry.code}</span>
+                        <span className="text-[#8A9B8F] text-[10px]">▼</span>
+                      </button>
+                    </div>
+
+                    {/* All Countries Button + Quick Shortcut Pills */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsCountryModalOpen(true)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#DFC285]/20 hover:bg-[#C5A059] text-[#11261B] hover:text-[#11261B] text-xs font-bold transition-all border border-[#C5A059] shadow-2xs hover:scale-105 cursor-pointer group"
+                      >
+                        <span className="text-base select-none group-hover:rotate-12 transition-transform">🌍</span>
+                        <span>All Countries & Flags</span>
+                        <span className="px-1.5 py-0.2 rounded-full bg-[#11261B] text-[#DFC285] text-[10px] font-mono">
+                          {WORLD_COUNTRIES.length}+
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Active Selected Country & Currency Notice Banner */}
+                  <div className="mb-3 px-3.5 py-2 rounded-xl bg-[#F8F5EE] border border-[#11261B]/10 flex items-center justify-between text-xs text-[#5C6E61]">
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="text-lg select-none shrink-0">{selectedCountry.flag}</span>
+                      <span className="font-semibold text-[#11261B] truncate">
+                        {selectedCountry.country} ({selectedCountry.name} - {selectedCountry.code} {selectedCountry.symbol})
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsCountryModalOpen(true)}
+                      className="text-[#C5A059] hover:underline font-bold text-[11px] shrink-0 ml-2 cursor-pointer"
+                    >
+                      Change Country ▾
+                    </button>
+                  </div>
+
+                  {/* Dynamic Budget Range Pills based on Selected Country Currency */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {budgetOptions.map((budget) => {
+                    {selectedCountry.options.map((budget) => {
                       const isSelected = formData.budget === budget;
                       return (
                         <button
@@ -554,6 +644,14 @@ ${payload.message}`;
         </div>
 
       </div>
+
+      {/* Full World Country & Currency Selector Modal */}
+      <CountryCurrencyModal
+        isOpen={isCountryModalOpen}
+        onClose={() => setIsCountryModalOpen(false)}
+        selectedCountryId={selectedCountry.id}
+        onSelectCountry={handleSelectCountry}
+      />
     </section>
   );
 };
