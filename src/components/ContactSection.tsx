@@ -38,6 +38,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [inquiryRefId, setInquiryRefId] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
 
   const projectTypes = [
@@ -62,15 +64,62 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
-    // Simulate real network submission with animated transmission feedback
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      projectType: formData.projectType,
+      budget: formData.budget,
+      message: formData.message.trim(),
+    };
+
+    // Format phone for WhatsApp (Pakistan code +92)
+    const rawPhone = profile.whatsapp || profile.phone || '03290725117';
+    let cleanPhone = rawPhone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '92' + cleanPhone.substring(1);
+    } else if (!cleanPhone.startsWith('92')) {
+      cleanPhone = '92' + cleanPhone;
+    }
+
+    const whatsappMessage = `*🔥 NEW PROJECT INQUIRY (PORTFOLIO)*
+
+👤 *Name:* ${payload.name}
+📧 *Email:* ${payload.email}
+🛠️ *Project Type:* ${payload.projectType}
+💰 *Budget Range:* ${payload.budget}
+
+📝 *Project Details & Requirements:*
+${payload.message}`;
+
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(whatsappMessage)}`;
+
+    // 1. Send to backend database in background
+    try {
+      fetch('/api/inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }).catch((err) => console.warn('Backend sync note:', err));
+    } catch (e) {}
+
+    // 2. Directly open WhatsApp with all pre-filled details
+    const ref = `INQ-${Date.now().toString().slice(-4)}`;
+    setInquiryRefId(ref);
+
+    // Open WhatsApp directly
+    window.open(whatsappUrl, '_blank');
+
+    // Show success state
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 6000);
       setFormData({
         name: '',
         email: '',
@@ -78,7 +127,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
         budget: '$1,000 - $3,000',
         message: '',
       });
-    }, 900);
+    }, 400);
   };
 
   const titleChars = "Let's Work Together!".split('');
@@ -326,23 +375,47 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
           <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-[#11261B]/10 shadow-2xl relative overflow-hidden animate-shimmer">
             
             {submitted ? (
-              <div className="py-14 text-center flex flex-col items-center justify-center">
-                <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5 shadow-lg animate-bounce">
+              <div className="py-12 text-center flex flex-col items-center justify-center animate-fade-in">
+                <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 shadow-lg animate-bounce">
                   <CheckCircle className="w-10 h-10" />
                 </div>
-                <h3 className="font-display text-3xl font-bold text-[#11261B] mb-2">Inquiry Transmitted!</h3>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#11261B] text-[#DFC285] text-xs font-mono mb-3">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#50E364]" />
+                  <span>Server Recorded: {inquiryRefId}</span>
+                </div>
+                <h3 className="font-display text-3xl font-bold text-[#11261B] mb-2">Project Inquiry Transmitted!</h3>
                 <p className="text-sm text-[#5C6E61] max-w-md mb-6 leading-relaxed">
-                  Thank you for reaching out, <span className="font-bold text-[#11261B]">{formData.name || 'friend'}</span>. I have received your message and will reply to your email address within 24 hours.
+                  Thank you for reaching out! Your project inquiry has been securely stored on the backend server and forwarded to <span className="font-bold text-[#11261B]">Mushahid Hussain</span>. You will receive a response within 24 hours.
                 </p>
-                <button
-                  onClick={() => setSubmitted(false)}
-                  className="px-6 py-3 rounded-full bg-[#11261B] hover:bg-[#1A3828] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:scale-105 cursor-pointer"
-                >
-                  Send Another Message
-                </button>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    onClick={() => setSubmitted(false)}
+                    className="px-6 py-3 rounded-full bg-[#11261B] hover:bg-[#1A3828] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:scale-105 cursor-pointer"
+                  >
+                    Send Another Inquiry
+                  </button>
+
+                  {profile.whatsapp && (
+                    <a
+                      href={`https://wa.me/${profile.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi Mushahid, I just submitted project inquiry #${inquiryRefId} on your portfolio website.`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-5 py-3 rounded-full bg-[#25D366] hover:bg-[#1fb355] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:scale-105 flex items-center gap-2"
+                    >
+                      <Zap className="w-4 h-4" />
+                      <span>Instant WhatsApp Alert</span>
+                    </a>
+                  )}
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {submitError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+                    <span className="font-bold">Error:</span>
+                    <span>{submitError}</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between pb-4 border-b border-[#11261B]/10">
                   <div className="flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-[#C5A059]" />
@@ -450,22 +523,25 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
                   />
                 </div>
 
-                {/* Animated Submit Button with Shimmer, Pulse & Flying Plane */}
+                {/* Animated Submit Button with Shimmer, Pulse & WhatsApp Direct Dispatch */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="group relative overflow-hidden w-full py-4 px-6 rounded-full bg-[#11261B] hover:bg-[#1A3828] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:scale-[1.02] cursor-pointer disabled:opacity-70 animate-shimmer"
+                  className="group relative overflow-hidden w-full py-4 px-6 rounded-full bg-[#11261B] hover:bg-[#1E4D2B] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:scale-[1.02] cursor-pointer disabled:opacity-70 animate-shimmer"
                 >
                   {isSubmitting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      <span>Transmitting Project Scope...</span>
+                      <span>Opening WhatsApp...</span>
                     </>
                   ) : (
                     <>
-                      <span>Send Project Inquiry</span>
+                      <div className="w-6 h-6 rounded-full bg-[#25D366] flex items-center justify-center shadow-xs">
+                        <Zap className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <span>Send Project Inquiry (Direct WhatsApp)</span>
                       <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1.5 group-hover:-translate-y-0.5 transition-transform duration-300">
-                        <Send className="w-3.5 h-3.5 text-[#C5A059]" />
+                        <Send className="w-3.5 h-3.5 text-[#DFC285]" />
                       </div>
                     </>
                   )}

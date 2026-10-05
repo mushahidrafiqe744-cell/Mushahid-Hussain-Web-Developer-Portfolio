@@ -10,6 +10,19 @@ export type SectionId =
   | 'resume'
   | 'contact';
 
+export interface VisitorLog {
+  id: string;
+  name: string;
+  email: string;
+  company?: string;
+  purpose: string;
+  timestamp: string;
+  dateStr: string;
+  device?: string;
+  location?: string;
+  notes?: string;
+}
+
 export interface Project {
   id: string;
   title: string;

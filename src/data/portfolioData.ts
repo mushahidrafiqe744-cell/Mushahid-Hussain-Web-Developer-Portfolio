@@ -1,6 +1,7 @@
 import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
 import heroPortrait from '../assets/images/mushahid_about_pinterest_1130333206525614062.jpg';
 import biztopFullImg from '../assets/images/biztop_full_web_1790852703068.jpg';
+import meerRoyalDecorImg from '../assets/images/meer_royal_decor_full_web_1791025431587.jpg';
 import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
 import aqsaRamzanImg from '../assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
 import raheemRehabImg from '../assets/images/raheem_rehab_full_web_1790428879741.jpg';
@@ -138,6 +139,27 @@ export const initialProjects: Project[] = [
       'High-converting lead capture with instant WhatsApp & email integration'
     ],
     metrics: '99% Client Satisfaction & 3.5x Traffic Growth'
+  },
+  {
+    id: 'meer-royal-decor',
+    title: 'Meer Royal Decor — Handmade Candles & Luxury Party Decor',
+    tagline: 'Exquisite artisanal handmade scented candles, event decoration collections, and custom party themes.',
+    category: 'ecommerce',
+    categoryLabel: 'Luxury Decor & Artisanal E-Commerce',
+    year: '2025',
+    description: 'An enchanting artisanal decor and handmade candle storefront showcasing premium scented candle collections, event backdrop setups, live product video reels, dynamic team manager, and instant WhatsApp inquiry booking.',
+    fullOverview: 'Designed with regal gold and royal burgundy aesthetics, featuring interactive product catalogs, video showcase reels, customer testimonials, admin team management interface, and streamlined WhatsApp checkout.',
+    image: meerRoyalDecorImg,
+    technologies: ['React', 'JavaScript', 'TailwindCSS', 'WhatsApp Business API', 'Vite'],
+    githubUrl: 'https://github.com/mushahidhussain/meer-royal-decor',
+    liveUrl: 'https://meer-royal-decor-hkh5.vercel.app/',
+    features: [
+      'Handcrafted aesthetic candle collection & custom fragrance pricing',
+      'Luxury party backdrop & balloon theme decor package showcase',
+      'Live product video gallery and customer feedback reviews',
+      'Direct WhatsApp order placement and custom event quote generator'
+    ],
+    metrics: '165+ Decor Setups Completed & 100+ Happy Clients'
   },
   {
     id: 'the-grand-pavilion',
