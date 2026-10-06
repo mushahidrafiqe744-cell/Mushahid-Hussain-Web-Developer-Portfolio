@@ -83,6 +83,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
 
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'takeoff' | 'flying' | 'delivered'>('idle');
+  const [flightProgress, setFlightProgress] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [inquiryRefId, setInquiryRefId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -105,8 +107,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
     setSubmitError(null);
+    setAnimationPhase('takeoff');
+    setFlightProgress(15);
 
     const payload = {
       name: formData.name.trim(),
@@ -151,16 +157,27 @@ ${payload.message}`;
       }).catch((err) => console.warn('Backend sync note:', err));
     } catch (e) {}
 
-    // 2. Directly open WhatsApp with all pre-filled details
     const ref = `INQ-${Date.now().toString().slice(-4)}`;
     setInquiryRefId(ref);
 
-    // Open WhatsApp directly
-    window.open(whatsappUrl, '_blank');
-
-    // Show success state
+    // Step 2: Flying Airplane Phase
     setTimeout(() => {
+      setAnimationPhase('flying');
+      setFlightProgress(65);
+    }, 450);
+
+    // Step 3: Delivered & Checkmark Pop Phase
+    setTimeout(() => {
+      setAnimationPhase('delivered');
+      setFlightProgress(100);
+    }, 1250);
+
+    // Step 4: Open WhatsApp and switch to completed screen
+    setTimeout(() => {
+      window.open(whatsappUrl, '_blank');
       setIsSubmitting(false);
+      setAnimationPhase('idle');
+      setFlightProgress(0);
       setSubmitted(true);
       setFormData({
         name: '',
@@ -169,7 +186,7 @@ ${payload.message}`;
         budget: selectedCountry.defaultBudget,
         message: '',
       });
-    }, 400);
+    }, 1850);
   };
 
   const titleChars = "Let's Work Together!".split('');
@@ -613,25 +630,77 @@ ${payload.message}`;
                   />
                 </div>
 
-                {/* Animated Submit Button with Shimmer, Pulse & WhatsApp Direct Dispatch */}
+                {/* Pinterest-Inspired Paper Airplane Flight Micro-Interaction Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="group relative overflow-hidden w-full py-4 px-6 rounded-full bg-[#11261B] hover:bg-[#1E4D2B] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl hover:scale-[1.02] cursor-pointer disabled:opacity-70 animate-shimmer"
+                  className={`group relative overflow-hidden w-full py-4 px-6 rounded-full text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-500 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl cursor-pointer disabled:cursor-not-allowed select-none ${
+                    animationPhase === 'delivered'
+                      ? 'bg-[#059669] ring-4 ring-[#10B981]/40 scale-[1.02]'
+                      : animationPhase === 'flying' || animationPhase === 'takeoff'
+                      ? 'bg-[#0D1F16] ring-2 ring-[#C5A059] scale-[1.01]'
+                      : 'bg-[#11261B] hover:bg-[#1E4D2B] hover:scale-[1.02] animate-shimmer'
+                  }`}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                      <span>Opening WhatsApp...</span>
-                    </>
+                  {/* Progress Line on bottom of the button during flight */}
+                  {isSubmitting && (
+                    <div
+                      className="absolute bottom-0 left-0 h-1.5 bg-gradient-to-r from-[#C5A059] via-[#50E364] to-[#25D366] transition-all duration-300 ease-out rounded-full shadow-sm"
+                      style={{ width: `${flightProgress}%` }}
+                    />
+                  )}
+
+                  {/* Wind Lines Streamers during Flight */}
+                  {(animationPhase === 'takeoff' || animationPhase === 'flying') && (
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden flex flex-col justify-around opacity-40">
+                      <div className="w-16 h-[2px] bg-white rounded-full animate-wind-line-1" />
+                      <div className="w-24 h-[1.5px] bg-[#C5A059] rounded-full animate-wind-line-2 ml-auto" />
+                      <div className="w-12 h-[2px] bg-white rounded-full animate-wind-line-1" />
+                    </div>
+                  )}
+
+                  {/* Dynamic Button Content based on Flight Phase */}
+                  {animationPhase === 'delivered' ? (
+                    <div className="flex items-center gap-2.5 animate-check-pop">
+                      <div className="w-7 h-7 rounded-full bg-white text-[#059669] flex items-center justify-center shadow-md">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                      <span className="text-white font-extrabold tracking-wide">
+                        Inquiry Delivered! Opening WhatsApp...
+                      </span>
+                    </div>
+                  ) : animationPhase === 'flying' ? (
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex items-center">
+                        <div className="w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center animate-ping absolute" />
+                        <SendHorizontal className="w-5 h-5 text-[#DFC285] animate-plane-fly drop-shadow-md" />
+                      </div>
+                      <span className="text-[#DFC285] animate-pulse">
+                        Transmitting Scope to WhatsApp... 🚀
+                      </span>
+                    </div>
+                  ) : animationPhase === 'takeoff' ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-full bg-[#C5A059] flex items-center justify-center animate-spin">
+                        <Sparkles className="w-3.5 h-3.5 text-[#11261B]" />
+                      </div>
+                      <span className="text-[#DFC285]">
+                        Folding & Launching Inquiry...
+                      </span>
+                    </div>
                   ) : (
                     <>
-                      <div className="w-6 h-6 rounded-full bg-[#25D366] flex items-center justify-center shadow-xs">
+                      {/* WhatsApp Icon */}
+                      <div className="w-6 h-6 rounded-full bg-[#25D366] flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
                         <Zap className="w-3.5 h-3.5 text-white" />
                       </div>
+
+                      {/* Main Call to Action Label */}
                       <span>Send Project Inquiry (Direct WhatsApp)</span>
-                      <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-1.5 group-hover:-translate-y-0.5 transition-transform duration-300">
-                        <Send className="w-3.5 h-3.5 text-[#DFC285]" />
+
+                      {/* Floating Airplane Icon */}
+                      <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-2 group-hover:-translate-y-1 transition-all duration-300">
+                        <Send className="w-3.5 h-3.5 text-[#DFC285] airplane-hover-glide" />
                       </div>
                     </>
                   )}
