@@ -3,7 +3,7 @@ import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, 
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
-import heroHoverImage from '../assets/images/mushahid_about_hover_pinterest_1130333206525614977.jpg';
+import heroHoverImage from '../assets/images/mushahid_hussain_pinterest_1141451468122182249.jpg';
 
 interface HeroProps {
   profile: DeveloperProfile;
@@ -20,7 +20,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
 
   // Extract numerical targets
   const projectsCount = parseInt(profile.projectsCompleted.replace(/\D/g, ''), 10) || 30;
-  const experienceCount = parseInt(profile.yearsOfExperience.replace(/\D/g, ''), 10) || 3;
+  const experienceCount = parseInt(profile.yearsOfExperience.replace(/\D/g, ''), 10) || 8;
   const satisfactionCount = parseInt(profile.happyClients.replace(/\D/g, ''), 10) || 99;
 
   return (
@@ -102,7 +102,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               </button>
             </div>
 
-            {/* Interactive Metric Numbers Bar with 0 -> Target Count-up on Cursor Hover */}
+            {/* Interactive Metric Numbers Bar matching screenshot */}
             <div className="grid grid-cols-3 gap-3 sm:gap-6 mt-10 pt-8 border-t border-[#11261B]/10 w-full max-w-lg">
               
               {/* Stat 1: Projects Delivered (0+ -> 30+) */}
@@ -110,42 +110,32 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 onClick={() => onOpenSection('projects')}
                 onMouseEnter={() => setHoveredMetric(1)}
                 onMouseLeave={() => setHoveredMetric(null)}
-                className={`text-left group cursor-pointer p-3 rounded-2xl transition-all duration-300 number-badge-glow border ${
-                  hoveredMetric === 1
-                    ? 'bg-white shadow-lg border-[#C5A059]'
-                    : 'bg-transparent border-transparent hover:bg-white/60'
-                }`}
+                className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
               >
                 <div className="flex items-baseline gap-1">
-                  <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
+                  <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
                     <HoverCounter target={projectsCount} suffix="+" isParentHovered={hoveredMetric === 1} />
                   </span>
-                  <Award className={`w-3.5 h-3.5 text-[#C5A059] transition-opacity duration-300 ${hoveredMetric === 1 ? 'opacity-100 scale-110' : 'opacity-0'}`} />
                 </div>
-                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-0.5 group-hover:text-[#11261B] transition-colors">
+                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1.5 group-hover:text-[#11261B] transition-colors">
                   Projects Delivered ↗
                 </div>
               </button>
 
-              {/* Stat 2: Experience (0+ Years -> 3+ Years) */}
+              {/* Stat 2: Experience (0+ Years -> 8+ Years) */}
               <button
                 onClick={() => onOpenSection('experience')}
                 onMouseEnter={() => setHoveredMetric(2)}
                 onMouseLeave={() => setHoveredMetric(null)}
-                className={`text-left group cursor-pointer p-3 rounded-2xl transition-all duration-300 number-badge-glow border ${
-                  hoveredMetric === 2
-                    ? 'bg-white shadow-lg border-[#C5A059]'
-                    : 'bg-transparent border-transparent hover:bg-white/60'
-                }`}
+                className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
               >
                 <div className="flex flex-col leading-tight">
                   <div className="flex items-baseline gap-1">
-                    <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
+                    <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
                       <HoverCounter target={experienceCount} suffix="+" isParentHovered={hoveredMetric === 2} />
                     </span>
-                    <Zap className={`w-3.5 h-3.5 text-[#C5A059] transition-opacity duration-300 ${hoveredMetric === 2 ? 'opacity-100 scale-110' : 'opacity-0'}`} />
                   </div>
-                  <span className="font-display font-bold text-xl sm:text-2xl text-[#11261B] group-hover:text-[#C5A059] -mt-1 transition-colors">
+                  <span className="font-display font-bold text-xl sm:text-2xl lg:text-3xl text-[#11261B] group-hover:text-[#C5A059] transition-colors mt-0.5">
                     Years
                   </span>
                 </div>
@@ -159,19 +149,14 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 onClick={() => onOpenSection('why-choose-me')}
                 onMouseEnter={() => setHoveredMetric(3)}
                 onMouseLeave={() => setHoveredMetric(null)}
-                className={`text-left group cursor-pointer p-3 rounded-2xl transition-all duration-300 number-badge-glow border ${
-                  hoveredMetric === 3
-                    ? 'bg-white shadow-lg border-[#C5A059]'
-                    : 'bg-transparent border-transparent hover:bg-white/60'
-                }`}
+                className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
               >
                 <div className="flex items-baseline gap-1">
-                  <span className="font-display font-bold text-3xl sm:text-4xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums">
+                  <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
                     <HoverCounter target={satisfactionCount} suffix="%" isParentHovered={hoveredMetric === 3} />
                   </span>
-                  <Star className={`w-3.5 h-3.5 text-[#C5A059] fill-[#C5A059] transition-opacity duration-300 ${hoveredMetric === 3 ? 'opacity-100 scale-110' : 'opacity-0'}`} />
                 </div>
-                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-0.5 group-hover:text-[#11261B] transition-colors">
+                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1.5 group-hover:text-[#11261B] transition-colors">
                   Satisfaction ↗
                 </div>
               </button>
@@ -189,29 +174,21 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
             <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-[4/5] p-[3.5px] sm:p-[4px] rounded-t-[190px] rounded-b-[28px] bg-gradient-to-b from-[#E2C785] via-[#C5A059] via-35% via-[#7B8B67] via-65% to-[#11261B] shadow-[0_25px_60px_-15px_rgba(17,38,27,0.35)] interactive-image-card">
               
               {/* Inner Arch Background */}
-              <div className="w-full h-full rounded-t-[186px] rounded-b-[24px] overflow-hidden relative bg-gradient-to-b from-[#FDFBF7] via-[#F5EFEB] to-[#E6DCce] group cursor-pointer">
+              <div className="w-full h-full rounded-t-[186px] rounded-b-[24px] overflow-hidden relative bg-[#11261B] group cursor-pointer shadow-inner">
                 
-                {/* Primary Developer Image (mushahid_about_pinterest_1130333206525614062) */}
+                {/* Crisp Hero Developer Portrait */}
                 <img
                   src={profile.avatarUrl}
                   alt={profile.name}
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-top filter contrast-[1.04] transition-all duration-700 ease-out group-hover:scale-108 group-hover:opacity-0"
+                  className="w-full h-full object-cover object-top filter brightness-105 contrast-[1.06] transition-transform duration-700 ease-out group-hover:scale-105"
                 />
 
-                {/* Hover Reveal Image */}
-                <img
-                  src={heroHoverImage}
-                  alt={`${profile.name} Alternate`}
-                  referrerPolicy="no-referrer"
-                  className="absolute inset-0 w-full h-full object-cover object-top filter contrast-[1.04] opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out group-hover:scale-108 scale-100"
-                />
+                {/* Gentle Ambient Gold Glow Highlight on Top Arch */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#C5A059]/10 via-transparent to-black/30 pointer-events-none" />
 
-                {/* Shimmer Light Reflection on Image */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                {/* Subtle bottom gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#11261B]/60 via-transparent to-transparent pointer-events-none" />
+                {/* Shimmer Light Reflection on Image Hover */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </div>
             </div>
 

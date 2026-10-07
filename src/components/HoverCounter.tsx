@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface HoverCounterProps {
   target: number;
@@ -17,32 +17,43 @@ export const HoverCounter: React.FC<HoverCounterProps> = ({
 }) => {
   const [internalHover, setInternalHover] = useState(false);
   const [displayValue, setDisplayValue] = useState(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   const active = isParentHovered || internalHover;
 
   useEffect(() => {
-    let animationFrameId: number;
-    let startTime: number | null = null;
-    const duration = 700; // Smooth 0.7s count up
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
 
     if (active) {
+      let startTime: number | null = null;
+      const duration = 750; // Smooth 0.75s count up
+
       const step = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const progress = Math.min((timestamp - startTime) / duration, 1);
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        setDisplayValue(Math.round(easeOut * target));
+        const current = Math.min(Math.round(easeOut * target), target);
+        setDisplayValue(current);
 
         if (progress < 1) {
-          animationFrameId = requestAnimationFrame(step);
+          animationFrameRef.current = requestAnimationFrame(step);
+        } else {
+          setDisplayValue(target);
+          animationFrameRef.current = null;
         }
       };
-      animationFrameId = requestAnimationFrame(step);
+
+      animationFrameRef.current = requestAnimationFrame(step);
     } else {
       setDisplayValue(0);
     }
 
     return () => {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, [active, target]);
 

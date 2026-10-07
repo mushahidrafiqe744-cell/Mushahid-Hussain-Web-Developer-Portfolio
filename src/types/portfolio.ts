@@ -6,9 +6,27 @@ export type SectionId =
   | 'experience'
   | 'courses'
   | 'why-choose-me'
+  | 'testimonials'
   | 'projects'
   | 'resume'
   | 'contact';
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  company: string;
+  project: string;
+  avatar: string;
+  flag: string;
+  location: string;
+  rating: number;
+  review: string;
+  date: string;
+  verified: boolean;
+  metricsResult?: string;
+  tags?: string[];
+}
 
 export interface VisitorLog {
   id: string;

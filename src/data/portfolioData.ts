@@ -1,5 +1,5 @@
 import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
-import heroPortrait from '../assets/images/mushahid_about_pinterest_1130333206525614062.jpg';
+import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
 import biztopFullImg from '../assets/images/biztop_full_web_1790852703068.jpg';
 import meerRoyalDecorImg from '../assets/images/meer_royal_decor_full_web_1791025431587.jpg';
 import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
@@ -417,4 +417,104 @@ export const initialCourses: CourseCertification[] = [
     credentialBadge: 'Harvard edX Verified'
   }
 ];
+
+export const initialTestimonials: import('../types/portfolio').Testimonial[] = [
+  {
+    id: 'test-1',
+    name: 'Marcus Vance',
+    role: 'Managing Director & Founder',
+    company: 'BizTop Global Strategy Ltd',
+    project: 'BizTop Enterprise Portal',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+    flag: '🇬🇧',
+    location: 'London, United Kingdom',
+    rating: 5,
+    review: "Mushahid transformed our entire digital presence. The custom enterprise platform he built loads instantly, looks world-class, and handles our international B2B inquiries flawlessly. His attention to design nuances, accessibility, and backend security exceeded every standard.",
+    date: 'February 2025',
+    verified: true,
+    metricsResult: '+240% Client Inquiries & 99.8 Lighthouse Score',
+    tags: ['Next.js', 'React', 'Node.js', 'Enterprise Architecture']
+  },
+  {
+    id: 'test-2',
+    name: 'Hamza Al-Maktoum',
+    role: 'Creative Director & Co-Owner',
+    company: 'Meer Royal Decor LLC',
+    project: 'Luxury E-Commerce Showroom',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
+    flag: '🇦🇪',
+    location: 'Dubai, UAE',
+    rating: 5,
+    review: "Working with Mushahid was seamless from start to finish. He delivered an ultra-luxurious, dynamic product showcase that reflects the royal aesthetic of our brand. The 3D interactions and fast checkout have significantly increased our high-ticket interior bookings.",
+    date: 'January 2025',
+    verified: true,
+    metricsResult: '3.4x Higher Consultation Conversion Rate',
+    tags: ['E-Commerce', 'Tailwind CSS', 'High-Converting UI', 'Framer Motion']
+  },
+  {
+    id: 'test-3',
+    name: 'Dr. Aqsa Ramzan',
+    role: 'Lead Healthcare Practitioner',
+    company: 'Integrated Medical Clinic',
+    project: 'Clinical Portfolio & Patient Portal',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
+    flag: '🇵🇰',
+    location: 'Lahore, Pakistan',
+    rating: 5,
+    review: "Mushahid is an exceptionally skilled engineer who truly cares about the end-user experience. He built a clean, intuitive booking system for our medical consultations that patients find very easy to navigate. He was always available and responsive throughout development.",
+    date: 'December 2024',
+    verified: true,
+    metricsResult: '1,200+ Monthly Online Patient Bookings',
+    tags: ['Full-Stack', 'HIPAA/Security', 'Mobile First', 'REST API']
+  },
+  {
+    id: 'test-4',
+    name: 'Sarah Jenkins',
+    role: 'VP of Technology & Operations',
+    company: 'NovaCore Solutions Inc',
+    project: 'SaaS Analytics & Cloud Dashboard',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80',
+    flag: '🇺🇸',
+    location: 'San Francisco, CA, USA',
+    rating: 5,
+    review: "Mushahid’s full-stack engineering expertise is phenomenal. His code quality is pristine, modular, and type-safe. He modernized our legacy frontend into a blazing-fast React and TypeScript ecosystem with zero downtime.",
+    date: 'November 2024',
+    verified: true,
+    metricsResult: '65% Reduction in API Response Times',
+    tags: ['TypeScript', 'React 19', 'GraphQL', 'Performance Optimization']
+  },
+  {
+    id: 'test-5',
+    name: 'Tariq Al-Faisal',
+    role: 'Executive Operations Head',
+    company: 'Grand Pavilion Hospitality Group',
+    project: 'Grand Pavilion Event Reservation Engine',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
+    flag: '🇸🇦',
+    location: 'Riyadh, Saudi Arabia',
+    rating: 5,
+    review: "Mushahid delivered our luxury event booking application ahead of schedule. The WhatsApp instant integration and multi-currency billing transformed how our international VIP clients reserve event dates. Highly recommended for premium web development!",
+    date: 'October 2024',
+    verified: true,
+    metricsResult: '100% On-Time Project Delivery & 0 Critical Bugs',
+    tags: ['WhatsApp Automation', 'Multi-Currency', 'Luxury Theme', 'Responsive']
+  },
+  {
+    id: 'test-6',
+    name: 'David Tremblay',
+    role: 'Founder & Product Lead',
+    company: 'Novara Apparel Group',
+    project: 'Global Direct-to-Consumer Store',
+    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&auto=format&fit=crop&q=80',
+    flag: '🇨🇦',
+    location: 'Toronto, Canada',
+    rating: 5,
+    review: "A rare developer who combines deep backend knowledge with exceptional aesthetic taste. Mushahid built an omnichannel commerce platform that scaled effortlessly across North America with incredible mobile responsiveness.",
+    date: 'September 2024',
+    verified: true,
+    metricsResult: '$180K+ in First Quarter D2C Transactions',
+    tags: ['E-Commerce', 'Payment Gateways', 'Tailwind CSS', 'Next.js']
+  }
+];
+
 

@@ -12,6 +12,7 @@ import { ProjectModal } from './components/ProjectModal';
 import { ContactSection } from './components/ContactSection';
 import { ResumeModal } from './components/ResumeModal';
 import { CoursesSection } from './components/CoursesSection';
+import { TestimonialsSection } from './components/TestimonialsSection';
 import { Footer } from './components/Footer';
 import {
   initialProfile,
@@ -19,6 +20,7 @@ import {
   initialSkillGroups,
   initialProjects,
   initialCourses,
+  initialTestimonials,
 } from './data/portfolioData';
 import { DeveloperProfile, Project, SectionId } from './types/portfolio';
 import { Home } from 'lucide-react';
@@ -33,6 +35,9 @@ const VALID_SECTIONS: Record<string, SectionId> = {
   courses: 'courses',
   certifications: 'courses',
   'why-choose-me': 'why-choose-me',
+  testimonials: 'testimonials',
+  reviews: 'testimonials',
+  feedback: 'testimonials',
   projects: 'projects',
   resume: 'resume',
   contact: 'contact',
@@ -46,6 +51,7 @@ const SECTION_TITLES: Record<SectionId, string> = {
   experience: 'Professional Experience',
   courses: 'Verified Courses & Official Accreditations',
   'why-choose-me': 'Why Choose Me',
+  testimonials: 'Client Testimonials & Feedback',
   projects: 'Featured Projects & Work',
   resume: 'Resume & Credentials',
   contact: 'Contact & Work Together',
@@ -170,7 +176,15 @@ export default function App() {
           <WhyChooseMeSection />
         )}
 
-        {/* 8. Projects Section */}
+        {/* 8. Client Testimonials Carousel Section */}
+        {activeSection === 'testimonials' && (
+          <TestimonialsSection
+            testimonials={initialTestimonials}
+            onOpenContact={() => handleSelectSection('contact')}
+          />
+        )}
+
+        {/* 9. Projects Section */}
         {activeSection === 'projects' && (
           <ProjectsSection
             projects={projects}
