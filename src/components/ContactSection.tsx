@@ -634,12 +634,12 @@ ${payload.message}`;
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`group relative overflow-hidden w-full py-4 px-6 rounded-full text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-500 flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl cursor-pointer disabled:cursor-not-allowed select-none ${
+                  className={`group relative overflow-hidden w-full py-4 px-6 rounded-full text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-500 flex items-center justify-between shadow-xl hover:shadow-2xl cursor-pointer disabled:cursor-not-allowed select-none border border-[#C5A059]/30 ${
                     animationPhase === 'delivered'
                       ? 'bg-[#059669] ring-4 ring-[#10B981]/40 scale-[1.02]'
                       : animationPhase === 'flying' || animationPhase === 'takeoff'
                       ? 'bg-[#0D1F16] ring-2 ring-[#C5A059] scale-[1.01]'
-                      : 'bg-[#11261B] hover:bg-[#1E4D2B] hover:scale-[1.02] animate-shimmer'
+                      : 'bg-[#11261B] hover:bg-[#1A3828] hover:scale-[1.01] animate-shimmer'
                   }`}
                 >
                   {/* Progress Line on bottom of the button during flight */}
@@ -661,7 +661,7 @@ ${payload.message}`;
 
                   {/* Dynamic Button Content based on Flight Phase */}
                   {animationPhase === 'delivered' ? (
-                    <div className="flex items-center gap-2.5 animate-check-pop">
+                    <div className="w-full flex items-center justify-center gap-2.5 animate-check-pop py-0.5">
                       <div className="w-7 h-7 rounded-full bg-white text-[#059669] flex items-center justify-center shadow-md">
                         <Check className="w-4 h-4 stroke-[3]" />
                       </div>
@@ -670,7 +670,7 @@ ${payload.message}`;
                       </span>
                     </div>
                   ) : animationPhase === 'flying' ? (
-                    <div className="flex items-center gap-3">
+                    <div className="w-full flex items-center justify-center gap-3 py-0.5">
                       <div className="relative flex items-center">
                         <div className="w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center animate-ping absolute" />
                         <SendHorizontal className="w-5 h-5 text-[#DFC285] animate-plane-fly drop-shadow-md" />
@@ -680,7 +680,7 @@ ${payload.message}`;
                       </span>
                     </div>
                   ) : animationPhase === 'takeoff' ? (
-                    <div className="flex items-center gap-3">
+                    <div className="w-full flex items-center justify-center gap-3 py-0.5">
                       <div className="w-6 h-6 rounded-full bg-[#C5A059] flex items-center justify-center animate-spin">
                         <Sparkles className="w-3.5 h-3.5 text-[#11261B]" />
                       </div>
@@ -690,17 +690,19 @@ ${payload.message}`;
                     </div>
                   ) : (
                     <>
-                      {/* WhatsApp Icon */}
-                      <div className="w-6 h-6 rounded-full bg-[#25D366] flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
-                        <Zap className="w-3.5 h-3.5 text-white" />
+                      {/* Left: WhatsApp / Zap Circular Badge */}
+                      <div className="w-8 h-8 rounded-full bg-[#25D366] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform shrink-0">
+                        <Zap className="w-4 h-4 text-white fill-white" />
                       </div>
 
-                      {/* Main Call to Action Label */}
-                      <span>Send Project Inquiry (Direct WhatsApp)</span>
+                      {/* Center: Main Call to Action Label */}
+                      <span className="font-extrabold text-xs sm:text-sm tracking-wider uppercase text-white px-2">
+                        SEND PROJECT INQUIRY (DIRECT WHATSAPP)
+                      </span>
 
-                      {/* Floating Airplane Icon */}
-                      <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-2 group-hover:-translate-y-1 transition-all duration-300">
-                        <Send className="w-3.5 h-3.5 text-[#DFC285] airplane-hover-glide" />
+                      {/* Right: Floating Paper Airplane Icon Badge */}
+                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:translate-x-1.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0">
+                        <Send className="w-4 h-4 text-[#DFC285] airplane-hover-glide" />
                       </div>
                     </>
                   )}
