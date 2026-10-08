@@ -14,8 +14,6 @@ import { ResumeModal } from './components/ResumeModal';
 import { CoursesSection } from './components/CoursesSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { Footer } from './components/Footer';
-import { LiveChatWidget } from './components/LiveChatWidget';
-import { OwnerChatModal } from './components/OwnerChatModal';
 import {
   initialProfile,
   initialServices,
@@ -83,7 +81,6 @@ export default function App() {
   });
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeOpen, setIsResumeOpen] = useState(false);
-  const [isOwnerChatOpen, setIsOwnerChatOpen] = useState(false);
 
   // Sync state when URL hash changes (back/forward buttons or direct hash edit)
   useEffect(() => {
@@ -236,7 +233,6 @@ export default function App() {
       <Footer
         profile={profile}
         onSelectSection={handleSelectSection}
-        onOpenOwnerChat={() => setIsOwnerChatOpen(true)}
       />
 
       {/* Project Details Modal */}
@@ -253,18 +249,6 @@ export default function App() {
         projects={projects}
         skillGroups={initialSkillGroups}
         courses={initialCourses}
-      />
-
-      {/* Real-Time Live Chat System (Client-to-Owner) */}
-      <LiveChatWidget
-        profile={profile}
-        onOpenOwnerPanel={() => setIsOwnerChatOpen(true)}
-      />
-
-      {/* Owner / Admin Chat Dashboard */}
-      <OwnerChatModal
-        isOpen={isOwnerChatOpen}
-        onClose={() => setIsOwnerChatOpen(false)}
       />
     </div>
   );

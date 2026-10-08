@@ -6,10 +6,9 @@ import { EmblemLogo } from './EmblemLogo';
 interface FooterProps {
   profile: DeveloperProfile;
   onSelectSection: (section: SectionId) => void;
-  onOpenOwnerChat?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection, onOpenOwnerChat }) => {
+export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -164,21 +163,8 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection, onOpen
 
         {/* Quiet Copyright */}
         <div className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#A3B8A8] gap-4">
-          <div className="flex items-center gap-3">
-            <span>© {new Date().getFullYear()} {profile.name}. All rights reserved.</span>
-            {onOpenOwnerChat && (
-              <>
-                <span aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  onClick={onOpenOwnerChat}
-                  className="text-[#A3B8A8]/60 hover:text-[#C5A059] transition-colors cursor-pointer text-[11px]"
-                  title="Owner Live Chat Portal"
-                >
-                  Owner Live Chat 🔐
-                </button>
-              </>
-            )}
+          <div>
+            © {new Date().getFullYear()} {profile.name}. All rights reserved.
           </div>
           <div className="flex items-center gap-2">
             <span>Built with React & TypeScript</span>
