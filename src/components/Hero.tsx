@@ -66,6 +66,13 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 <Zap className="w-3.5 h-3.5 text-[#C5A059] animate-bounce" />
                 <span>{profile.badge}</span>
               </div>
+              <button
+                onClick={() => onOpenSection('services')}
+                className="inline-flex items-center gap-2 bg-[#11261B]/5 hover:bg-[#11261B]/10 border border-[#11261B]/15 text-[#11261B] text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-2xs hover:scale-105 transition-all cursor-pointer"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Websites Starting From ₨ 20,000</span>
+              </button>
             </div>
 
             {/* Bio Paragraph */}

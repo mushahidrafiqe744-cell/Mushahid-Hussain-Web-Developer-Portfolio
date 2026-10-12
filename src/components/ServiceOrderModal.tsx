@@ -21,6 +21,9 @@ export interface ServiceItemData {
   deliverables: string[];
   stack: string[];
   targetNum: number;
+  startingPricePKR?: string;
+  startingPriceUSD?: string;
+  estimatedTimeline?: string;
 }
 
 interface ServiceOrderModalProps {
@@ -173,7 +176,7 @@ _Order submitted via Developer Portfolio_`;
           </div>
 
           {/* Selected Service Snippet Banner */}
-          <div className="mt-4 p-3.5 rounded-xl bg-white/5 border border-[#C5A059]/30 flex items-center justify-between gap-3">
+          <div className="mt-4 p-3.5 rounded-xl bg-white/5 border border-[#C5A059]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 rounded-lg bg-[#C5A059] text-[#11261B] flex items-center justify-center shrink-0 font-bold">
                 <Icon className="w-5 h-5" />
@@ -186,9 +189,18 @@ _Order submitted via Developer Portfolio_`;
               </div>
             </div>
 
-            <div className="hidden sm:flex items-center gap-1 text-xs text-[#DFC285]">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Verified Developer</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              {service.startingPricePKR && (
+                <div className="px-2.5 py-1 rounded-lg bg-[#C5A059] text-[#11261B] text-xs font-bold font-mono">
+                  {currency === 'PKR' ? service.startingPricePKR : (service.startingPriceUSD || '$150+')}
+                </div>
+              )}
+              {service.estimatedTimeline && (
+                <div className="px-2.5 py-1 rounded-lg bg-white/10 text-white text-xs font-medium border border-white/15 flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-[#DFC285]" />
+                  <span>{service.estimatedTimeline}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

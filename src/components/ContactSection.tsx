@@ -16,7 +16,10 @@ import {
   ArrowRight,
   SendHorizontal,
   Linkedin,
-  Github
+  Github,
+  Calendar,
+  Tag,
+  CheckCircle2
 } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
@@ -67,7 +70,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    projectType: 'Full-Stack Web App',
+    projectType: 'Custom Website (Business / Portfolio)',
     budget: selectedCountry.defaultBudget,
     message: '',
   });
@@ -90,14 +93,143 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
 
-  const projectTypes = [
-    'Full-Stack Web App',
-    'Frontend (React/Next.js)',
-    'E-Commerce Store',
-    'REST/GraphQL API',
-    'Performance & SEO',
-    'Contract Role',
+  interface ProjectTypeDetail {
+    id: string;
+    label: string;
+    icon: string;
+    pricePKR: string;
+    priceUSD: string;
+    timeline: string;
+    description: string;
+    features: string[];
+    recommendedBudgetPKR: string;
+    recommendedBudgetUSD: string;
+  }
+
+  const projectTypeDetails: ProjectTypeDetail[] = [
+    {
+      id: 'Custom Website (Business / Portfolio)',
+      label: 'Custom Website (Business / Portfolio)',
+      icon: '🌐',
+      pricePKR: '₨ 20,000 – 45,000',
+      priceUSD: '$150 – $320',
+      timeline: '4 – 7 Days',
+      description: 'Professional, mobile-responsive custom website for your brand, business, or portfolio. Clean code, lightning speed, WhatsApp chat integration & SEO ready.',
+      features: ['Modern React & Tailwind Architecture', '100% Mobile & Tablet Responsive', 'Direct WhatsApp & Inquiry Integration', 'Fast 4–7 Days Delivery Guarantee'],
+      recommendedBudgetPKR: '₨ 20,000 – 50,000',
+      recommendedBudgetUSD: '< $1,000',
+    },
+    {
+      id: 'Full-Stack Web App',
+      label: 'Full-Stack Web App',
+      icon: '⚡',
+      pricePKR: '₨ 40,000 – 120,000+',
+      priceUSD: '$300 – $950+',
+      timeline: '2 – 4 Weeks',
+      description: 'End-to-end full-stack web application with React/Next.js frontend, Node.js backend, database, user authentication & admin panel.',
+      features: ['Modern React/Next.js Frontend', 'Custom Backend API & Database', 'User Auth & Protected Dashboard', 'Cloud Deployment & Monitoring'],
+      recommendedBudgetPKR: '₨ 50,000 – 150,000',
+      recommendedBudgetUSD: '$1,000 - $3,000',
+    },
+    {
+      id: 'Frontend (React/Next.js)',
+      label: 'Frontend (React/Next.js)',
+      icon: '🎨',
+      pricePKR: '₨ 20,000 – 50,000',
+      priceUSD: '$150 – $380',
+      timeline: '4 – 8 Days',
+      description: 'Pixel-perfect, high-performance UI built with Tailwind CSS, responsive animations, Figma-to-code conversion & SEO optimization.',
+      features: ['Figma to Pixel-Perfect Code', 'Tailwind CSS & Smooth Animations', 'Mobile-First Responsive Layout', 'Lighthouse Score 95+ Performance'],
+      recommendedBudgetPKR: '₨ 20,000 – 50,000',
+      recommendedBudgetUSD: '< $1,000',
+    },
+    {
+      id: 'Business & Agency Website',
+      label: 'Business & Agency Website',
+      icon: '🏢',
+      pricePKR: '₨ 20,000 – 55,000',
+      priceUSD: '$150 – $400',
+      timeline: '5 – 10 Days',
+      description: 'High-converting corporate company or creative agency website with lead capture, portfolio showcase, SEO, and WhatsApp inquiry.',
+      features: ['Corporate Branding & Animations', 'Interactive Service Packages', 'WhatsApp & Email Lead Inquiries', 'Speed & Google SEO Tuning'],
+      recommendedBudgetPKR: '₨ 20,000 – 50,000',
+      recommendedBudgetUSD: '< $1,000',
+    },
+    {
+      id: 'E-Commerce Store',
+      label: 'E-Commerce Store',
+      icon: '🛒',
+      pricePKR: '₨ 45,000 – 140,000',
+      priceUSD: '$350 – $1,100',
+      timeline: '2 – 3 Weeks',
+      description: 'Complete online store with product catalog, cart & checkout, payment gateway integration (Stripe/JazzCash/EasyPaisa), order management.',
+      features: ['Dynamic Products & Categories', 'Cart, Checkout & Coupons', 'Payment Gateway Integration', 'Customer & Order Management'],
+      recommendedBudgetPKR: '₨ 50,000 – 150,000',
+      recommendedBudgetUSD: '$1,000 - $3,000',
+    },
+    {
+      id: 'Real Estate & Property Portal',
+      label: 'Real Estate & Property Portal',
+      icon: '🏡',
+      pricePKR: '₨ 55,000 – 140,000',
+      priceUSD: '$400 – $1,050',
+      timeline: '2 – 3 Weeks',
+      description: 'Comprehensive property marketplace with listings, price filters, virtual tours, map integration, and direct agent booking.',
+      features: ['Property Filters & Mapbox Search', 'Virtual Video & Gallery Tours', 'Agent WhatsApp Schedule Booking', 'Admin Property Management'],
+      recommendedBudgetPKR: '150,000 - 400,000 PKR',
+      recommendedBudgetUSD: '$1,000 - $3,000',
+    },
+    {
+      id: 'Restaurant & Food Delivery',
+      label: 'Restaurant & Food Delivery',
+      icon: '🍽️',
+      pricePKR: '₨ 35,000 – 80,000',
+      priceUSD: '$250 – $600',
+      timeline: '1 – 2 Weeks',
+      description: 'Mouth-watering gourmet dining website with digital food menu, table reservation calendar, and direct WhatsApp takeaway checkout.',
+      features: ['Digital Menu with Dietary Filters', 'Table Reservation Booking System', 'Takeaway WhatsApp Checkout Form', 'Customer Reviews Carousel'],
+      recommendedBudgetPKR: '< 150,000 PKR',
+      recommendedBudgetUSD: '< $1,000',
+    },
+    {
+      id: 'REST/GraphQL API',
+      label: 'REST/GraphQL API',
+      icon: '🔌',
+      pricePKR: '₨ 20,000 – 55,000',
+      priceUSD: '$150 – $400',
+      timeline: '4 – 10 Days',
+      description: 'Secure, scalable backend REST or GraphQL API with PostgreSQL/MongoDB, JWT authentication, rate limiting, and Swagger documentation.',
+      features: ['Clean Architecture & MVC', 'Database Schema & Migrations', 'JWT & OAuth Authentication', 'Complete Swagger / Postman Docs'],
+      recommendedBudgetPKR: '< 150,000 PKR',
+      recommendedBudgetUSD: '< $1,000',
+    },
+    {
+      id: 'Performance & SEO',
+      label: 'Performance & SEO',
+      icon: '🚀',
+      pricePKR: '₨ 15,000 – 40,000',
+      priceUSD: '$100 – $300',
+      timeline: '3 – 7 Days',
+      description: 'Comprehensive speed audit, Core Web Vitals optimization, bundle compression, server caching, and schema markup for Google ranking.',
+      features: ['Core Web Vitals 95+ Green', 'Image Compression & Lazy Load', 'SEO Tags, OpenGraph & JSON-LD', 'Server-Side Caching Setup'],
+      recommendedBudgetPKR: '< 150,000 PKR',
+      recommendedBudgetUSD: '< $1,000',
+    },
+    {
+      id: 'Contract Role',
+      label: 'Contract Role',
+      icon: '💼',
+      pricePKR: 'Discuss / Monthly',
+      priceUSD: '$20 – $40 / hr or Monthly',
+      timeline: 'Part-Time / Full-Time Contract',
+      description: 'Dedicated software engineering contract for sprints, feature development, bug fixing, or ongoing project maintenance.',
+      features: ['Daily Standups & Git Commits', 'Direct Slack/WhatsApp Access', 'Flexible Milestone or Hourly', 'Code Reviews & Mentorship'],
+      recommendedBudgetPKR: '400,000 - 1,000,000 PKR',
+      recommendedBudgetUSD: '$3,000 - $7,000',
+    },
   ];
+
+  const currentProjectDetail = projectTypeDetails.find((p) => p.id === formData.projectType) || projectTypeDetails[0];
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(profile.email);
@@ -515,30 +647,126 @@ ${payload.message}`;
                   </div>
                 </div>
 
-                {/* Project Type Interactive Pills */}
+                {/* Project Type Interactive Pills with Price & Timeline */}
                 <div>
-                  <label className="block text-xs font-bold text-[#11261B] uppercase tracking-wider mb-2">
-                    Select Project Type
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {projectTypes.map((type) => {
-                      const isSelected = formData.projectType === type;
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold text-[#11261B] uppercase tracking-wider">
+                      Select Project Type <span className="text-[#C5A059] font-normal lowercase">(click to view price & timeline)</span>
+                    </label>
+                    <span className="text-[11px] font-mono text-[#5C6E61]">
+                      {projectTypeDetails.length} Options
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {projectTypeDetails.map((item) => {
+                      const isSelected = formData.projectType === item.id;
+                      const displayPrice = selectedCountry.code === 'PKR' ? item.pricePKR : item.priceUSD;
                       return (
                         <button
                           type="button"
-                          key={type}
-                          onClick={() => setFormData({ ...formData, projectType: type })}
-                          className={`p-2.5 rounded-xl text-left text-xs font-semibold transition-all duration-200 border cursor-pointer ${
+                          key={item.id}
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              projectType: item.id,
+                              budget: selectedCountry.code === 'PKR' ? item.recommendedBudgetPKR : item.recommendedBudgetUSD,
+                            }));
+                          }}
+                          className={`p-3 rounded-2xl text-left transition-all duration-300 border cursor-pointer relative group flex flex-col justify-between ${
                             isSelected
-                              ? 'bg-[#11261B] text-[#DFC285] border-[#C5A059] shadow-sm scale-[1.02]'
-                              : 'bg-[#F8F5EE] text-[#5C6E61] border-[#11261B]/10 hover:border-[#C5A059]/50 hover:bg-white'
+                              ? 'bg-[#11261B] text-[#DFC285] border-[#C5A059] shadow-lg scale-[1.02] ring-2 ring-[#C5A059]/40'
+                              : 'bg-[#F8F5EE] text-[#11261B] border-[#11261B]/10 hover:border-[#C5A059]/60 hover:bg-white hover:shadow-md'
                           }`}
                         >
-                          <div className="leading-tight">{type}</div>
+                          <div>
+                            <div className="flex items-center justify-between gap-1 mb-1.5">
+                              <span className="text-base">{item.icon}</span>
+                              {isSelected && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#C5A059] text-[#11261B]">
+                                  Selected
+                                </span>
+                              )}
+                            </div>
+                            <div className={`text-xs font-bold leading-tight mb-2 ${isSelected ? 'text-white' : 'text-[#11261B]'}`}>
+                              {item.label}
+                            </div>
+                          </div>
+
+                          {/* Quick Mini Badges for Price & Timeline */}
+                          <div className="pt-2 border-t border-current/10 space-y-1">
+                            <div className="flex items-center gap-1 text-[11px] font-mono font-semibold">
+                              <Tag className={`w-3 h-3 shrink-0 ${isSelected ? 'text-[#DFC285]' : 'text-[#C5A059]'}`} />
+                              <span className={`truncate ${isSelected ? 'text-[#DFC285]' : 'text-[#11261B] font-bold'}`}>
+                                {displayPrice}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[10px] font-medium">
+                              <Clock className={`w-3 h-3 shrink-0 ${isSelected ? 'text-[#A3B8A8]' : 'text-[#5C6E61]'}`} />
+                              <span className={`truncate ${isSelected ? 'text-[#A3B8A8]' : 'text-[#5C6E61]'}`}>
+                                {item.timeline}
+                              </span>
+                            </div>
+                          </div>
                         </button>
                       );
                     })}
                   </div>
+
+                  {/* Active Selected Project Details Box showing Price, Timeline & Deliverables */}
+                  {currentProjectDetail && (
+                    <div className="mt-3.5 p-4 rounded-2xl bg-[#11261B] text-white border border-[#C5A059]/40 shadow-xl animate-fade-in relative overflow-hidden">
+                      {/* Decorative ambient glow */}
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/10 rounded-full blur-2xl pointer-events-none" />
+
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-2xl">{currentProjectDetail.icon}</span>
+                          <div>
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-[#C5A059]">
+                              Selected Project Package
+                            </div>
+                            <div className="text-sm sm:text-base font-bold text-white">
+                              {currentProjectDetail.label}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Highlighted Price & Timeline Badges */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Price Tag */}
+                          <div className="px-3 py-1.5 rounded-xl bg-[#C5A059] text-[#11261B] font-bold text-xs flex items-center gap-1.5 shadow-sm">
+                            <Tag className="w-3.5 h-3.5" />
+                            <span>
+                              {selectedCountry.code === 'PKR' ? currentProjectDetail.pricePKR : currentProjectDetail.priceUSD}
+                            </span>
+                          </div>
+
+                          {/* Timeline Tag */}
+                          <div className="px-3 py-1.5 rounded-xl bg-white/10 text-white font-bold text-xs flex items-center gap-1.5 border border-white/15">
+                            <Clock className="w-3.5 h-3.5 text-[#DFC285]" />
+                            <span>{currentProjectDetail.timeline}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Description & Deliverables */}
+                      <div className="mt-3">
+                        <p className="text-xs text-[#D1DDD4] leading-relaxed mb-3">
+                          {currentProjectDetail.description}
+                        </p>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-[#A3B8A8]">
+                          {currentProjectDetail.features.map((feat, idx) => (
+                            <div key={idx} className="flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#50E364] shrink-0" />
+                              <span className="truncate">{feat}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Estimated Budget Interactive Selector with Multi-Country Currency Switcher */}

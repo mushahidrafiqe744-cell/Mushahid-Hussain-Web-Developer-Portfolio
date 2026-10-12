@@ -17,8 +17,8 @@ export const WORLD_COUNTRIES: CountryCurrency[] = [
     name: 'Pakistani Rupee',
     symbol: '₨',
     flag: '🇵🇰',
-    options: ['< 150,000 PKR', '150,000 - 400,000 PKR', '400,000 - 1,000,000 PKR', '1,000,000+ PKR'],
-    defaultBudget: '150,000 - 400,000 PKR',
+    options: ['₨ 20,000 – 50,000', '₨ 50,000 – 150,000', '₨ 150,000 – 400,000', '₨ 400,000+ PKR'],
+    defaultBudget: '₨ 20,000 – 50,000',
   },
   {
     id: 'US',

@@ -13,6 +13,11 @@ import alNoorTextileImg from '../assets/images/al_noor_textile_full_web_17904288
 import claudeBadgeDevImg from '../assets/images/claude_badge_dev_1790595243034.jpg';
 import claudeBadgeAiImg from '../assets/images/claude_badge_ai_1790595259009.jpg';
 import weversityBadgeImg from '../assets/images/weversity_badge_1790595272249.jpg';
+import realEstateWebImg from '../assets/images/real_estate_web_1791805973161.jpg';
+import restaurantWebImg from '../assets/images/restaurant_web_1791805986623.jpg';
+import fintechWebImg from '../assets/images/fintech_web_1791806009333.jpg';
+import cloudApiWebImg from '../assets/images/cloud_api_web_1791806022294.jpg';
+import projectAiPlatformImg from '../assets/images/project_ai_platform_1790256957586.jpg';
 
 export const initialProfile: DeveloperProfile = {
   name: 'Mushahid Hussain',
@@ -34,7 +39,7 @@ export const initialProfile: DeveloperProfile = {
   twitter: 'https://twitter.com/mushahiddev',
   avatarUrl: heroPortrait,
   yearsOfExperience: '8+ Years',
-  projectsCompleted: '30+',
+  projectsCompleted: '50+',
   happyClients: '99%',
 };
 
@@ -328,6 +333,111 @@ export const initialProjects: Project[] = [
       'Patient success score and comprehensive medical department breakdown'
     ],
     metrics: '50,000+ Admitted & Cured with 99% Patient Score'
+  },
+  {
+    id: 'apex-estates',
+    title: 'Apex Estates — Luxury Real Estate & Smart Property Marketplace',
+    tagline: 'Curated selection of world-class exclusive luxury residences, villas, and architectural estates.',
+    category: 'fullstack',
+    categoryLabel: 'Real Estate Marketplace',
+    year: '2025',
+    description: 'A premier luxury real estate marketplace offering high-end property listings, interactive virtual tours, mortgage calculation tools, geolocation search, and direct agent inquiry booking.',
+    fullOverview: 'Engineered for high-net-worth real estate brokerage firms. Includes ultra-responsive property search by bedrooms, amenities, and price sliders, interactive map views, WhatsApp inquiry workflows, and instant client scheduling.',
+    image: realEstateWebImg,
+    technologies: ['React', 'Next.js', 'TypeScript', 'TailwindCSS', 'Mapbox GL', 'Node.js'],
+    githubUrl: 'https://github.com/mushahidhussain/apex-estates-luxury-properties',
+    liveUrl: 'https://apex-estates-luxury-real-estate.vercel.app/',
+    features: [
+      'Interactive luxury property listings with price filters & bedroom counts',
+      'High-resolution architectural photography & virtual residence tours',
+      'Direct WhatsApp tour booking and agent consultation form',
+      'Ultra-fast client-side search with zero latency filtering'
+    ],
+    metrics: '$180M+ Property Value Listed & 100% Mobile Ready'
+  },
+  {
+    id: 'saffron-lounge',
+    title: 'Saffron Lounge — Fine Dining & Gourmet Restaurant Ordering Platform',
+    tagline: 'Elevated dining, exquisite culinary artistry, online table reservations, and gourmet menus.',
+    category: 'ecommerce',
+    categoryLabel: 'Hospitality & Restaurant',
+    year: '2025',
+    description: 'An elegant dining portal and gourmet food ordering platform featuring chef signature menus, real-time table reservations, dietary filters, and direct WhatsApp takeaway checkout.',
+    fullOverview: 'Designed with warm golden culinary aesthetics, featuring categorized dining menus (Starters, Chef Specials, Beverages), interactive party reservation calendars, customer guest ratings, and seamless mobile ordering.',
+    image: restaurantWebImg,
+    technologies: ['React', 'TypeScript', 'TailwindCSS', 'Framer Motion', 'WhatsApp API', 'Vite'],
+    githubUrl: 'https://github.com/mushahidhussain/saffron-lounge-restaurant',
+    liveUrl: 'https://saffron-lounge-gourmet-dining.vercel.app/',
+    features: [
+      'Interactive chef signature creations & live price menus',
+      'Real-time online table booking with guest size & date pickers',
+      'Customer review carousel and culinary story walkthrough',
+      'Direct WhatsApp takeout orders with auto-generated receipt'
+    ],
+    metrics: '1,500+ Monthly Table Bookings & 4.9 Star Rating'
+  },
+  {
+    id: 'vaultpay-fintech',
+    title: 'VaultPay — Next-Gen FinTech & Crypto Payment Gateway',
+    tagline: 'Sleek payment gateway & crypto banking ecosystem for modern global enterprises.',
+    category: 'saas',
+    categoryLabel: 'FinTech & Web3 Payments',
+    year: '2025',
+    description: 'A high-performance digital finance and crypto payment platform featuring multi-currency transactions, interactive wallet charts, instant settlements, and biometric vault security.',
+    fullOverview: 'Engineered with dark-mode emerald financial styling, live cryptocurrency exchange rate feeds, animated transaction activity charts, multi-currency wallet management, and secure payout API webhooks.',
+    image: fintechWebImg,
+    technologies: ['Next.js', 'React', 'TypeScript', 'Chart.js', 'TailwindCSS', 'Web3.js'],
+    githubUrl: 'https://github.com/mushahidhussain/vaultpay-fintech-ecosystem',
+    liveUrl: 'https://vaultpay-global-fintech-ecosystem.vercel.app/',
+    features: [
+      'Interactive transaction activity charts with time filters',
+      'Live crypto & fiat currency exchange rates tracker',
+      'Virtual debit card management and encrypted asset wallet',
+      'Enterprise payout API webhooks and instant settlement status'
+    ],
+    metrics: '$12M+ Monthly Transaction Volume & Bank-Grade Security'
+  },
+  {
+    id: 'nexus-api-engine',
+    title: 'NexusAPI — Cloud Developer Engine & Microservices Portal',
+    tagline: 'High-performance developer Cloud REST & GraphQL microservices with interactive documentation.',
+    category: 'api',
+    categoryLabel: 'Cloud API & Microservices',
+    year: '2025',
+    description: 'A robust cloud developer API platform offering interactive OpenAPI/Swagger documentation, low-latency REST and GraphQL endpoints, live webhook event logs, and API key management.',
+    fullOverview: 'Built for enterprise developer ecosystems. Features real-time endpoint latency monitors, interactive test consoles (cURL, JavaScript, Python), GraphQL schema query explorer, and automated webhook delivery pipelines.',
+    image: cloudApiWebImg,
+    technologies: ['Node.js', 'Express', 'GraphQL', 'TypeScript', 'PostgreSQL', 'Docker', 'Redis'],
+    githubUrl: 'https://github.com/mushahidhussain/nexus-cloud-api-engine',
+    liveUrl: 'https://nexusapi-cloud-developer-engine.vercel.app/',
+    features: [
+      'Interactive REST & GraphQL endpoint test console with live responses',
+      'Real-time latency monitor (58ms average) and uptime health metrics',
+      'Instant code snippet generator (cURL, JavaScript, Python)',
+      'Live webhook event delivery log inspector with JSON payloads'
+    ],
+    metrics: '2.3M+ Daily Requests Handled with <58ms Latency'
+  },
+  {
+    id: 'synapse-ai-hub',
+    title: 'Synapse AI — Agentic Workflow Automation & Intelligence Hub',
+    tagline: 'Enterprise artificial intelligence workflow portal with multi-agent orchestration.',
+    category: 'saas',
+    categoryLabel: 'AI & Automation Hub',
+    year: '2025',
+    description: 'An enterprise artificial intelligence workflow portal with multi-agent orchestration, contextual reasoning dashboards, automated data ingestion pipelines, and LLM monitoring.',
+    fullOverview: 'Engineered for cutting-edge AI deployments. Integrates Anthropic Claude and Gemini reasoning models, real-time pipeline visualization, latency analytics, and intelligent customer query routing.',
+    image: projectAiPlatformImg,
+    technologies: ['React', 'TypeScript', 'Anthropic Claude API', 'Node.js', 'TailwindCSS', 'Python'],
+    githubUrl: 'https://github.com/mushahidhussain/synapse-ai-workflow-hub',
+    liveUrl: 'https://synapse-ai-intelligent-automation.vercel.app/',
+    features: [
+      'Agentic workflow execution pipeline with live status tracking',
+      'Context caching and prompt latency optimization dashboard',
+      'Automated multi-turn reasoning and tool-calling execution',
+      'Enterprise API security and rate-limiting safeguards'
+    ],
+    metrics: '99.9% Uptime with Sub-Second Intelligent Responses'
   }
 ];
 

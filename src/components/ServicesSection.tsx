@@ -12,6 +12,8 @@ import {
   CheckCircle,
   ArrowRight,
   MessageCircle,
+  Tag,
+  Clock,
 } from 'lucide-react';
 import { Service } from '../types/portfolio';
 import { ServiceOrderModal, ServiceItemData } from './ServiceOrderModal';
@@ -107,6 +109,32 @@ const ServiceCard: React.FC<{
           {service.description}
         </p>
 
+        {/* Price & Timeline Quick Snapshot */}
+        {(service.startingPricePKR || service.estimatedTimeline) && (
+          <div className="flex items-center gap-2 mb-3.5 flex-wrap">
+            {service.startingPricePKR && (
+              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono transition-colors ${
+                isHovered
+                  ? 'bg-[#C5A059] text-[#11261B]'
+                  : 'bg-[#11261B]/5 text-[#11261B] border border-[#11261B]/10'
+              }`}>
+                <Tag className="w-3 h-3 text-[#C5A059]" />
+                <span>From {service.startingPricePKR}</span>
+              </span>
+            )}
+            {service.estimatedTimeline && (
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-colors ${
+                isHovered
+                  ? 'bg-[#11261B] text-[#DFC285]'
+                  : 'bg-white text-[#5C6E61] border border-[#11261B]/10'
+              }`}>
+                <Clock className="w-3 h-3 text-[#C5A059]" />
+                <span>{service.estimatedTimeline}</span>
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Deliverables List with Checkmark Animations */}
         <div className="space-y-1.5 mb-4 pt-3 border-t border-[#11261B]/10">
           <div className="text-[10px] font-bold uppercase tracking-wider text-[#11261B] mb-1">
@@ -180,12 +208,15 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
   const serviceDetails: ServiceItemData[] = [
     {
       id: 'frontend',
-      title: 'Frontend Engineering',
+      title: 'Website & Frontend Engineering',
       icon: Layout,
-      description: 'Pixel-perfect, accessible, and ultra-fast web interfaces engineered using React, Next.js, and TypeScript with state-of-the-art responsiveness.',
-      deliverables: ['Custom React/Next.js Applications', 'Tailwind CSS & Design Systems', 'Interactive Animations & Transitions', 'WCAG AA Accessibility Compliance'],
+      description: 'Pixel-perfect, accessible, and ultra-fast custom websites & modern web apps engineered using React, Next.js, and TypeScript with state-of-the-art responsiveness.',
+      deliverables: ['Custom Business & Portfolio Websites', 'React & Next.js Web Applications', 'Tailwind CSS & Smooth Animations', 'Mobile-First & 95+ Google Lighthouse'],
       stack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Motion'],
       targetNum: 1,
+      startingPricePKR: '₨ 20,000+',
+      startingPriceUSD: '$150+',
+      estimatedTimeline: '4 – 7 Days',
     },
     {
       id: 'fullstack',
@@ -195,6 +226,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Single Page Apps (SPA) & SSR', 'Role-Based Access Control (RBAC)', 'State Management (Zustand/Redux)', 'Real-time WebSocket Sync'],
       stack: ['Node.js', 'Express', 'React', 'PostgreSQL', 'Prisma'],
       targetNum: 2,
+      startingPricePKR: '₨ 45,000+',
+      startingPriceUSD: '$350+',
+      estimatedTimeline: '2 – 4 Weeks',
     },
     {
       id: 'api',
@@ -204,6 +238,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Microservice & Monolith Endpoints', 'JWT & OAuth Authentication', 'Swagger / OpenAPI Specs', 'Automated Jest Unit Tests'],
       stack: ['Node.js', 'Express', 'TypeScript', 'Redis', 'Swagger'],
       targetNum: 3,
+      startingPricePKR: '₨ 20,000+',
+      startingPriceUSD: '$150+',
+      estimatedTimeline: '4 – 10 Days',
     },
     {
       id: 'database',
@@ -213,6 +250,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Schema Design & Migrations', 'Query Optimization & Indexing', 'Redis Caching Layers', 'Database Backups & Resilience'],
       stack: ['PostgreSQL', 'Supabase', 'MongoDB', 'Redis', 'Drizzle'],
       targetNum: 4,
+      startingPricePKR: '₨ 20,000+',
+      startingPriceUSD: '$150+',
+      estimatedTimeline: '3 – 7 Days',
     },
     {
       id: 'performance',
@@ -222,6 +262,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Core Web Vitals Optimization', 'Server-Side Rendering & SSG', 'Image & Bundle Minification', 'Dynamic OpenGraph & Schema.org'],
       stack: ['Lighthouse', 'Next.js', 'Web Vitals', 'Vercel Analytics'],
       targetNum: 5,
+      startingPricePKR: '₨ 15,000+',
+      startingPriceUSD: '$100+',
+      estimatedTimeline: '3 – 6 Days',
     },
     {
       id: 'responsive',
@@ -231,6 +274,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Fluid Multi-Breakpoint Layouts', 'Touch-Friendly UI Components', 'Progressive Web App (PWA) Support', 'Cross-Browser Testing'],
       stack: ['CSS Grid/Flexbox', 'Tailwind CSS', 'PWA Manifests'],
       targetNum: 6,
+      startingPricePKR: '₨ 15,000+',
+      startingPriceUSD: '$100+',
+      estimatedTimeline: '3 – 5 Days',
     },
     {
       id: 'ecommerce',
@@ -240,6 +286,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Custom Storefronts & Catalogs', 'Stripe / Apple Pay / Google Pay', 'Inventory & Order Tracking', 'Conversion-Rate Optimization'],
       stack: ['Next.js', 'Stripe API', 'Zustand', 'Tailwind CSS'],
       targetNum: 7,
+      startingPricePKR: '₨ 50,000+',
+      startingPriceUSD: '$400+',
+      estimatedTimeline: '2 – 3 Weeks',
     },
     {
       id: 'ai-integration',
@@ -249,6 +298,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
       deliverables: ['Gemini / AI Agent Integration', 'Document & Text Embeddings', 'Automated CI/CD Deployment', 'Cloud Run & Docker Containers'],
       stack: ['Google GenAI SDK', 'Docker', 'Vercel', 'Cloud Run'],
       targetNum: 8,
+      startingPricePKR: '₨ 35,000+',
+      startingPriceUSD: '$280+',
+      estimatedTimeline: '1 – 2 Weeks',
     },
   ];
 
@@ -278,9 +330,14 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ services, admi
             ))}
           </h2>
           <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
-          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
+          <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed mb-4">
             Comprehensive web engineering services tailored to bring high-performance web applications from concept to production.
           </p>
+
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#11261B] text-[#DFC285] border border-[#C5A059]/40 text-xs sm:text-sm font-bold shadow-md animate-shimmer">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>✨ Custom Website Development Starting from ₨ 20,000 (PKR) / $150</span>
+          </div>
         </div>
 
         {/* Services Grid (8 dedicated cards with 00 -> 01/02/03/04/05/06/07/08 dynamic count-up on hover) */}

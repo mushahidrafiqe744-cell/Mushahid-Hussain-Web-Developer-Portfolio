@@ -185,17 +185,22 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
         {/* Footer */}
         <div className="px-6 py-4 bg-[#F2EDE2] border-t border-[#11261B]/10 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <a
-            href={`https://wa.me/923290725117?text=${encodeURIComponent(
-              `Hi Mushahid! I saw your "${project.title}" (${project.categoryLabel || 'Web'}) project on your portfolio and I want to order a similar website for my business. Please share quotation and timeline.`
-            )}`}
-            target="_blank"
-            rel="noreferrer"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/20 hover:scale-105 transition-all cursor-pointer"
-          >
-            <MessageCircle className="w-4 h-4 fill-white" />
-            <span>Order a Website Like This on WhatsApp</span>
-          </a>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+              Starts from ₨ 20,000
+            </span>
+            <a
+              href={`https://wa.me/923290725117?text=${encodeURIComponent(
+                `Hi Mushahid! I saw your "${project.title}" (${project.categoryLabel || 'Web'}) project on your portfolio and I want to order a similar website starting from ₨ 20,000. Please share quotation and timeline.`
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#25D366]/20 hover:scale-105 transition-all cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4 fill-white" />
+              <span>Order Web on WhatsApp</span>
+            </a>
+          </div>
 
           <button
             onClick={onClose}

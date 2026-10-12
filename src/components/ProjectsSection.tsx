@@ -279,6 +279,10 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
             <p className="text-sm text-[#5C6E61] mt-1 max-w-xl">
               Explore recent web applications, production codebases, and architectural implementations with live previews and open-source GitHub repositories.
             </p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-xs font-bold text-emerald-800 mt-2">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Websites Starting From ₨ 20,000 · Custom Built in 4–7 Days</span>
+            </div>
           </div>
 
           {/* Controls: Search and Layout Toggle */}
@@ -325,10 +329,14 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
           </div>
         </div>
 
-        {/* Filter Segmented Buttons (Tabs with Icons) */}
+        {/* Filter Segmented Buttons (Tabs with Icons and Count Badges) */}
         <div className="flex items-center gap-1.5 p-1.5 bg-[#F2EDE2] rounded-xl border border-[#11261B]/10 mb-8 overflow-x-auto">
           {categories.map((cat) => {
             const isActive = activeCategory === cat.id;
+            const count = cat.id === 'all' 
+              ? projects.length 
+              : projects.filter((p) => p.category === cat.id).length;
+
             return (
               <button
                 key={cat.id}
@@ -341,6 +349,15 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
               >
                 <cat.icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#C5A059]' : 'text-[#5C6E61]'}`} />
                 <span>{cat.label}</span>
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full transition-colors ${
+                    isActive
+                      ? 'bg-[#C5A059] text-[#11261B] font-bold'
+                      : 'bg-black/5 text-[#5C6E61]'
+                  }`}
+                >
+                  {count}
+                </span>
               </button>
             );
           })}
