@@ -109,10 +109,10 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               </button>
             </div>
 
-            {/* Interactive Metric Numbers Bar matching screenshot */}
+            {/* Interactive Metric Numbers Bar */}
             <div className="grid grid-cols-3 gap-3 sm:gap-6 mt-10 pt-8 border-t border-[#11261B]/10 w-full max-w-lg">
               
-              {/* Stat 1: Projects Delivered (0+ -> 30+) */}
+              {/* Stat 1: Projects Delivered (50+) */}
               <button
                 onClick={() => onOpenSection('projects')}
                 onMouseEnter={() => setHoveredMetric(1)}
@@ -129,29 +129,27 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 </div>
               </button>
 
-              {/* Stat 2: Experience (0+ Years -> 8+ Years) */}
+              {/* Stat 2: Experience (8+ Years) */}
               <button
                 onClick={() => onOpenSection('experience')}
                 onMouseEnter={() => setHoveredMetric(2)}
                 onMouseLeave={() => setHoveredMetric(null)}
                 className="text-left group cursor-pointer p-1 transition-all duration-300 select-none"
               >
-                <div className="flex flex-col leading-tight">
-                  <div className="flex items-baseline gap-1">
-                    <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
-                      <HoverCounter target={experienceCount} suffix="+" isParentHovered={hoveredMetric === 2} />
-                    </span>
-                  </div>
-                  <span className="font-display font-bold text-xl sm:text-2xl lg:text-3xl text-[#11261B] group-hover:text-[#C5A059] transition-colors mt-0.5">
-                    Years
+                <div className="flex items-baseline gap-1.5">
+                  <span className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-[#11261B] group-hover:text-[#C5A059] transition-colors tabular-nums leading-none">
+                    <HoverCounter target={experienceCount} suffix="+" isParentHovered={hoveredMetric === 2} />
+                  </span>
+                  <span className="font-display font-bold text-lg sm:text-xl lg:text-2xl text-[#11261B] group-hover:text-[#C5A059] transition-colors">
+                    Yrs
                   </span>
                 </div>
-                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1 group-hover:text-[#11261B] transition-colors">
+                <div className="text-[11px] sm:text-xs text-[#5C6E61] font-semibold mt-1.5 group-hover:text-[#11261B] transition-colors">
                   Experience ↗
                 </div>
               </button>
 
-              {/* Stat 3: Satisfaction (0% -> 99%) */}
+              {/* Stat 3: Satisfaction (99%) */}
               <button
                 onClick={() => onOpenSection('why-choose-me')}
                 onMouseEnter={() => setHoveredMetric(3)}
@@ -200,18 +198,18 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
             </div>
 
             {/* Left Side: Floating Emblem Badge with Running 360° Circular Text & Dashed Line */}
-            <div className="absolute -top-5 -left-4 sm:-left-7 z-20 transition-transform duration-300 hover:scale-110 cursor-pointer drop-shadow-2xl animate-float">
+            <div className="hidden sm:block absolute -top-4 -left-6 z-20 transition-transform duration-300 hover:scale-110 cursor-pointer drop-shadow-2xl animate-float">
               <EmblemLogo size="md" showSubtitle={true} interactive={true} />
             </div>
 
             {/* Right Side: Floating Full-Stack Developer Badge */}
             <button
               onClick={() => onOpenSection('skills')}
-              className="flex absolute -top-4 -right-3 sm:-right-6 bg-[#11261B] text-[#C5A059] px-4 py-2.5 rounded-2xl shadow-xl border border-[#C5A059]/40 items-center gap-2.5 z-20 cursor-pointer hover:scale-108 transition-all duration-300 group backdrop-blur-md animate-float-delayed animate-shimmer"
+              className="flex absolute -top-3 -right-2 sm:-right-4 bg-[#11261B] text-[#C5A059] px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl shadow-xl border border-[#C5A059]/40 items-center gap-2 sm:gap-2.5 z-20 cursor-pointer hover:scale-108 transition-all duration-300 group backdrop-blur-md animate-float-delayed animate-shimmer"
               title="Click to view Skills"
             >
-              <div className="w-7 h-7 rounded-lg bg-white/5 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] group-hover:bg-[#C5A059] group-hover:text-[#11261B] group-hover:rotate-12 transition-all">
-                <Code2 className="w-4 h-4" />
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/5 border border-[#C5A059]/30 flex items-center justify-center text-[#C5A059] group-hover:bg-[#C5A059] group-hover:text-[#11261B] group-hover:rotate-12 transition-all">
+                <Code2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div className="text-left leading-tight">
                 <div className="text-xs font-bold text-white tracking-wide">Full-Stack</div>
@@ -222,7 +220,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
             </button>
 
             {/* Bottom-Right: Floating Social Glass Badge Card */}
-            <div className="absolute -bottom-6 -right-2 sm:right-2 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-[#11261B]/10 flex flex-col gap-2.5 z-20 min-w-[210px] animate-float hover:scale-105 transition-all duration-300">
+            <div className="absolute -bottom-6 right-0 sm:right-2 bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-2xl border border-[#11261B]/10 flex flex-col gap-2 z-20 min-w-[190px] sm:min-w-[210px] animate-float hover:scale-105 transition-all duration-300">
               <div className="text-[10px] font-bold tracking-widest uppercase text-[#5C6E61] px-1 flex items-center justify-between">
                 <span>Direct Channels</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
@@ -233,14 +231,14 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 href={profile.github}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
+                className="flex items-center gap-2.5 sm:gap-3 p-1 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
               >
-                <div className="w-7 h-7 rounded-full bg-[#11261B] text-white flex items-center justify-center group-hover:bg-[#C5A059] group-hover:scale-110 transition-all">
-                  <Github className="w-4 h-4" />
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#11261B] text-white flex items-center justify-center group-hover:bg-[#C5A059] group-hover:scale-110 transition-all">
+                  <Github className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-[#11261B] leading-none">GitHub</span>
-                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px]">@mushahidhussain</span>
+                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[120px]">@mushahidhussain</span>
                 </div>
               </a>
 
@@ -249,9 +247,9 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 href={`https://wa.me/92${profile.phone.replace(/^0+/, '')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
+                className="flex items-center gap-2.5 sm:gap-3 p-1 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
               >
-                <div className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center group-hover:scale-110 transition-all shadow-2xs">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center group-hover:scale-110 transition-all shadow-2xs">
                   <Phone className="w-3.5 h-3.5" />
                 </div>
                 <div className="flex flex-col">
@@ -259,7 +257,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                     <span>WhatsApp</span>
                     <span className="text-[9px] text-[#25D366] font-bold">Online</span>
                   </span>
-                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px] font-mono">{profile.phone}</span>
+                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[120px] font-mono">{profile.phone}</span>
                 </div>
               </a>
 
@@ -268,14 +266,14 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 href={profile.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
+                className="flex items-center gap-2.5 sm:gap-3 p-1 rounded-lg hover:bg-[#F8F5EE] transition-all group hover:translate-x-1"
               >
-                <div className="w-7 h-7 rounded-full bg-[#0A66C2] text-white flex items-center justify-center group-hover:scale-110 transition-all">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0A66C2] text-white flex items-center justify-center group-hover:scale-110 transition-all">
                   <Linkedin className="w-3.5 h-3.5" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-[#11261B] leading-none">LinkedIn</span>
-                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[130px]">mushahid-rafiqe</span>
+                  <span className="text-[10px] text-[#5C6E61] truncate max-w-[120px]">mushahid-rafiqe</span>
                 </div>
               </a>
 
