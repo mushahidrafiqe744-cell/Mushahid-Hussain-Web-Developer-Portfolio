@@ -74,6 +74,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
     budget: selectedCountry.defaultBudget,
     message: '',
   });
+  const [contactMethod, setContactMethod] = useState<'whatsapp' | 'email'>('whatsapp');
 
   // Handle country selection
   const handleSelectCountry = (country: CountryCurrency) => {
@@ -278,6 +279,17 @@ ${payload.message}`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(whatsappMessage)}`;
 
+    const emailSubject = `New Project Inquiry: ${payload.projectType}`;
+    const emailBody = `Name: ${payload.name}
+Email: ${payload.email}
+Project: ${payload.projectType}
+Budget: ${payload.budget}
+Country: ${selectedCountry.country} (${selectedCountry.code})
+
+Message:
+${payload.message}`;
+    const mailtoUrl = `mailto:${profile.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
     // 1. Send to backend database in background
     try {
       fetch('/api/inquiries', {
@@ -304,9 +316,13 @@ ${payload.message}`;
       setFlightProgress(100);
     }, 1250);
 
-    // Step 4: Open WhatsApp and switch to completed screen
+    // Step 4: Open WhatsApp/Email and switch to completed screen
     setTimeout(() => {
-      window.open(whatsappUrl, '_blank');
+      if (contactMethod === 'whatsapp') {
+        window.open(whatsappUrl, '_blank');
+      } else {
+        window.location.href = mailtoUrl;
+      }
       setIsSubmitting(false);
       setAnimationPhase('idle');
       setFlightProgress(0);
@@ -804,6 +820,39 @@ ${payload.message}`;
                     </div>
                   </div>
 
+                  {/* Contact Method Selector */}
+                  <div className="mb-4">
+                    <label className="block text-xs font-bold text-[#11261B] uppercase tracking-wider mb-2">
+                      Send Inquiry Via:
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setContactMethod('whatsapp')}
+                        className={`py-3 px-4 rounded-xl text-center text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                          contactMethod === 'whatsapp'
+                            ? 'bg-[#25D366] text-white border-[#25D366]'
+                            : 'bg-[#F8F5EE] text-[#11261B] border-[#11261B]/10 hover:border-[#25D366]'
+                        }`}
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setContactMethod('email')}
+                        className={`py-3 px-4 rounded-xl text-center text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                          contactMethod === 'email'
+                            ? 'bg-[#C5A059] text-[#11261B] border-[#C5A059]'
+                            : 'bg-[#F8F5EE] text-[#11261B] border-[#11261B]/10 hover:border-[#C5A059]'
+                        }`}
+                      >
+                        <Mail className="w-4 h-4" />
+                        Email
+                      </button>
+                    </div>
+                  </div>
+
                   {/* Active Selected Country & Currency Notice Banner */}
                   <div className="mb-3 px-3.5 py-2 rounded-xl bg-[#F8F5EE] border border-[#11261B]/10 flex items-center justify-between text-xs text-[#5C6E61]">
                     <div className="flex items-center gap-2 truncate">
@@ -894,7 +943,7 @@ ${payload.message}`;
                         <Check className="w-4 h-4 stroke-[3]" />
                       </div>
                       <span className="text-white font-extrabold tracking-wide">
-                        Inquiry Delivered! Opening WhatsApp...
+                        Inquiry Delivered! Opening {contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email App'}...
                       </span>
                     </div>
                   ) : animationPhase === 'flying' ? (
@@ -904,7 +953,7 @@ ${payload.message}`;
                         <SendHorizontal className="w-5 h-5 text-[#DFC285] animate-plane-fly drop-shadow-md" />
                       </div>
                       <span className="text-[#DFC285] animate-pulse">
-                        Transmitting Scope to WhatsApp... 🚀
+                        Transmitting Scope to {contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email App'}... 🚀
                       </span>
                     </div>
                   ) : animationPhase === 'takeoff' ? (
@@ -925,7 +974,7 @@ ${payload.message}`;
 
                       {/* Center: Main Call to Action Label */}
                       <span className="font-extrabold text-xs sm:text-sm tracking-wider uppercase text-white px-2">
-                        SEND PROJECT INQUIRY (DIRECT WHATSAPP)
+                        SEND PROJECT INQUIRY (VIA {contactMethod === 'whatsapp' ? 'WHATSAPP' : 'EMAIL'})
                       </span>
 
                       {/* Right: Floating Paper Airplane Icon Badge */}

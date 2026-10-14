@@ -1,5 +1,6 @@
 import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup } from '../types/portfolio';
 import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
+import mushahidBrandScrollImg from '../assets/images/mushahid_portrait_new_7ad876.jpg';
 import biztopFullImg from '../assets/images/biztop_full_web_1790852703068.jpg';
 import meerRoyalDecorImg from '../assets/images/meer_royal_decor_full_web_1791025431587.jpg';
 import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
@@ -124,6 +125,28 @@ export const initialSkillGroups: SkillGroup[] = [
 ];
 
 export const initialProjects: Project[] = [
+  {
+    id: 'mushahid-developer-brand',
+    title: 'Mushahid Hussain — Web Developer Brand & Tech Stack',
+    tagline: 'Custom Full-Stack Engineering, UI/UX Architecture, and Modern Web Solutions.',
+    category: 'fullstack',
+    categoryLabel: 'Developer Brand & Stack Showcase',
+    year: '2025',
+    description: 'Official Web Developer portfolio brand identity and tech stack showcase of Mushahid Hussain — featuring responsive frontend interfaces, React 19, TypeScript, Node.js, and modern full-stack web engineering.',
+    fullOverview: 'Interactive digital brand showcase highlighting clean code standards, modern web development pipelines, responsive layout systems, and full-stack architecture built for high conversion.',
+    image: mushahidBrandScrollImg,
+    technologies: ['HTML5', 'CSS3', 'JavaScript', 'React', 'Node.js', 'TypeScript', 'TailwindCSS'],
+    githubUrl: 'https://github.com/mushahidhussain',
+    liveUrl: 'https://mushahid-hussain-web-developer-port-seven.vercel.app/',
+    features: [
+      'Interactive Full-Stack Web Development & Responsive Design',
+      'Modern React Ecosystem, TypeScript, and Tailwind CSS',
+      'Clean Code Architecture & High-Performance Optimization',
+      'Instant WhatsApp & Verified Email Project Inquiries'
+    ],
+    metrics: '50+ Completed Projects & 99% Client Satisfaction',
+    featured: true
+  },
   {
     id: 'biztop-consulting',
     title: 'Biztop — Modern Business Consulting & Growth Agency',

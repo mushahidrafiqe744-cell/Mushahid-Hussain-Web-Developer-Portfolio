@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   ArrowRight,
   ExternalLink,
+  Mail,
 } from 'lucide-react';
 
 export interface ServiceItemData {
@@ -46,6 +47,7 @@ export const ServiceOrderModal: React.FC<ServiceOrderModalProps> = ({
   const [budgetTier, setBudgetTier] = useState('Standard (Rs. 35,000 – 65,000)');
   const [timeline, setTimeline] = useState('Standard (1 - 2 Weeks)');
   const [customNotes, setCustomNotes] = useState('');
+  const [contactMethod, setContactMethod] = useState<'whatsapp' | 'email'>('whatsapp');
 
   // Initialize/reset form when service opens
   useEffect(() => {
@@ -93,34 +95,40 @@ export const ServiceOrderModal: React.FC<ServiceOrderModalProps> = ({
     { label: '🎯 Flexible', value: 'Flexible' },
   ];
 
-  const generateWhatsAppMessage = () => {
+  const generateMessage = () => {
     const namePart = clientName.trim() ? clientName.trim() : 'Prospective Client';
     const contactPart = clientPhone.trim() ? clientPhone.trim() : 'Contact via this chat';
 
-    return `*🚀 NEW WEBSITE / SERVICE ORDER*
+    return `🚀 NEW WEBSITE / SERVICE ORDER
 ━━━━━━━━━━━━━━━━━━━━
-📌 *Selected Service:* ${service.title}
-👤 *Client Name:* ${namePart}
-📱 *Client Contact:* ${contactPart}
-💼 *Budget Tier:* ${budgetTier}
-⏱️ *Timeline:* ${timeline}
+📌 Selected Service: ${service.title}
+👤 Client Name: ${namePart}
+📱 Client Contact: ${contactPart}
+💼 Budget Tier: ${budgetTier}
+⏱️ Timeline: ${timeline}
 
-📝 *Project Requirement:*
+📝 Project Requirement:
 ${customNotes || websiteType}
 
-✨ *Included Deliverables:*
+✨ Included Deliverables:
 ${service.deliverables.slice(0, 3).map((d) => `• ${d}`).join('\n')}
-
 ━━━━━━━━━━━━━━━━━━━━
 _Order submitted via Developer Portfolio_`;
   };
 
-  const handleSendWhatsApp = (e: React.FormEvent) => {
+  const handleSendOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    const message = generateWhatsAppMessage();
-    const encoded = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${cleanAdminPhone}?text=${encoded}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    const message = generateMessage();
+    
+    if (contactMethod === 'whatsapp') {
+      const encoded = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${cleanAdminPhone}?text=${encoded}`;
+      window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      const subject = encodeURIComponent(`New Project Inquiry: ${service.title}`);
+      const body = encodeURIComponent(message);
+      window.location.href = `mailto:mushahidrafiqe744@gmail.com?subject=${subject}&body=${body}`;
+    }
   };
 
   const handleQuickChat = () => {
@@ -143,25 +151,25 @@ _Order submitted via Developer Portfolio_`;
         <div className="bg-[#11261B] text-white p-5 sm:p-6 border-b border-[#C5A059]/30 relative">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#25D366] text-white flex items-center justify-center shadow-lg shadow-[#25D366]/30 shrink-0">
-                <MessageCircle className="w-7 h-7 fill-white text-[#25D366]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#C5A059] text-[#11261B] flex items-center justify-center shadow-lg shadow-[#C5A059]/30 shrink-0">
+                <Send className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#C5A059] flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-[#C5A059]" />
-                    Direct Admin Order
+                    Direct Order
                   </span>
                   <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    Online on WhatsApp
+                    Open for orders
                   </span>
                 </div>
                 <h3 className="font-display text-xl sm:text-2xl font-bold text-white mt-0.5">
-                  Order Website on WhatsApp
+                  Send Your Order
                 </h3>
                 <p className="text-xs text-[#A3B8A8] mt-0.5">
-                  Apna order fill karein — direct developer Mushahid Hussain ke WhatsApp par send ho jayega.
+                  Fill in your requirements and choose how you want to send it.
                 </p>
               </div>
             </div>
@@ -206,7 +214,7 @@ _Order submitted via Developer Portfolio_`;
         </div>
 
         {/* Modal Form Content */}
-        <form onSubmit={handleSendWhatsApp} className="p-5 sm:p-7 max-h-[72vh] overflow-y-auto space-y-5">
+        <form onSubmit={handleSendOrder} className="p-5 sm:p-7 max-h-[72vh] overflow-y-auto space-y-5">
           {/* Deliverables summary */}
           <div className="bg-[#F2EDE2] p-3.5 rounded-xl border border-[#11261B]/10">
             <div className="text-xs font-bold text-[#11261B] uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -345,6 +353,39 @@ _Order submitted via Developer Portfolio_`;
             </div>
           </div>
 
+          {/* Contact Method Selector */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#11261B] mb-2">
+              Send Order Via:
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setContactMethod('whatsapp')}
+                className={`py-3 px-4 rounded-xl text-center text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                  contactMethod === 'whatsapp'
+                    ? 'bg-[#25D366] text-white border-[#25D366]'
+                    : 'bg-white text-[#11261B] border-[#11261B]/10 hover:border-[#25D366]'
+                }`}
+              >
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </button>
+              <button
+                type="button"
+                onClick={() => setContactMethod('email')}
+                className={`py-3 px-4 rounded-xl text-center text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                  contactMethod === 'email'
+                    ? 'bg-[#C5A059] text-[#11261B] border-[#C5A059]'
+                    : 'bg-white text-[#11261B] border-[#11261B]/10 hover:border-[#C5A059]'
+                }`}
+              >
+                <Mail className="w-4 h-4" />
+                Email
+              </button>
+            </div>
+          </div>
+
           {/* Project Details */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[#11261B] mb-1.5 flex items-center justify-between">
@@ -360,15 +401,14 @@ _Order submitted via Developer Portfolio_`;
             />
           </div>
 
-          {/* Buttons: Submit on WhatsApp & Quick Action */}
+          {/* Buttons: Submit & Quick Action */}
           <div className="pt-2 space-y-2.5">
             <button
               type="submit"
-              className="w-full py-4 px-6 rounded-2xl bg-[#25D366] hover:bg-[#20ba59] active:scale-[0.99] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-[#25D366]/30 hover:shadow-2xl transition-all cursor-pointer group"
+              className="w-full py-4 px-6 rounded-2xl bg-[#11261B] hover:bg-[#1A3828] active:scale-[0.99] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all cursor-pointer group"
             >
-              <MessageCircle className="w-5 h-5 fill-white text-[#25D366] group-hover:scale-110 transition-transform" />
-              <span>Send Order to Admin via WhatsApp</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+              <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span>Send Order via {contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}</span>
             </button>
 
             <div className="flex items-center justify-between pt-1">

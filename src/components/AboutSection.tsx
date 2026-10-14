@@ -13,8 +13,8 @@ import {
   Youtube
 } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
-import aboutImage from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
-import aboutHoverImage from '../assets/images/mushahid_hussain_pinterest_1141451468122182249.jpg';
+import aboutImage from '../assets/images/pin1_new.jpg';
+import aboutHoverImage from '../assets/images/pin2_new.jpg';
 
 interface AboutSectionProps {
   profile: DeveloperProfile;

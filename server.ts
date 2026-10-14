@@ -3,6 +3,7 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import nodemailer from 'nodemailer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -276,6 +277,44 @@ const saveMessagesToFile = (messages: any[]) => {
 // BACKEND API ROUTES
 // ==========================================
 
+const transporter = process.env.SMTP_HOST
+  ? nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587', 10),
+      secure: parseInt(process.env.SMTP_PORT || '587', 10) === 465,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    })
+  : null;
+
+const sendInquiryEmail = async (inquiry: any) => {
+  if (!transporter) return;
+
+  try {
+    await transporter.sendMail({
+      from: `"${inquiry.name}" <${process.env.SMTP_USER}>`,
+      to: process.env.SMTP_USER,
+      subject: `New Project Inquiry: ${inquiry.projectType}`,
+      text: `
+Name: ${inquiry.name}
+Email: ${inquiry.email}
+Phone: ${inquiry.phone}
+Project Type: ${inquiry.projectType}
+Budget: ${inquiry.budget}
+Message: ${inquiry.message}
+Timestamp: ${inquiry.dateFormatted}
+Device: ${inquiry.device}
+IP: ${inquiry.ip}
+      `,
+    });
+    console.log(`[BACKEND LOG] 📧 Email notification sent for inquiry ${inquiry.id}`);
+  } catch (error) {
+    console.error('Error sending email notification:', error);
+  }
+};
+
 // 1. POST /api/visitors -> Record a new visitor with Gmail ID
 app.post('/api/visitors', (req: Request, res: Response) => {
   try {
@@ -380,7 +419,7 @@ app.post('/api/admin/verify-pin', (req: Request, res: Response) => {
 });
 
 // 6. Direct Project Inquiry API (POST /api/inquiries)
-app.post('/api/inquiries', (req: Request, res: Response) => {
+app.post('/api/inquiries', async (req: Request, res: Response) => {
   try {
     const { name, email, projectType, budget, message, phone } = req.body;
 
@@ -420,6 +459,8 @@ app.post('/api/inquiries', (req: Request, res: Response) => {
     const inquiries = getInquiriesFromFile();
     inquiries.unshift(newInquiry);
     saveInquiriesToFile(inquiries);
+
+    await sendInquiryEmail(newInquiry);
 
     console.log(`[BACKEND LOG] 🚀 New Project Inquiry received from ${newInquiry.name} (${newInquiry.email}) | Type: ${newInquiry.projectType} | Budget: ${newInquiry.budget}`);
 

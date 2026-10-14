@@ -3,7 +3,8 @@ import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, 
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
-import heroHoverImage from '../assets/images/mushahid_hussain_pinterest_1141451468122182249.jpg';
+import pin1Img from '../assets/images/pin1_new.jpg';
+import pin2Img from '../assets/images/pin2_new.jpg';
 
 interface HeroProps {
   profile: DeveloperProfile;
@@ -181,12 +182,18 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               {/* Inner Arch Background */}
               <div className="w-full h-full rounded-t-[186px] rounded-b-[24px] overflow-hidden relative bg-[#11261B] group cursor-pointer shadow-inner">
                 
-                {/* Crisp Hero Developer Portrait */}
+                {/* Primary Image (Starts with first pin) */}
                 <img
-                  src={profile.avatarUrl}
+                  src={pin1Img}
                   alt={profile.name}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-top filter brightness-105 contrast-[1.06] transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="w-full h-full object-cover object-top transition-all duration-1000 ease-in-out group-hover:opacity-0"
+                />
+
+                {/* Secondary Image (Fades in on hover) */}
+                <img
+                  src={pin2Img}
+                  alt={`${profile.name} alternate`}
+                  className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-1000 ease-in-out"
                 />
 
                 {/* Gentle Ambient Gold Glow Highlight on Top Arch */}
