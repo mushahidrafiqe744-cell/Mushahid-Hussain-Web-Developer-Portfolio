@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Printer, Download, Mail, Phone, MapPin, Globe, Github, Linkedin, Briefcase, GraduationCap, Award, Code2, ArrowUpRight } from 'lucide-react';
 import { CourseCertification, DeveloperProfile, Project, SkillGroup } from '../types/portfolio';
+import cvPortrait from '../assets/images/cv_portrait_new.jpg';
 
 interface ResumeModalProps {
   isOpen: boolean;
@@ -142,8 +143,11 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
         <div className="p-8 sm:p-12 overflow-y-auto bg-white text-[#11261B] font-sans printable-resume">
           
           {/* Header */}
-          <div className="border-b-2 border-[#11261B] pb-6 mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="border-b-2 border-[#11261B] pb-6 mb-6 flex gap-6">
+            <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-[#C5A059]/20">
+              <img src={cvPortrait} alt={profile.name} className="w-full h-full object-cover" />
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 flex-1">
               <div>
                 <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[#11261B] leading-none">
                   {profile.name}
