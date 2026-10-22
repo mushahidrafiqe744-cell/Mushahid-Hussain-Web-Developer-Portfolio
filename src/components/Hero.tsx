@@ -3,6 +3,7 @@ import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, 
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
+import heroPortrait from '../assets/images/hero_new_portrait.jpg';
 import pin1Img from '../assets/images/pin1_new.jpg';
 import pin2Img from '../assets/images/pin2_new.jpg';
 
@@ -182,18 +183,11 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
               {/* Inner Arch Background */}
               <div className="w-full h-full rounded-t-[186px] rounded-b-[24px] overflow-hidden relative bg-[#11261B] group cursor-pointer shadow-inner">
                 
-                {/* Primary Image (Starts with first pin) */}
+                {/* Hero Developer Portrait */}
                 <img
-                  src={pin1Img}
+                  src={heroPortrait}
                   alt={profile.name}
-                  className="w-full h-full object-cover object-top transition-all duration-1000 ease-in-out group-hover:opacity-0"
-                />
-
-                {/* Secondary Image (Fades in on hover) */}
-                <img
-                  src={pin2Img}
-                  alt={`${profile.name} alternate`}
-                  className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-1000 ease-in-out"
+                  className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                 />
 
                 {/* Gentle Ambient Gold Glow Highlight on Top Arch */}
