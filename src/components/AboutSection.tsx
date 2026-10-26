@@ -13,8 +13,8 @@ import {
   Youtube
 } from 'lucide-react';
 import { DeveloperProfile } from '../types/portfolio';
-import aboutImage from '../assets/images/pin1_new.jpg';
-import aboutHoverImage from '../assets/images/pin2_new.jpg';
+import aboutImage from '../assets/images/about_primary_new.jpg';
+import aboutHoverImage from '../assets/images/about_new_portrait.jpg';
 
 interface AboutSectionProps {
   profile: DeveloperProfile;
