@@ -15,7 +15,7 @@ import {
 import { DeveloperProfile } from '../types/portfolio';
 import aboutImage from '../assets/images/about_primary_new.jpg';
 import aboutHoverImage from '../assets/images/about_new_portrait.jpg';
-
+import cvPortrait from '../assets/images/about_new_portrait_2.jpg';
 interface AboutSectionProps {
   profile: DeveloperProfile;
 }
@@ -222,29 +222,21 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
           {/* ================= RIGHT COLUMN: PORTRAIT WITH GOLDEN SIGNATURE ================= */}
           <div className="lg:col-span-4 flex justify-center items-center relative">
             
-            {/* Main portrait image wrapper matching Pinterest pin with interactive hover crossfade */}
+            {/* Main portrait image wrapper matching Pinterest pin */}
             <div className="relative w-full max-w-[320px] sm:max-w-[360px] aspect-[4/5] overflow-hidden rounded-2xl group shadow-[0_20px_50px_rgba(3,12,6,0.9)] border border-white/10 cursor-pointer">
               
-              {/* Primary Image (Visible by default, fades out smoothly on hover) */}
+              {/* Portrait Image */}
               <img 
-                src={aboutImage} 
+                src={cvPortrait} 
                 alt="Mushahid Hussain Portrait" 
-                className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-108 group-hover:opacity-0"
-              />
-
-              {/* Hover Image (Reveals with smooth zoom and crossfade when cursor hovers) */}
-              <img 
-                src={aboutHoverImage} 
-                alt="Mushahid Hussain Alternate Portrait" 
-                className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out group-hover:scale-108 scale-100"
+                className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-108"
               />
 
               {/* Premium dark gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#030C06] via-transparent to-transparent opacity-80 z-10 pointer-events-none" />
 
-              {/* Overlay Golden Signature & Title matching Pinterest pin */}
+              {/* Overlay Golden Signature & Title */}
               <div className="absolute bottom-6 left-0 right-0 z-20 flex flex-col items-center justify-center select-none text-center pointer-events-none">
-                {/* Alex Brush Beautiful cursive signature with text-glow */}
                 <span 
                   className="text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#DFC285] via-[#FFF5D6] to-[#C5A059] leading-tight drop-shadow-[0_2px_4px_rgba(3,12,6,0.9)]"
                   style={{ fontFamily: "'Alex Brush', cursive" }}
@@ -252,12 +244,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
                   Mushahid Hussain
                 </span>
                 
-                {/* Role label spacing */}
                 <span className="text-[9px] uppercase tracking-[0.35em] text-white/80 font-bold mt-1.5 drop-shadow-md">
                   WEB DEVELOPER
                 </span>
               </div>
-
             </div>
 
             {/* Vertical slogan ribbon on far right */}
