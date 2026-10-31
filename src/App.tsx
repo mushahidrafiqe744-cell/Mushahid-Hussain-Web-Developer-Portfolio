@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Home } from 'lucide-react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AdminDashboard } from './components/AdminDashboard';
 import {
   initialProfile,
   initialServices,
@@ -63,7 +65,7 @@ const getInitialSection = (): SectionId => {
   return hash && SECTION_HASH_MAP[hash] ? SECTION_HASH_MAP[hash] : 'hero';
 };
 
-export default function App() {
+function PortfolioMain() {
   const [profile] = useState(() => initialProfile);
   const [projects] = useState(() => initialProjects);
   const [activeSection, setActiveSection] = useState<SectionId>(() => getInitialSection());
@@ -201,5 +203,16 @@ export default function App() {
         courses={initialCourses}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="*" element={<PortfolioMain />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

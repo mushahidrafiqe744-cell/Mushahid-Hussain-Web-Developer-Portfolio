@@ -292,6 +292,7 @@ ${payload.message}`;
 
     // 1. Send to backend database in background
     try {
+      // Existing inquiries sync
       fetch('/api/inquiries', {
         method: 'POST',
         headers: {
@@ -299,6 +300,20 @@ ${payload.message}`;
         },
         body: JSON.stringify(payload),
       }).catch((err) => console.warn('Backend sync note:', err));
+
+      // New real-time order notification
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: payload.name,
+          email: payload.email,
+          projectType: payload.projectType,
+          message: payload.message
+        }),
+      }).catch((err) => console.warn('Real-time order sync note:', err));
     } catch (e) {}
 
     const ref = `INQ-${Date.now().toString().slice(-4)}`;

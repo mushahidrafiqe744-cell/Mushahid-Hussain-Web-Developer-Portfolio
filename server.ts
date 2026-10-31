@@ -1,5 +1,8 @@
 import express, { Request, Response } from 'express';
 import { createServer as createViteServer } from 'vite';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import mongoose from 'mongoose';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -9,6 +12,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: { origin: '*' }
+});
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
 app.use(express.json({ limit: '10mb' }));
@@ -858,6 +865,53 @@ app.post('/api/chat/admin/verify', (req: Request, res: Response) => {
 });
 
 // ==========================================
+// ORDER SYSTEM (MongoDB + Socket.io)
+// ==========================================
+
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio_db')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Order Model
+const OrderSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  projectType: String,
+  message: String,
+  status: { type: String, default: 'unread' },
+  createdAt: { type: Date, default: Date.now }
+});
+const Order = mongoose.model('Order', OrderSchema);
+
+// Socket.io events
+io.on('connection', (socket) => {
+  console.log('Admin client connected:', socket.id);
+});
+
+// API Routes
+app.post('/api/orders', async (req: Request, res: Response) => {
+  try {
+    const newOrder = new Order(req.body);
+    await newOrder.save();
+    io.emit('new_order', newOrder); // Emit real-time event
+    res.status(201).json(newOrder);
+  } catch (err) {
+    console.error('Order save error:', err);
+    res.status(500).json({ error: 'Failed to save order' });
+  }
+});
+
+app.get('/api/orders', async (req: Request, res: Response) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
+// ==========================================
 // Vite Middleware & Server Initialization
 // ==========================================
 async function startServer() {
@@ -877,7 +931,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Full-Stack Backend Server running at http://0.0.0.0:${PORT}`);
   });
 }
