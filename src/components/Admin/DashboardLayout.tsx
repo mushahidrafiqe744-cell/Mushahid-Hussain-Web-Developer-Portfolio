@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut, Lock } from 'lucide-react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { cmsService } from '../../services/cms';
+import { AdminLogin } from './AdminLogin';
 
 export const ADMIN_IMAGE_URL = '/assets/images/mushahid_admin_profile.jpg';
 
@@ -10,8 +11,17 @@ export const DashboardLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [adminAvatar, setAdminAvatar] = useState(ADMIN_IMAGE_URL);
+  
+  // Strict Auth State: Check if valid admin session exists in session or local storage
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return Boolean(
+      sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token')
+    );
+  });
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const loadProfileImg = async () => {
       try {
         const data = await cmsService.fetchData('profiles');
@@ -24,7 +34,27 @@ export const DashboardLayout: React.FC = () => {
       }
     };
     loadProfileImg();
-  }, []);
+  }, [isAuthenticated]);
+
+  const handleLogout = async () => {
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {
+        // ignore
+      }
+    }
+    sessionStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
+    setIsAuthenticated(false);
+    navigate('/admin');
+  };
+
+  // If user is not authenticated, DO NOT show the admin dashboard! Render password login screen directly.
+  if (!isAuthenticated) {
+    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
 
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
@@ -71,13 +101,13 @@ export const DashboardLayout: React.FC = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 space-y-2">
           <button 
-            onClick={async () => { if (supabase) await supabase.auth.signOut(); navigate('/admin/login'); }}
-            className="flex items-center gap-3 px-4 py-2.5 w-full hover:bg-white/10 rounded-xl text-sm font-bold text-red-300 transition-colors cursor-pointer"
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-4 py-2.5 w-full bg-red-500/10 hover:bg-red-500/20 rounded-xl text-sm font-bold text-red-300 transition-colors cursor-pointer border border-red-500/20"
           >
             <LogOut size={18} />
-            <span>Logout</span>
+            <span>Lock & Logout</span>
           </button>
         </div>
       </aside>
@@ -88,7 +118,7 @@ export const DashboardLayout: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-800">
             {navItems.find(i => i.path === location.pathname)?.name || 'Dashboard'}
           </h2>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
              <Link
                to="/"
                className="inline-flex items-center gap-2 text-xs font-bold text-[#0A3D22] bg-[#EAF9EE] hover:bg-[#d5f5db] px-4 py-2 rounded-full border border-[#50E364]/40 transition-all cursor-pointer shadow-2xs"
@@ -96,6 +126,15 @@ export const DashboardLayout: React.FC = () => {
                <ExternalLink size={14} />
                <span>Live Preview</span>
              </Link>
+
+             <button
+               onClick={handleLogout}
+               title="Lock admin session immediately"
+               className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 px-3.5 py-2 rounded-full border border-gray-200 transition-all cursor-pointer"
+             >
+               <Lock size={13} />
+               <span>Lock Admin</span>
+             </button>
              
              <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
                <img

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Github, Linkedin, Mail, ArrowUp, Home, Phone } from 'lucide-react';
+import { Sparkles, Github, Linkedin, Mail, ArrowUp, Home, Phone, ShieldCheck } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 
@@ -171,7 +171,14 @@ export const Footer: React.FC<FooterProps> = ({ profile, onSelectSection }) => {
             <span aria-hidden="true">·</span>
             <span>Tailwind CSS</span>
             <span aria-hidden="true">·</span>
-            <span className="text-[#C5A059]">Production Ready</span>
+            <a
+              href="/admin"
+              className="text-[#C5A059] hover:text-[#DFC285] hover:underline flex items-center gap-1 transition-colors font-medium"
+              title="Admin Panel Login"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[#50E364]" />
+              <span>Admin Panel</span>
+            </a>
           </div>
         </div>
 
