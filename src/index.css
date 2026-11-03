@@ -123,6 +123,49 @@
   animation: 3s ease-in-out infinite pulseGlowGold;
 }
 
+/* Infinite Marquee Wall Animations */
+@keyframes marqueeScrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeScrollRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marqueeScrollLeft 38s linear infinite;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marqueeScrollRight 42s linear infinite;
+}
+
+.animate-marquee-left-slow {
+  display: flex;
+  width: max-content;
+  animation: marqueeScrollLeft 48s linear infinite;
+}
+
+.marquee-pause:hover .animate-marquee-left,
+.marquee-pause:hover .animate-marquee-right,
+.marquee-pause:hover .animate-marquee-left-slow {
+  animation-play-state: paused !important;
+}
+
 @keyframes shimmerPass {
   0% {
     transform: translate(-150%) skew(-20deg);

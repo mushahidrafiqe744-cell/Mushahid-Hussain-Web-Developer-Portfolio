@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Send, SlidersHorizontal, Menu, X } from 'lucide-react';
+import { FileText, Send, Menu, X } from 'lucide-react';
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 
@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-50 bg-[#F8F5EE]/95 backdrop-blur-md border-b border-[#11261B]/10 transition-all shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center justify-between h-14 sm:h-16">
         
         {/* Brand Logo with Running Circular Line - Clicking this opens the Hero Section */}
         <a
@@ -48,26 +48,26 @@ export const Navbar: React.FC<NavbarProps> = ({
             e.preventDefault();
             handleNavClick('hero');
           }}
-          className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
+          className="flex items-center gap-2.5 group text-left cursor-pointer focus:outline-none py-0.5"
           title="Click to go to Home Section"
         >
-          <div className="relative transition-transform duration-300 group-hover:scale-105">
+          <div className="relative transition-transform duration-300 group-hover:scale-105 shrink-0 scale-90 -ml-1">
             <EmblemLogo size="sm" showSubtitle={false} interactive={true} />
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#11261B] group-hover:text-[#C5A059] transition-colors leading-none">
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-1">
+              <span className="font-display font-bold text-base sm:text-lg tracking-tight text-[#C5A059] group-hover:text-[#DFC285] transition-colors leading-none">
                 {profile.name}
               </span>
             </div>
-            <span className="text-[10px] tracking-widest uppercase font-semibold text-[#5C6E61] mt-0.5">
-              {profile.title}
+            <span className="text-[9px] sm:text-[10px] tracking-widest uppercase font-bold text-[#5C6E61] mt-0.5 leading-none whitespace-nowrap">
+              WEB DEVELOPER
             </span>
           </div>
         </a>
 
         {/* Main Nav Links (Without ALL button) */}
-        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+        <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
             return (
@@ -78,15 +78,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                   e.preventDefault();
                   handleNavClick(link.id);
                 }}
-                className={`relative px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                className={`relative px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#11261B] text-[#C5A059] shadow-xs'
+                    ? 'bg-[#11261B] text-[#C5A059] shadow-2xs'
                     : 'text-[#11261B]/80 hover:text-[#11261B] hover:bg-[#11261B]/5'
                 }`}
               >
                 <span>{link.label}</span>
                 {isActive && (
-                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#C5A059]" />
+                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#C5A059]" />
                 )}
               </a>
             );
@@ -94,20 +94,20 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
           <a
             href="#resume"
             onClick={(e) => {
               e.preventDefault();
               handleNavClick('resume');
             }}
-            className={`hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold tracking-wide rounded-xl border transition-all shadow-xs cursor-pointer ${
+            className={`hidden sm:inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold tracking-wide rounded-lg border transition-all shadow-2xs cursor-pointer ${
               activeSection === 'resume'
                 ? 'bg-[#11261B] text-[#C5A059] border-[#11261B]'
                 : 'bg-white text-[#11261B] border-[#11261B]/15 hover:border-[#C5A059] hover:bg-[#F2EDE2]'
             }`}
           >
-            <FileText className="w-3.5 h-3.5 text-[#C5A059]" />
+            <FileText className="w-3 h-3 text-[#C5A059]" />
             <span>CV</span>
           </a>
 
@@ -117,7 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               e.preventDefault();
               handleNavClick('contact');
             }}
-            className={`inline-flex items-center gap-1.5 sm:gap-2 px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-xl transition-all shadow-sm hover:scale-[1.02] cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[11px] font-bold tracking-wider uppercase rounded-lg transition-all shadow-xs hover:scale-[1.02] cursor-pointer ${
               activeSection === 'contact'
                 ? 'bg-[#C5A059] text-[#11261B]'
                 : 'bg-[#11261B] text-white hover:bg-[#1A3828]'
@@ -130,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Menu Hamburger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-[#11261B] hover:bg-[#11261B]/5 rounded-xl transition-colors ml-1 cursor-pointer"
+            className="lg:hidden p-1.5 text-[#11261B] hover:bg-[#11261B]/5 rounded-lg transition-colors cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

@@ -3,6 +3,16 @@ import { Home } from 'lucide-react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AdminLogin } from './components/Admin/AdminLogin';
 import { DashboardLayout } from './components/Admin/DashboardLayout';
+import { AdminOverview } from './components/Admin/AdminOverview';
+import { ManageHero } from './components/Admin/ManageHero';
+import { ManageAbout } from './components/Admin/ManageAbout';
+import { ManageProjects } from './components/Admin/ManageProjects';
+import { ManageSkills } from './components/Admin/ManageSkills';
+import { ManageServices } from './components/Admin/ManageServices';
+import { ManageTestimonials } from './components/Admin/ManageTestimonials';
+import { ManageMessages } from './components/Admin/ManageMessages';
+import { ManageSettings } from './components/Admin/ManageSettings';
+import { cmsService } from './services/cms';
 import {
   initialProfile,
   initialServices,
@@ -67,11 +77,107 @@ const getInitialSection = (): SectionId => {
 };
 
 function PortfolioMain() {
-  const [profile] = useState(() => initialProfile);
-  const [projects] = useState(() => initialProjects);
+  const [profile, setProfile] = useState(() => initialProfile);
+  const [projects, setProjects] = useState(() => initialProjects);
+  const [services, setServices] = useState(() => initialServices);
+  const [testimonials, setTestimonials] = useState(() => initialTestimonials);
   const [activeSection, setActiveSection] = useState<SectionId>(() => getInitialSection());
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+
+  const loadCmsFrontendData = async () => {
+    try {
+      const fetchedProfiles = await cmsService.fetchData('profiles');
+      if (fetchedProfiles && fetchedProfiles[0]) {
+        const p = fetchedProfiles[0];
+        setProfile((prev) => ({
+          ...prev,
+          name: p.name || prev.name,
+          title: p.title || prev.title,
+          scriptSubhead: p.scriptSubhead || prev.scriptSubhead,
+          badge: p.badge || prev.badge,
+          bioHero: p.bioHero || prev.bioHero,
+          bioAbout: p.bioAbout || prev.bioAbout,
+          location: p.location || prev.location,
+          email: p.email || prev.email,
+          phone: p.phone || prev.phone,
+          whatsapp: p.whatsapp || p.phone || prev.whatsapp,
+          github: p.github || prev.github,
+          linkedin: p.linkedin || prev.linkedin,
+          tiktok: p.tiktok || prev.tiktok,
+          avatarUrl: p.avatarUrl || prev.avatarUrl,
+        }));
+      }
+
+      const fetchedProjects = await cmsService.fetchData('projects');
+      if (fetchedProjects && fetchedProjects.length > 0) {
+        setProjects(
+          fetchedProjects.map((p: any) => ({
+            id: p.id,
+            title: p.title || 'Project Title',
+            description: p.description || '',
+            category: p.category || 'Web Application',
+            technologies: Array.isArray(p.technologies) ? p.technologies : (p.technologies ? String(p.technologies).split(',') : []),
+            imageUrl: p.imageUrl || p.image_url || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c',
+            liveUrl: p.link || p.liveUrl || '#',
+            githubUrl: p.githubUrl || '#',
+            featured: p.featured ?? true,
+            hidden: Boolean(p.hidden),
+          }))
+        );
+      }
+
+      const fetchedServices = await cmsService.fetchData('services');
+      if (fetchedServices && fetchedServices.length > 0) {
+        setServices(
+          fetchedServices.map((s: any) => ({
+            id: s.id,
+            title: s.title || 'Service Title',
+            description: s.description || '',
+            iconName: s.icon || s.iconName || 'Code',
+          }))
+        );
+      }
+
+      const fetchedTestimonials = await cmsService.fetchData('testimonials');
+      if (fetchedTestimonials && fetchedTestimonials.length > 0) {
+        setTestimonials(
+          fetchedTestimonials.map((t: any) => ({
+            id: t.id,
+            name: t.name || 'Client Name',
+            role: t.role || 'Client',
+            company: t.company || '',
+            review: (t.review || t.feedback || t.message || '').trim(),
+            feedback: (t.review || t.feedback || t.message || '').trim(),
+            message: (t.review || t.feedback || t.message || '').trim(),
+            avatar: t.avatar || t.avatarUrl || '',
+            avatarColor: t.avatarColor || '#EA580C',
+            avatarLetter: t.avatarLetter || t.name?.charAt(0).toUpperCase() || 'U',
+            date: t.date || 'Recent',
+            flag: t.flag || '⭐',
+            location: t.location || '',
+            project: t.project || '',
+            rating: t.rating || 5,
+            metricsResult: t.metricsResult || '',
+            tags: Array.isArray(t.tags) ? t.tags : (t.tags ? String(t.tags).split(',') : []),
+            platform: t.platform || 'google',
+          }))
+        );
+      }
+    } catch (err) {
+      console.warn('Frontend CMS sync error', err);
+    }
+  };
+
+  useEffect(() => {
+    loadCmsFrontendData();
+    window.addEventListener('cms_data_updated', loadCmsFrontendData);
+    window.addEventListener('storage', loadCmsFrontendData);
+    return () => {
+      window.removeEventListener('cms_data_updated', loadCmsFrontendData);
+      window.removeEventListener('storage', loadCmsFrontendData);
+    };
+  }, []);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -132,7 +238,7 @@ function PortfolioMain() {
         {activeSection === 'about' && <AboutSection profile={profile} />}
         {activeSection === 'services' && (
           <ServicesSection
-            services={initialServices}
+            services={services}
             adminPhone={profile.whatsapp || profile.phone}
           />
         )}
@@ -142,20 +248,20 @@ function PortfolioMain() {
         {activeSection === 'why-choose-me' && <WhyChooseMeSection />}
         {activeSection === 'testimonials' && (
           <TestimonialsSection
-            testimonials={initialTestimonials}
+            testimonials={testimonials}
             onOpenContact={() => handleSelectSection('contact')}
           />
         )}
         {activeSection === 'projects' && (
           <ProjectsSection
-            projects={projects}
+            projects={projects.filter((p: any) => !p.hidden)}
             onSelectProject={(project) => setSelectedProject(project)}
           />
         )}
         {activeSection === 'resume' && (
           <ResumeSection
             profile={profile}
-            projects={projects}
+            projects={projects.filter((p: any) => !p.hidden)}
             skillGroups={initialSkillGroups}
             courses={initialCourses}
             onOpenFullModal={() => setIsResumeModalOpen(true)}
@@ -213,7 +319,15 @@ export default function App() {
       <Routes>
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<DashboardLayout />}>
-           <Route index element={<div className="text-2xl font-bold">Welcome to Admin Dashboard</div>} />
+           <Route index element={<AdminOverview />} />
+           <Route path="hero" element={<ManageHero />} />
+           <Route path="about" element={<ManageAbout />} />
+           <Route path="projects" element={<ManageProjects />} />
+           <Route path="skills" element={<ManageSkills />} />
+           <Route path="services" element={<ManageServices />} />
+           <Route path="testimonials" element={<ManageTestimonials />} />
+           <Route path="messages" element={<ManageMessages />} />
+           <Route path="settings" element={<ManageSettings />} />
         </Route>
         <Route path="/home" element={<PortfolioMain />} />
         <Route path="/" element={<PortfolioMain />} />

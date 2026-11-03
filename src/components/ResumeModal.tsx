@@ -75,7 +75,7 @@ ${projects
 - **GitHub**: ${p.githubUrl}
 - **Live Demo**: ${p.liveUrl}
 - **Key Highlights**:
-${p.features.map((f) => `  * ${f}`).join('\n')}`
+${(p.features || []).map((f) => `  * ${f}`).join('\n')}`
   )
   .join('\n\n')}
 

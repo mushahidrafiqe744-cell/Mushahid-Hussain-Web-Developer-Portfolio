@@ -16,16 +16,22 @@ export interface Testimonial {
   name: string;
   role: string;
   company: string;
-  project: string;
+  project?: string;
   avatar: string;
-  flag: string;
-  location: string;
+  avatarUrl?: string;
+  flag?: string;
+  location?: string;
   rating: number;
   review: string;
+  feedback?: string;
+  message?: string;
   date: string;
-  verified: boolean;
+  verified?: boolean;
   metricsResult?: string;
   tags?: string[];
+  avatarColor?: string;
+  avatarLetter?: string;
+  platform?: 'google' | 'weversity' | 'upwork' | 'client';
 }
 
 export interface VisitorLog {
@@ -52,13 +58,15 @@ export interface Project {
   description: string;
   longDescription?: string;
   fullOverview?: string;
-  image: string;
+  image?: string;
+  imageUrl?: string;
   tags?: string[];
   technologies: string[];
-  features: string[];
-  githubUrl: string;
+  features?: string[];
+  githubUrl?: string;
   liveUrl?: string;
   featured?: boolean;
+  hidden?: boolean;
   highlights?: string[];
   architecture?: string[];
 }
@@ -72,7 +80,9 @@ export interface Service {
 
 export interface SkillItem {
   name: string;
-  level: string; // 'Expert' | 'Advanced' | 'Proficient'
+  level?: string; // 'Expert' | 'Advanced' | 'Proficient'
+  levelPercentage?: number;
+  iconName?: string;
   yearsOfExp?: string;
   icon?: string;
   iconBg?: string;
@@ -82,7 +92,7 @@ export interface SkillItem {
 
 export interface SkillGroup {
   category: string;
-  skills?: SkillItem[];
+  skills: SkillItem[];
   items?: SkillItem[];
 }
 

@@ -151,7 +151,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               <span>Key Features & Engineering Highlights</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {project.features.map((feature, idx) => (
+              {(project.features || []).map((feature, idx) => (
                 <div key={idx} className="flex items-start gap-2.5 p-2.5 rounded-lg bg-white border border-[#11261B]/5">
                   <div className="w-5 h-5 rounded-full bg-[#11261B] text-[#C5A059] flex items-center justify-center shrink-0 mt-0.5">
                     <Check className="w-3 h-3" />
