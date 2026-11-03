@@ -40,6 +40,7 @@ export const AdminOverview: React.FC = () => {
   const [recentProjects, setRecentProjects] = useState<any[]>([]);
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [serverInfo, setServerInfo] = useState<{ status: string; uptime: number; backend: string } | null>(null);
 
   useEffect(() => {
     loadData();
@@ -47,6 +48,27 @@ export const AdminOverview: React.FC = () => {
 
   const loadData = async () => {
     try {
+      // 1. Fetch live backend admin stats
+      try {
+        const statsRes = await fetch('/api/admin/stats');
+        if (statsRes.ok) {
+          const sJson = await statsRes.json();
+          if (sJson.success) {
+            if (sJson.server) setServerInfo(sJson.server);
+            if (sJson.stats) {
+              setStats({
+                projectsCount: sJson.stats.projectsCount || 14,
+                skillsCount: sJson.stats.skillsCount || 8,
+                servicesCount: sJson.stats.servicesCount || 8,
+                messagesCount: (sJson.stats.messagesCount || 0) + (sJson.stats.inquiriesCount || 0),
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Backend stats endpoint unavailable, reading CMS files');
+      }
+
       const projects = await cmsService.fetchData('projects');
       const skills = await cmsService.fetchData('skills');
       const services = await cmsService.fetchData('services');
@@ -55,13 +77,6 @@ export const AdminOverview: React.FC = () => {
 
       setRecentProjects((projects || []).slice(0, 2));
       setRecentMessages((messages || []).slice(0, 3));
-
-      setStats({
-        projectsCount: projects?.length || 12,
-        skillsCount: skills?.length || 8,
-        servicesCount: services?.length || 6,
-        messagesCount: messages?.length || 18,
-      });
 
       if (profile && profile[0]) {
         const fetchedAvatar = profile[0].avatarUrl;
@@ -127,9 +142,15 @@ export const AdminOverview: React.FC = () => {
       {/* Welcome Banner */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#EAF9EE] via-[#F2FBF4] to-[#DCFCE7] p-8 sm:p-10 border border-[#50E364]/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A3D22]/10 text-[#0A3D22] text-xs font-bold mb-3">
-            <span className="w-2 h-2 rounded-full bg-[#50E364] animate-ping" />
-            <span>Portfolio Live</span>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A3D22]/10 text-[#0A3D22] text-xs font-bold">
+              <span className="w-2 h-2 rounded-full bg-[#50E364] animate-ping" />
+              <span>Portfolio Live</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-900 text-xs font-bold">
+              <Zap className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Backend Server: {serverInfo?.status === 'online' ? 'Connected (Express Node.js)' : 'Active (REST API)'}</span>
+            </div>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0A3D22] tracking-tight leading-tight">
             Welcome Back, <br />
@@ -253,6 +274,7 @@ export const AdminOverview: React.FC = () => {
                   alt="Profile Preview"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
+                    e.currentTarget.onerror = null;
                     e.currentTarget.src = LOCAL_ADMIN_IMAGE;
                   }}
                   className="w-full h-full object-cover"

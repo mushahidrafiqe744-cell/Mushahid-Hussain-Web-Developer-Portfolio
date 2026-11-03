@@ -83,9 +83,13 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               }}
             >
               <img
-                src={project.image}
+                src={project.image || project.imageUrl || '/assets/images/biztop_full_web_1790852703068.jpg'}
                 alt={project.title}
                 referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+                }}
                 className="w-full h-auto block pointer-events-none select-none"
               />
             </div>

@@ -233,6 +233,10 @@ export const ManageProjects: React.FC = () => {
                 <img
                   src={formData.imageUrl}
                   alt="Preview"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+                  }}
                   className="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0"
                 />
               )}
@@ -319,10 +323,15 @@ export const ManageProjects: React.FC = () => {
                   <img
                     src={
                       proj.imageUrl ||
+                      proj.image ||
                       proj.image_url ||
-                      'https://images.unsplash.com/photo-1555066931-4365d14bab8c'
+                      '/assets/images/biztop_full_web_1790852703068.jpg'
                     }
                     alt={proj.title}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+                    }}
                     className="w-16 h-12 rounded-xl object-cover border border-gray-200 shrink-0"
                   />
                   <div className="min-w-0">

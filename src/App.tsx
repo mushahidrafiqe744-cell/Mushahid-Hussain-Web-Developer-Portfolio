@@ -112,18 +112,23 @@ function PortfolioMain() {
       const fetchedProjects = await cmsService.fetchData('projects');
       if (fetchedProjects && fetchedProjects.length > 0) {
         setProjects(
-          fetchedProjects.map((p: any) => ({
-            id: p.id,
-            title: p.title || 'Project Title',
-            description: p.description || '',
-            category: p.category || 'Web Application',
-            technologies: Array.isArray(p.technologies) ? p.technologies : (p.technologies ? String(p.technologies).split(',') : []),
-            imageUrl: p.imageUrl || p.image_url || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c',
-            liveUrl: p.link || p.liveUrl || '#',
-            githubUrl: p.githubUrl || '#',
-            featured: p.featured ?? true,
-            hidden: Boolean(p.hidden),
-          }))
+          fetchedProjects.map((p: any) => {
+            const resolvedImg = p.image || p.imageUrl || p.image_url || '/assets/images/biztop_full_web_1790852703068.jpg';
+            return {
+              id: p.id,
+              title: p.title || 'Project Title',
+              description: p.description || '',
+              category: p.category || 'saas',
+              categoryLabel: p.categoryLabel || p.category || 'Web Application',
+              technologies: Array.isArray(p.technologies) ? p.technologies : (p.technologies ? String(p.technologies).split(',') : []),
+              image: resolvedImg,
+              imageUrl: resolvedImg,
+              liveUrl: p.link || p.liveUrl || '#',
+              githubUrl: p.githubUrl || '#',
+              featured: p.featured ?? true,
+              hidden: Boolean(p.hidden),
+            };
+          })
         );
       }
 

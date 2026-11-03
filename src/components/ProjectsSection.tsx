@@ -83,16 +83,20 @@ const ProjectCard: React.FC<{
             }}
           >
             <img
-              src={project.image}
+              src={project.image || project.imageUrl || '/assets/images/biztop_full_web_1790852703068.jpg'}
               alt={project.title}
               referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+              }}
               className="w-full h-auto block select-none pointer-events-none"
             />
           </div>
 
           {/* Category Label at bottom-left */}
           <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30 z-20 shadow-md">
-            {project.categoryLabel}
+            {project.categoryLabel || project.category}
           </div>
 
           {/* Number Badge Index at bottom-right */}
@@ -225,8 +229,24 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
     { id: 'api', label: 'APIs & Backend', icon: Terminal },
   ];
 
+  const normalizeCategory = (cat?: string): 'saas' | 'ecommerce' | 'fullstack' | 'api' => {
+    if (!cat) return 'saas';
+    const c = cat.toLowerCase();
+    if (c.includes('e-com') || c.includes('shop') || c.includes('store') || c.includes('apparel') || c.includes('decor') || c.includes('textile')) {
+      return 'ecommerce';
+    }
+    if (c.includes('api') || c.includes('backend') || c.includes('cloud') || c.includes('microservice') || c.includes('devops') || c.includes('fintech') || c.includes('developer')) {
+      return 'api';
+    }
+    if (c.includes('full') || c.includes('stack') || c.includes('health') || c.includes('medical') || c.includes('hospitality') || c.includes('rehab') || c.includes('estate') || c.includes('restaurant')) {
+      return 'fullstack';
+    }
+    return 'saas';
+  };
+
   const filteredProjects = projects.filter((project) => {
-    const matchesCategory = activeCategory === 'all' || project.category === activeCategory;
+    const projectCatNorm = normalizeCategory(project.category);
+    const matchesCategory = activeCategory === 'all' || projectCatNorm === activeCategory;
     const query = searchQuery.toLowerCase();
     const matchesSearch =
       project.title.toLowerCase().includes(query) ||
@@ -335,7 +355,7 @@ export const ProjectsSection: React.FC<ProjectsSectionProps> = ({ projects, onSe
             const isActive = activeCategory === cat.id;
             const count = cat.id === 'all' 
               ? projects.length 
-              : projects.filter((p) => p.category === cat.id).length;
+              : projects.filter((p) => normalizeCategory(p.category) === cat.id).length;
 
             return (
               <button
