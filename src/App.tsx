@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Home } from 'lucide-react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AdminDashboard } from './components/AdminDashboard';
+import { AdminLogin } from './components/Admin/AdminLogin';
+import { DashboardLayout } from './components/Admin/DashboardLayout';
 import {
   initialProfile,
   initialServices,
@@ -210,7 +211,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<DashboardLayout />}>
+           <Route index element={<div className="text-2xl font-bold">Welcome to Admin Dashboard</div>} />
+        </Route>
+        <Route path="/home" element={<PortfolioMain />} />
+        <Route path="/" element={<PortfolioMain />} />
         <Route path="*" element={<PortfolioMain />} />
       </Routes>
     </BrowserRouter>

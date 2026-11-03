@@ -869,10 +869,13 @@ app.post('/api/chat/admin/verify', (req: Request, res: Response) => {
 // ==========================================
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/portfolio_db')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
+} else {
+  console.warn('MONGODB_URI not provided. Skipping MongoDB connection.');
+}
 // Order Model
 const OrderSchema = new mongoose.Schema({
   name: String,
@@ -891,6 +894,9 @@ io.on('connection', (socket) => {
 
 // API Routes
 app.post('/api/orders', async (req: Request, res: Response) => {
+  if (!mongoose.connection.readyState) {
+      return res.status(503).json({ error: 'Database not connected' });
+  }
   try {
     const newOrder = new Order(req.body);
     await newOrder.save();
@@ -903,11 +909,27 @@ app.post('/api/orders', async (req: Request, res: Response) => {
 });
 
 app.get('/api/orders', async (req: Request, res: Response) => {
+  if (!mongoose.connection.readyState) {
+      return res.json([]);
+  }
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
     res.json(orders);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
+app.patch('/api/orders/:id', async (req: Request, res: Response) => {
+  if (!mongoose.connection.readyState) {
+      return res.status(503).json({ error: 'Database not connected' });
+  }
+  try {
+    const { status } = req.body;
+    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update order' });
   }
 });
 
