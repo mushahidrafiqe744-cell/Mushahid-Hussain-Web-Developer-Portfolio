@@ -16,12 +16,27 @@ const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
 const cleanUrl = supabaseUrl?.trim().replace(/^['"](.*)['"]$/, '$1') || '';
 const cleanKey = supabaseAnonKey?.trim().replace(/^['"](.*)['"]$/, '$1') || '';
 
-export const supabase = (cleanUrl && cleanKey && cleanUrl !== 'YOUR_SUPABASE_PROJECT_URL' && !cleanUrl.includes('YOUR_'))
-  ? createClient(cleanUrl, cleanKey)
-  : null;
+const isValidUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch (e) {
+    return false;
+  }
+};
+
+let supabaseClient = null;
+
+if (cleanUrl && cleanKey && isValidUrl(cleanUrl) && !cleanUrl.includes('YOUR_')) {
+  try {
+    supabaseClient = createClient(cleanUrl, cleanKey);
+  } catch (err) {
+    console.error('Supabase initialization failed:', err);
+  }
+}
+
+export const supabase = supabaseClient;
 
 if (!supabase) {
-  if (!cleanUrl) console.warn('Missing VITE_SUPABASE_URL');
-  if (!cleanKey) console.warn('Missing VITE_SUPABASE_ANON_KEY');
-  console.warn('Supabase credentials are missing or invalid. Current URL check:', cleanUrl ? 'Present' : 'Empty');
+  console.warn('Supabase credentials are missing or invalid URL. Current URL:', cleanUrl || 'Empty');
 }
