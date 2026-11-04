@@ -4,25 +4,42 @@
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT DEFAULT 'Mushahid Hussain',
-  title TEXT DEFAULT 'Full-Stack Web Developer',
-  scriptSubhead TEXT DEFAULT 'Architecting high-performance digital solutions',
-  badge TEXT DEFAULT 'Web Developer Portfolio',
-  bioHero TEXT DEFAULT 'Full-Stack Developer specializing in high-performance React & Node.js applications with pixel-perfect design.',
-  bioAbout TEXT DEFAULT 'With extensive experience in web technologies, I build scalable solutions that solve real-world problems.',
-  location TEXT DEFAULT 'Lahore, Pakistan',
+  title TEXT DEFAULT 'Web Developer',
+  scriptSubhead TEXT DEFAULT 'Web Developer & Engineer',
+  badge TEXT DEFAULT 'CRAFTING SCALABLE & INTUITIVE WEB EXPERIENCES.',
+  bioHero TEXT DEFAULT 'I build high-performance web applications, responsive interfaces, and robust backend services.',
+  bioAbout TEXT DEFAULT 'I am a passionate Full-Stack Web Developer specializing in modern React ecosystems...',
+  location TEXT DEFAULT 'Pakistan',
   email TEXT DEFAULT 'mushahidrafiqe744@gmail.com',
-  phone TEXT DEFAULT '03001234567',
-  whatsapp TEXT DEFAULT '03001234567',
-  github TEXT DEFAULT 'https://github.com/mushahid',
-  linkedin TEXT DEFAULT 'https://linkedin.com/in/mushahid',
-  tiktok TEXT DEFAULT '',
-  avatarUrl TEXT DEFAULT '/assets/images/mushahid_admin_profile.jpg',
-  projectsCompleted TEXT DEFAULT '30+',
-  yearsOfExperience TEXT DEFAULT '3+',
+  phone TEXT DEFAULT '03290725117',
+  whatsapp TEXT DEFAULT '03290725117',
+  github TEXT DEFAULT 'https://github.com/mushahidhussain',
+  linkedin TEXT DEFAULT 'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
+  tiktok TEXT DEFAULT 'https://www.tiktok.com/@mushahidrafiqe699',
+  avatarUrl TEXT DEFAULT 'https://i.pinimg.com/1200x/0c/b3/9e/0cb39e700962bebdce9925a2c566b1a1.jpg',
+  projectsCompleted TEXT DEFAULT '50+',
+  yearsOfExperience TEXT DEFAULT '8+',
   happyClients TEXT DEFAULT '99%',
   createdAt TIMESTAMPTZ DEFAULT NOW(),
   updatedAt TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Initial Profile Seed
+INSERT INTO profiles (id, name, title, email, phone, whatsapp, github, linkedin, avatarUrl, projectsCompleted, yearsOfExperience, happyClients)
+VALUES (
+  '00000000-0000-0000-0000-000000000001',
+  'Mushahid Hussain',
+  'Web Developer',
+  'mushahidrafiqe744@gmail.com',
+  '03290725117',
+  '03290725117',
+  'https://github.com/mushahidhussain',
+  'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
+  'https://i.pinimg.com/1200x/0c/b3/9e/0cb39e700962bebdce9925a2c566b1a1.jpg',
+  '50+',
+  '8+',
+  '99%'
+) ON CONFLICT (id) DO NOTHING;
 
 -- 2. Projects Table
 CREATE TABLE IF NOT EXISTS projects (
