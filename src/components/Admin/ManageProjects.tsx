@@ -93,8 +93,13 @@ export const ManageProjects: React.FC = () => {
     try {
       const url = await cmsService.uploadFile('images', file);
       setFormData((prev) => ({ ...prev, imageUrl: url }));
-    } catch (err) {
-      showNotification('Failed to upload project image');
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      if (err.message?.includes('Bucket not found')) {
+          showNotification('Error: "images" bucket nahi mila. Supabase Storage mein "images" bucket banayein.');
+      } else {
+          showNotification('Failed to upload project image');
+      }
     }
   };
 

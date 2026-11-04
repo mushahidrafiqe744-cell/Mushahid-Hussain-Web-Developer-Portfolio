@@ -83,6 +83,7 @@ const getFallbackData = (table: string) => {
   } else if (table === 'experiences') {
     initial = [
         {
+          id: 'exp_default_1',
           role: 'Full-Stack Web Developer',
           company: 'Freelance & Independent Contractor',
           period: '2024 – Present',

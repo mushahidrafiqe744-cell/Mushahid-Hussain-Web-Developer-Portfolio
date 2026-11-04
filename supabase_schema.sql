@@ -1,5 +1,16 @@
 -- Supabase PostgreSQL Schema for Portfolio CMS (Full Update)
 
+/* 
+  STEP 0: STORAGE SETUP
+  1. Go to Supabase Dashboard -> Storage
+  2. Create a new bucket named: images
+  3. IMPORTANT: Set bucket to PUBLIC (Check "Public bucket").
+  4. Go to "Policies" (under Storage in left menu).
+  5. Under "images" bucket, create a policy for "ALL" (Select, Insert, Update, Delete).
+  6. Choose "Authenticated" for roles (so only logged-in admin can upload).
+  7. Use "true" for all policy expressions.
+*/
+
 -- 1. Profiles Table (Hero, About, Contact info, Stats)
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

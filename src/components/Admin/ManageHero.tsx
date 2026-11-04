@@ -71,8 +71,13 @@ export const ManageHero: React.FC = () => {
     try {
       const url = await cmsService.uploadFile('images', file);
       setFormData((prev) => ({ ...prev, avatarUrl: url }));
-    } catch (err) {
-      alert('Failed to upload image');
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      if (err.message?.includes('Bucket not found')) {
+          alert('Error: "images" storage bucket nahi mila. Supabase Dashboard mein ja kar Storage mein "images" naam ka Public bucket banayein.');
+      } else {
+          alert('Failed to upload image. Please check your Supabase Storage settings.');
+      }
     }
   };
 

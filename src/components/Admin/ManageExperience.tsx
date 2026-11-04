@@ -77,8 +77,8 @@ export const ManageExperience: React.FC = () => {
       )}
 
       <div className="space-y-3">
-        {experiences.map(exp => (
-          <div key={exp.id} className="bg-gray-50 border rounded-2xl p-4 flex justify-between items-center group">
+        {experiences.map((exp, idx) => (
+          <div key={exp.id || idx} className="bg-gray-50 border rounded-2xl p-4 flex justify-between items-center group">
             <div>
                 <h4 className="font-bold text-gray-900">{exp.role} @ {exp.company}</h4>
                 <p className="text-xs text-gray-500">{exp.period} · {exp.location}</p>
