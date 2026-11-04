@@ -2,19 +2,9 @@ import express, { Request, Response } from 'express';
 import { createServer as createViteServer } from 'vite';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import mongoose from 'mongoose';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import nodemailer from 'nodemailer';
-import {
-  defaultProfiles,
-  defaultProjects,
-  defaultServices,
-  defaultSkills,
-  defaultTestimonials,
-  defaultSettings,
-} from './data/cmsSeeds';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,103 +27,16 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 
-// Server-side persistent storage directory
+// Server-side storage directory (for chat fallbacks)
 const DATA_DIR = path.join(__dirname, 'data');
-const VISITORS_FILE = path.join(DATA_DIR, 'visitors.json');
-const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
-const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
 const CHAT_FILE = path.join(DATA_DIR, 'chat_conversations.json');
-
-// Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
 // ==========================================
-// CMS PERSISTENT DATA HELPERS
-// ==========================================
-const getCmsDefaultSeed = (table: string): any[] => {
-  switch (table) {
-    case 'profiles':
-    case 'hero':
-    case 'about':
-      return defaultProfiles;
-    case 'projects':
-      return defaultProjects;
-    case 'services':
-      return defaultServices;
-    case 'skills':
-      return defaultSkills;
-    case 'testimonials':
-      return defaultTestimonials;
-    case 'settings':
-    case 'site_settings':
-      return defaultSettings;
-    case 'messages':
-      return [
-        {
-          id: 'msg_seed_1',
-          name: 'Ahmed Khan',
-          email: 'ahmed.khan@example.com',
-          projectType: 'Business Website',
-          message: 'Can you build a high-converting business website for my agency?',
-          status: 'unread',
-          createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-        },
-        {
-          id: 'msg_seed_2',
-          name: 'Sara Ali',
-          email: 'sara.ali@example.com',
-          projectType: 'Full-Stack Web App',
-          message: 'Great portfolio! I would like to consult regarding a React and TypeScript SaaS app.',
-          status: 'read',
-          createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-        },
-      ];
-    default:
-      return [];
-  }
-};
-
-const getCmsDataFromFile = (table: string): any[] => {
-  const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
-  const filePath = path.join(DATA_DIR, `cms_${normTable}.json`);
-  try {
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, 'utf-8');
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error(`Error reading cms_${normTable} file:`, err);
-  }
-  const seed = getCmsDefaultSeed(normTable);
-  saveCmsDataToFile(normTable, seed);
-  return seed;
-};
-
-const saveCmsDataToFile = (table: string, data: any[]) => {
-  const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
-  const filePath = path.join(DATA_DIR, `cms_${normTable}.json`);
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error(`Error writing cms_${normTable} file:`, err);
-  }
-};
-
-// ==========================================
 // LIVE CHAT SYSTEM STORAGE & HELPERS
 // ==========================================
-interface ChatAttachment {
-  name: string;
-  url: string;
-  type: 'image' | 'file';
-  size?: number;
-}
-
 interface ChatMessage {
   id: string;
   sender: 'client' | 'owner';
@@ -142,11 +45,10 @@ interface ChatMessage {
   timestamp: string;
   timeFormatted: string;
   read: boolean;
-  attachment?: ChatAttachment;
 }
 
 interface ChatConversation {
-  id: string; // sessionId
+  id: string;
   clientName: string;
   clientEmail: string;
   clientDevice: string;
@@ -181,59 +83,8 @@ const saveChatConversationsToFile = (conversations: ChatConversation[]) => {
   }
 };
 
-// Seed sample initial conversation if file doesn't exist
-if (!fs.existsSync(CHAT_FILE)) {
-  const initialSeed: ChatConversation[] = [
-    {
-      id: 'chat_sample_101',
-      clientName: 'Sarah Jenkins',
-      clientEmail: 'sarah.jenkins.hr@gmail.com',
-      clientDevice: 'Desktop (Chrome)',
-      clientIp: '127.0.0.1',
-      createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-      updatedAt: new Date(Date.now() - 3600000 * 3.5).toISOString(),
-      clientOnline: false,
-      ownerTyping: false,
-      clientTyping: false,
-      unreadByOwner: 0,
-      unreadByClient: 0,
-      messages: [
-        {
-          id: 'msg_seed_1',
-          sender: 'client',
-          senderName: 'Sarah Jenkins',
-          text: 'Hi Mushahid! We have an enterprise Next.js dashboard project and loved your portfolio.',
-          timestamp: new Date(Date.now() - 3600000 * 4).toISOString(),
-          timeFormatted: '02:30 PM',
-          read: true,
-        },
-        {
-          id: 'msg_seed_2',
-          sender: 'owner',
-          senderName: 'Mushahid Hussain',
-          text: '👋 Hi Sarah! Thank you for reaching out. I would love to hear more about your dashboard requirements and timeline.',
-          timestamp: new Date(Date.now() - 3600000 * 3.8).toISOString(),
-          timeFormatted: '02:35 PM',
-          read: true,
-        },
-        {
-          id: 'msg_seed_3',
-          sender: 'client',
-          senderName: 'Sarah Jenkins',
-          text: 'Awesome, we will review your CV and set up a consultation call shortly!',
-          timestamp: new Date(Date.now() - 3600000 * 3.5).toISOString(),
-          timeFormatted: '02:40 PM',
-          read: true,
-        },
-      ],
-    },
-  ];
-  saveChatConversationsToFile(initialSeed);
-}
-
-// Active Server-Sent Events (SSE) connections for live real-time messaging
+// SSE connections
 const sseClients = new Set<{ res: Response; sessionId?: string; isOwner?: boolean }>();
-
 const broadcastChatEvent = (event: string, payload: any) => {
   const messageStr = `event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`;
   sseClients.forEach((client) => {
@@ -245,614 +96,11 @@ const broadcastChatEvent = (event: string, payload: any) => {
   });
 };
 
-// Helper to get project inquiries
-const getInquiriesFromFile = (): any[] => {
-  try {
-    if (fs.existsSync(INQUIRIES_FILE)) {
-      const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Error reading inquiries file:', err);
-  }
-  return [];
-};
-
-const saveInquiriesToFile = (inquiries: any[]) => {
-  try {
-    fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(inquiries, null, 2));
-  } catch (err) {
-    console.error('Error writing inquiries file:', err);
-  }
-};
-
-// Seed sample inquiry if empty
-if (!fs.existsSync(INQUIRIES_FILE)) {
-  const initialInquiries = [
-    {
-      id: 'inq_1001',
-      name: 'Sarah Jenkins',
-      email: 'sarah.jenkins.hr@gmail.com',
-      projectType: 'Frontend (React/Next.js)',
-      budget: '$3,000 - $7,000',
-      message: 'Looking for a senior React/TypeScript engineer for building a high-performance customer dashboard.',
-      timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-      dateFormatted: 'Oct 4, 2026, 03:30 PM',
-      device: 'Desktop Browser',
-      ip: '127.0.0.1',
-      status: 'new',
-    },
-  ];
-  saveInquiriesToFile(initialInquiries);
-}
-
-// Seed initial visitors if file doesn't exist
-if (!fs.existsSync(VISITORS_FILE)) {
-  const initialVisitors = [
-    {
-      id: 'v_seed_1',
-      name: 'Alexander Wright',
-      email: 'alex.wright.tech@gmail.com',
-      company: 'VentureScale Global',
-      purpose: 'Hiring / Web Project Consultation',
-      timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-      dateStr: 'Oct 3, 2026, 02:15 PM',
-      device: 'Desktop Browser (Chrome)',
-      location: 'Islamabad, Pakistan',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'v_seed_2',
-      name: 'Farhan Tariq',
-      email: 'farhan.tariq99@gmail.com',
-      company: 'InnovateX Media',
-      purpose: 'Freelance / SaaS Development Inquiry',
-      timestamp: new Date(Date.now() - 3600000 * 6).toISOString(),
-      dateStr: 'Oct 3, 2026, 11:30 AM',
-      device: 'Mobile (Safari)',
-      location: 'Lahore, Pakistan',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'v_seed_3',
-      name: 'Sarah Jenkins',
-      email: 'sarah.jenkins.hr@gmail.com',
-      company: 'Apex Talent Recruitment',
-      purpose: 'Recruiter / Full-time Job Opportunity',
-      timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-      dateStr: 'Oct 2, 2026, 04:45 PM',
-      device: 'Desktop (macOS)',
-      location: 'London, UK',
-      ip: '127.0.0.1',
-    }
-  ];
-  fs.writeFileSync(VISITORS_FILE, JSON.stringify(initialVisitors, null, 2));
-}
-
-// Helper to read visitors from server file
-const getVisitorsFromFile = (): any[] => {
-  try {
-    if (fs.existsSync(VISITORS_FILE)) {
-      const data = fs.readFileSync(VISITORS_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Error reading visitors file:', err);
-  }
-  return [];
-};
-
-// Helper to write visitors to server file
-const saveVisitorsToFile = (visitors: any[]) => {
-  try {
-    fs.writeFileSync(VISITORS_FILE, JSON.stringify(visitors, null, 2));
-  } catch (err) {
-    console.error('Error writing visitors file:', err);
-  }
-};
-
-// Helper to get messages
-const getMessagesFromFile = (): any[] => {
-  try {
-    if (fs.existsSync(MESSAGES_FILE)) {
-      const data = fs.readFileSync(MESSAGES_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Error reading messages file:', err);
-  }
-  return [];
-};
-
-const saveMessagesToFile = (messages: any[]) => {
-  try {
-    fs.writeFileSync(MESSAGES_FILE, JSON.stringify(messages, null, 2));
-  } catch (err) {
-    console.error('Error writing messages file:', err);
-  }
-};
-
 // ==========================================
 // BACKEND API ROUTES
 // ==========================================
 
-const transporter = process.env.SMTP_HOST
-  ? nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
-      secure: parseInt(process.env.SMTP_PORT || '587', 10) === 465,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
-  : null;
-
-const sendInquiryEmail = async (inquiry: any) => {
-  if (!transporter) return;
-
-  try {
-    await transporter.sendMail({
-      from: `"${inquiry.name}" <${process.env.SMTP_USER}>`,
-      to: process.env.SMTP_USER,
-      subject: `New Project Inquiry: ${inquiry.projectType}`,
-      text: `
-Name: ${inquiry.name}
-Email: ${inquiry.email}
-Phone: ${inquiry.phone}
-Project Type: ${inquiry.projectType}
-Budget: ${inquiry.budget}
-Message: ${inquiry.message}
-Timestamp: ${inquiry.dateFormatted}
-Device: ${inquiry.device}
-IP: ${inquiry.ip}
-      `,
-    });
-    console.log(`[BACKEND LOG] 📧 Email notification sent for inquiry ${inquiry.id}`);
-  } catch (error) {
-    console.error('Error sending email notification:', error);
-  }
-};
-
-// 1. POST /api/visitors -> Record a new visitor with Gmail ID
-app.post('/api/visitors', (req: Request, res: Response) => {
-  try {
-    const { name, email, company, purpose } = req.body;
-
-    if (!name || !email) {
-      return res.status(400).json({ success: false, error: 'Name and Email are required' });
-    }
-
-    const now = new Date();
-    const userAgent = req.headers['user-agent'] || '';
-    const isMobile = /mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(userAgent);
-    const deviceType = isMobile ? 'Mobile Device' : 'Desktop Browser';
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Online';
-
-    const newVisitor = {
-      id: `v_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-      name: String(name).trim(),
-      email: String(email).trim().toLowerCase(),
-      company: company ? String(company).trim() : 'Individual Visitor',
-      purpose: purpose ? String(purpose).trim() : 'Portfolio Exploration',
-      timestamp: now.toISOString(),
-      dateStr: now.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      device: deviceType,
-      location: 'Verified Visitor',
-      ip: typeof clientIp === 'string' ? clientIp.split(',')[0] : 'Online',
-    };
-
-    const currentVisitors = getVisitorsFromFile();
-    // Update or insert visitor
-    const filtered = currentVisitors.filter((v: any) => v.email !== newVisitor.email);
-    const updated = [newVisitor, ...filtered];
-    saveVisitorsToFile(updated);
-
-    console.log(`[BACKEND LOG] 👤 New Visitor Checked In: ${newVisitor.name} (${newVisitor.email}) for "${newVisitor.purpose}"`);
-
-    return res.status(201).json({
-      success: true,
-      message: 'Visitor registered successfully in server database',
-      visitor: newVisitor,
-      totalVisitors: updated.length,
-    });
-  } catch (error: any) {
-    console.error('Backend visitor save error:', error);
-    return res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
-
-// 2. GET /api/visitors -> Fetch all recorded visitors for admin
-app.get('/api/visitors', (_req: Request, res: Response) => {
-  try {
-    const visitors = getVisitorsFromFile();
-    return res.json({
-      success: true,
-      visitors,
-      totalCount: visitors.length,
-      gmailCount: visitors.filter((v: any) => v.email && v.email.includes('@gmail.com')).length,
-    });
-  } catch (error: any) {
-    console.error('Backend fetch error:', error);
-    return res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
-
-// 3. DELETE /api/visitors/:id -> Delete a specific visitor
-app.delete('/api/visitors/:id', (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const current = getVisitorsFromFile();
-    const updated = current.filter((v: any) => v.id !== id);
-    saveVisitorsToFile(updated);
-    return res.json({ success: true, message: 'Visitor deleted', remaining: updated.length });
-  } catch (error: any) {
-    return res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
-
-// 4. DELETE /api/visitors -> Clear all visitors
-app.delete('/api/visitors', (_req: Request, res: Response) => {
-  try {
-    saveVisitorsToFile([]);
-    return res.json({ success: true, message: 'All visitor logs cleared' });
-  } catch (error: any) {
-    return res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
-
-// 5. Admin Authentication & Verification
-app.post('/api/admin/verify-pin', (req: Request, res: Response) => {
-  const { pin } = req.body;
-  const validPins = ['7860', '1234', process.env.ADMIN_PIN].filter(Boolean);
-  if (validPins.includes(String(pin).trim())) {
-    return res.json({ success: true, authenticated: true });
-  }
-  return res.status(401).json({ success: false, authenticated: false, message: 'Invalid Admin PIN' });
-});
-
-app.post('/api/admin/login', (req: Request, res: Response) => {
-  try {
-    const { email, username, password, pin } = req.body;
-    const adminPin = String(pin || '').trim();
-    const adminUser = String(username || email || '').trim().toLowerCase();
-    const adminPass = String(password || '').trim();
-    const validPins = ['7860', '1234', process.env.ADMIN_PIN].filter(Boolean);
-
-    const pinMatches = adminPin && validPins.includes(adminPin);
-    const userMatches =
-      adminUser === 'mushahid hussain' ||
-      adminUser === 'mushahid' ||
-      adminUser === 'mushahidrafiqe744@gmail.com' ||
-      adminUser.includes('mushahid') ||
-      adminUser === 'admin@gmail.com' ||
-      adminUser === 'admin';
-
-    const passMatches =
-      adminPass === 'Mushahid6611@' ||
-      adminPass.toLowerCase() === 'mushahid6611@' ||
-      validPins.includes(adminPass) ||
-      adminPass.length >= 3;
-
-    if (pinMatches || (userMatches && passMatches)) {
-      const token = `adm_token_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      console.log(`[ADMIN AUTH] 🔑 Admin authenticated: ${userMatches ? adminUser : 'PIN ' + adminPin}`);
-      return res.json({
-        success: true,
-        authenticated: true,
-        token,
-        user: {
-          name: 'Mushahid Hussain',
-          username: 'Mushahid Hussain',
-          email: 'mushahidrafiqe744@gmail.com',
-          role: 'Administrator',
-          avatar: '/assets/images/mushahid_admin_profile.jpg',
-        },
-      });
-    }
-
-    return res.status(401).json({
-      success: false,
-      authenticated: false,
-      message: 'Invalid Admin Credentials or PIN. Use username "Mushahid Hussain" and password "Mushahid6611@" or PIN "7860".',
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: 'Internal Auth Error' });
-  }
-});
-
-// Admin System Stats
-app.get('/api/admin/stats', (_req: Request, res: Response) => {
-  try {
-    const projects = getCmsDataFromFile('projects');
-    const testimonials = getCmsDataFromFile('testimonials');
-    const skills = getCmsDataFromFile('skills');
-    const services = getCmsDataFromFile('services');
-    const messages = getMessagesFromFile();
-    const inquiries = getInquiriesFromFile();
-    const visitors = getVisitorsFromFile();
-    const profiles = getCmsDataFromFile('profiles');
-
-    return res.json({
-      success: true,
-      stats: {
-        projectsCount: projects.length,
-        testimonialsCount: testimonials.length,
-        skillsCount: skills.length,
-        servicesCount: services.length,
-        messagesCount: messages.length,
-        inquiriesCount: inquiries.length,
-        visitorsCount: visitors.length,
-        unreadInquiries: inquiries.filter((i: any) => i.status === 'new').length,
-        unreadMessages: messages.filter((m: any) => m.status === 'unread').length,
-        profile: profiles[0] || null,
-      },
-      server: {
-        status: 'online',
-        backend: 'Full-Stack Express & Vite Server',
-        port: PORT,
-        uptime: Math.floor(process.uptime()),
-        timestamp: new Date().toISOString(),
-      },
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: 'Failed to fetch admin stats' });
-  }
-});
-
-// Permanent File & Image Upload
-app.post('/api/upload', (req: Request, res: Response) => {
-  try {
-    const { imageBase64, dataUrl, fileName } = req.body;
-    const base64Data = imageBase64 || dataUrl;
-
-    if (!base64Data) {
-      return res.status(400).json({ success: false, error: 'Image base64 data is required' });
-    }
-
-    const matches = String(base64Data).match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-    let ext = 'jpg';
-    let buffer: Buffer;
-
-    if (matches && matches.length === 3) {
-      const mime = matches[1].toLowerCase();
-      if (mime.includes('png')) ext = 'png';
-      else if (mime.includes('svg')) ext = 'svg';
-      else if (mime.includes('webp')) ext = 'webp';
-      else if (mime.includes('gif')) ext = 'gif';
-      buffer = Buffer.from(matches[2], 'base64');
-    } else {
-      buffer = Buffer.from(String(base64Data), 'base64');
-    }
-
-    const cleanName = (fileName || `media_${Date.now()}`)
-      .replace(/[^a-zA-Z0-9_-]/g, '_')
-      .replace(/\.[^/.]+$/, '');
-    const finalName = `${Date.now()}_${cleanName}.${ext}`;
-    const targetFile = path.join(UPLOADS_DIR, finalName);
-
-    fs.writeFileSync(targetFile, buffer);
-    const publicUrl = `/uploads/${finalName}`;
-    console.log(`[UPLOAD BACKEND] 📸 Saved uploaded media to: ${publicUrl}`);
-
-    return res.status(201).json({
-      success: true,
-      url: publicUrl,
-      fileName: finalName,
-      size: buffer.length,
-    });
-  } catch (err: any) {
-    console.error('Upload error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to save uploaded image' });
-  }
-});
-
-// ==========================================
-// CMS REST API ENDPOINTS
-// ==========================================
-
-// GET /api/cms/:table
-app.get('/api/cms/:table', (req: Request, res: Response) => {
-  try {
-    const { table } = req.params;
-    const data = getCmsDataFromFile(table);
-    return res.json(data);
-  } catch (err) {
-    return res.status(500).json({ error: 'Failed to fetch CMS table' });
-  }
-});
-
-// GET /api/cms/:table/:id
-app.get('/api/cms/:table/:id', (req: Request, res: Response) => {
-  try {
-    const { table, id } = req.params;
-    const data = getCmsDataFromFile(table);
-    const item = data.find((i: any) => String(i.id) === String(id));
-    if (!item) return res.status(404).json({ error: 'Item not found' });
-    return res.json(item);
-  } catch (err) {
-    return res.status(500).json({ error: 'Failed to fetch CMS item' });
-  }
-});
-
-// POST /api/cms/:table
-app.post('/api/cms/:table', (req: Request, res: Response) => {
-  try {
-    const { table } = req.params;
-    const payload = req.body;
-    const newItem = {
-      id: payload.id || `${table.substring(0, 4)}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      createdAt: new Date().toISOString(),
-      ...payload,
-    };
-    const current = getCmsDataFromFile(table);
-    const updated = [newItem, ...current];
-    saveCmsDataToFile(table, updated);
-    console.log(`[CMS BACKEND] ➕ Inserted record in '${table}':`, newItem.id);
-    return res.status(201).json(newItem);
-  } catch (err) {
-    return res.status(500).json({ error: 'Failed to insert CMS item' });
-  }
-});
-
-// PUT /api/cms/:table/:id
-app.put('/api/cms/:table/:id', (req: Request, res: Response) => {
-  try {
-    const { table, id } = req.params;
-    const updates = req.body;
-    const current = getCmsDataFromFile(table);
-    let updatedRecord: any = null;
-    const updated = current.map((item: any) => {
-      if (String(item.id) === String(id)) {
-        updatedRecord = { ...item, ...updates, updatedAt: new Date().toISOString() };
-        return updatedRecord;
-      }
-      return item;
-    });
-
-    if (!updatedRecord) {
-      if (table === 'profiles' || table === 'hero' || table === 'about' || table === 'settings' || table === 'site_settings') {
-        updatedRecord = { id, ...updates, updatedAt: new Date().toISOString() };
-        updated.push(updatedRecord);
-      } else {
-        return res.status(404).json({ error: 'Item not found to update' });
-      }
-    }
-
-    saveCmsDataToFile(table, updated);
-    console.log(`[CMS BACKEND] ✏️ Updated record in '${table}':`, id);
-    return res.json(updatedRecord);
-  } catch (err) {
-    return res.status(500).json({ error: 'Failed to update CMS item' });
-  }
-});
-
-// DELETE /api/cms/:table/:id
-app.delete('/api/cms/:table/:id', (req: Request, res: Response) => {
-  try {
-    const { table, id } = req.params;
-    const current = getCmsDataFromFile(table);
-    const updated = current.filter((item: any) => String(item.id) !== String(id));
-    saveCmsDataToFile(table, updated);
-    console.log(`[CMS BACKEND] 🗑️ Deleted record from '${table}':`, id);
-    return res.json({ success: true, message: 'Item deleted', id, remaining: updated.length });
-  } catch (err) {
-    return res.status(500).json({ error: 'Failed to delete CMS item' });
-  }
-});
-
-// 6. Direct Project Inquiry API (POST /api/inquiries)
-app.post('/api/inquiries', async (req: Request, res: Response) => {
-  try {
-    const { name, email, projectType, budget, message, phone } = req.body;
-
-    if (!name || !email || !message) {
-      return res.status(400).json({
-        success: false,
-        error: 'Please fill in all required fields (Name, Email, and Project Details)',
-      });
-    }
-
-    const now = new Date();
-    const userAgent = req.headers['user-agent'] || '';
-    const isMobile = /mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(userAgent);
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-
-    const newInquiry = {
-      id: `inq_${Date.now()}`,
-      name: String(name).trim(),
-      email: String(email).trim().toLowerCase(),
-      phone: phone ? String(phone).trim() : '',
-      projectType: projectType ? String(projectType).trim() : 'Full-Stack Web App',
-      budget: budget ? String(budget).trim() : '$1,000 - $3,000',
-      message: String(message).trim(),
-      timestamp: now.toISOString(),
-      dateFormatted: now.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      device: isMobile ? 'Mobile Device' : 'Desktop Browser',
-      ip: typeof clientIp === 'string' ? clientIp.split(',')[0] : '127.0.0.1',
-      status: 'new',
-    };
-
-    const inquiries = getInquiriesFromFile();
-    inquiries.unshift(newInquiry);
-    saveInquiriesToFile(inquiries);
-
-    await sendInquiryEmail(newInquiry);
-
-    console.log(`[BACKEND LOG] 🚀 New Project Inquiry received from ${newInquiry.name} (${newInquiry.email}) | Type: ${newInquiry.projectType} | Budget: ${newInquiry.budget}`);
-
-    return res.status(201).json({
-      success: true,
-      message: 'Your project inquiry has been delivered directly to Mushahid Hussain. Thank you!',
-      inquiry: newInquiry,
-      referenceId: newInquiry.id,
-    });
-  } catch (error: any) {
-    console.error('Backend inquiry error:', error);
-    return res.status(500).json({ success: false, error: 'Internal Server Error while saving inquiry' });
-  }
-});
-
-// 7. GET /api/inquiries -> Fetch all received inquiries
-app.get('/api/inquiries', (_req: Request, res: Response) => {
-  try {
-    const inquiries = getInquiriesFromFile();
-    return res.json({
-      success: true,
-      inquiries,
-      totalCount: inquiries.length,
-    });
-  } catch (error: any) {
-    return res.status(500).json({ success: false, error: 'Failed to fetch inquiries' });
-  }
-});
-
-// 8. Contact Form API (POST /api/contact)
-app.post('/api/contact', (req: Request, res: Response) => {
-  try {
-    const { name, email, phone, subject, message } = req.body;
-    if (!name || !email || !message) {
-      return res.status(400).json({ success: false, error: 'Name, email, and message are required' });
-    }
-
-    const newMessage = {
-      id: `msg_${Date.now()}`,
-      name: String(name).trim(),
-      email: String(email).trim(),
-      phone: phone || '',
-      subject: subject || 'General Inquiry',
-      message: String(message).trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    const messages = getMessagesFromFile();
-    messages.unshift(newMessage);
-    saveMessagesToFile(messages);
-
-    console.log(`[BACKEND LOG] 📩 New Contact Message from ${name} (${email})`);
-    return res.status(201).json({ success: true, message: 'Message sent successfully' });
-  } catch (error) {
-    return res.status(500).json({ success: false, error: 'Failed to save message' });
-  }
-});
-
-// ==========================================
-// REAL-TIME LIVE CHAT API ENDPOINTS
-// ==========================================
-
-// 1. GET /api/chat/stream -> Real-time Server-Sent Events (SSE)
+// Chat Stream
 app.get('/api/chat/stream', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache, no-transform');
@@ -866,10 +114,8 @@ app.get('/api/chat/stream', (req: Request, res: Response) => {
   const clientItem = { res, sessionId, isOwner };
   sseClients.add(clientItem);
 
-  // Send initial handshake
   res.write(`event: connected\ndata: ${JSON.stringify({ status: 'connected', time: Date.now() })}\n\n`);
 
-  // Heartbeat every 25 seconds to keep connection alive
   const heartbeatInterval = setInterval(() => {
     try {
       res.write(`event: ping\ndata: ${JSON.stringify({ ping: true })}\n\n`);
@@ -885,7 +131,7 @@ app.get('/api/chat/stream', (req: Request, res: Response) => {
   });
 });
 
-// 2. POST /api/chat/init -> Initialize client session or retrieve conversation
+// Chat Init
 app.post('/api/chat/init', (req: Request, res: Response) => {
   try {
     let { sessionId, clientName, clientEmail, initialMessage } = req.body;
@@ -897,37 +143,19 @@ app.post('/api/chat/init', (req: Request, res: Response) => {
 
     const now = new Date();
     const timeFormatted = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const userAgent = req.headers['user-agent'] || '';
-    const isMobile = /mobile|iphone|ipod|android/i.test(userAgent);
-    const clientDevice = isMobile ? 'Mobile' : 'Desktop';
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-
     let conv = conversations.find((c) => c.id === sessionId);
 
     if (conv) {
-      // Update details if passed
-      if (clientName && clientName.trim()) conv.clientName = clientName.trim();
-      if (clientEmail && clientEmail.trim()) conv.clientEmail = clientEmail.trim().toLowerCase();
+      if (clientName) conv.clientName = clientName.trim();
       conv.clientOnline = true;
       conv.updatedAt = now.toISOString();
     } else {
-      // Create new conversation with Welcome message from Mushahid
-      const welcomeMessage: ChatMessage = {
-        id: `msg_welcome_${Date.now()}`,
-        sender: 'owner',
-        senderName: 'Mushahid Hussain',
-        text: '👋 Hi! Welcome to my portfolio. How can I help you?',
-        timestamp: now.toISOString(),
-        timeFormatted,
-        read: false,
-      };
-
       conv = {
         id: sessionId,
-        clientName: (clientName && clientName.trim()) || 'Visitor',
-        clientEmail: (clientEmail && clientEmail.trim()) || '',
-        clientDevice,
-        clientIp: typeof clientIp === 'string' ? clientIp.split(',')[0] : '127.0.0.1',
+        clientName: clientName || 'Visitor',
+        clientEmail: clientEmail || '',
+        clientDevice: 'Web',
+        clientIp: (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1') as string,
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
         clientOnline: true,
@@ -935,324 +163,83 @@ app.post('/api/chat/init', (req: Request, res: Response) => {
         clientTyping: false,
         unreadByOwner: 0,
         unreadByClient: 1,
-        messages: [welcomeMessage],
+        messages: [{
+          id: `msg_welcome_${Date.now()}`,
+          sender: 'owner',
+          senderName: 'Mushahid Hussain',
+          text: '👋 Hi! Welcome to my portfolio. How can I help you?',
+          timestamp: now.toISOString(),
+          timeFormatted,
+          read: false,
+        }],
       };
-
       conversations.unshift(conv);
     }
 
-    // If an initial quick message was supplied, append it
-    if (initialMessage && String(initialMessage).trim()) {
+    if (initialMessage) {
       const clientMsg: ChatMessage = {
-        id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        id: `msg_${Date.now()}`,
         sender: 'client',
-        senderName: conv.clientName || 'Client',
-        text: String(initialMessage).trim(),
+        senderName: conv.clientName,
+        text: initialMessage,
         timestamp: new Date().toISOString(),
         timeFormatted,
         read: false,
       };
       conv.messages.push(clientMsg);
       conv.unreadByOwner += 1;
-      conv.updatedAt = new Date().toISOString();
       broadcastChatEvent('new_message', { sessionId: conv.id, message: clientMsg, conversation: conv });
     }
 
     saveChatConversationsToFile(conversations);
-
-    return res.json({
-      success: true,
-      conversation: conv,
-      sessionId: conv.id,
-    });
-  } catch (err: any) {
-    console.error('Chat init error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to initialize chat' });
+    return res.json({ success: true, conversation: conv, sessionId: conv.id });
+  } catch (err) {
+    return res.status(500).json({ success: false });
   }
 });
 
-// 3. GET /api/chat/conversations/:sessionId -> Get conversation details
-app.get('/api/chat/conversations/:sessionId', (req: Request, res: Response) => {
-  try {
-    const { sessionId } = req.params;
-    const conversations = getChatConversationsFromFile();
-    const conv = conversations.find((c) => c.id === sessionId);
-
-    if (!conv) {
-      return res.status(404).json({ success: false, error: 'Conversation not found' });
-    }
-
-    return res.json({
-      success: true,
-      conversation: conv,
-    });
-  } catch (err: any) {
-    return res.status(500).json({ success: false, error: 'Failed to fetch conversation' });
-  }
-});
-
-// 4. POST /api/chat/messages/:sessionId -> Send a message (Client or Owner)
+// Chat Messages
 app.post('/api/chat/messages/:sessionId', (req: Request, res: Response) => {
   try {
     const { sessionId } = req.params;
-    const { sender, senderName, text, attachment } = req.body;
-
-    if (!text && !attachment) {
-      return res.status(400).json({ success: false, error: 'Message text or attachment is required' });
-    }
-
+    const { sender, text } = req.body;
     const conversations = getChatConversationsFromFile();
-    let conv = conversations.find((c) => c.id === sessionId);
+    const conv = conversations.find((c) => c.id === sessionId);
+
+    if (!conv) return res.status(404).json({ success: false });
 
     const now = new Date();
-    const timeFormatted = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-    if (!conv) {
-      // Auto-create if somehow missing
-      conv = {
-        id: sessionId,
-        clientName: sender === 'client' ? (senderName || 'Client') : 'Visitor',
-        clientEmail: '',
-        clientDevice: 'Web',
-        clientIp: '127.0.0.1',
-        createdAt: now.toISOString(),
-        updatedAt: now.toISOString(),
-        clientOnline: true,
-        ownerTyping: false,
-        clientTyping: false,
-        unreadByOwner: 0,
-        unreadByClient: 0,
-        messages: [],
-      };
-      conversations.unshift(conv);
-    }
-
     const newMessage: ChatMessage = {
-      id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-      sender: sender === 'owner' ? 'owner' : 'client',
-      senderName: senderName || (sender === 'owner' ? 'Mushahid Hussain' : conv.clientName || 'Client'),
-      text: (text || '').trim(),
+      id: `msg_${Date.now()}`,
+      sender,
+      senderName: sender === 'owner' ? 'Mushahid Hussain' : conv.clientName,
+      text: text.trim(),
       timestamp: now.toISOString(),
-      timeFormatted,
+      timeFormatted: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       read: false,
-      attachment: attachment || undefined,
     };
 
     conv.messages.push(newMessage);
     conv.updatedAt = now.toISOString();
-
-    if (sender === 'client') {
-      conv.unreadByOwner += 1;
-      conv.clientTyping = false;
-    } else {
-      conv.unreadByClient += 1;
-      conv.ownerTyping = false;
-    }
-
-    // Move updated conversation to top of list
-    const index = conversations.indexOf(conv);
-    if (index > 0) {
-      conversations.splice(index, 1);
-      conversations.unshift(conv);
-    }
+    if (sender === 'client') conv.unreadByOwner += 1; else conv.unreadByClient += 1;
 
     saveChatConversationsToFile(conversations);
+    broadcastChatEvent('new_message', { sessionId, message: newMessage, conversation: conv });
 
-    // Broadcast instant real-time message via SSE
-    broadcastChatEvent('new_message', {
-      sessionId,
-      message: newMessage,
-      conversation: conv,
-    });
-
-    console.log(`[LIVE CHAT] 💬 [${newMessage.sender.toUpperCase()}] to (${conv.clientName}): ${newMessage.text.slice(0, 50)}`);
-
-    return res.status(201).json({
-      success: true,
-      message: newMessage,
-      conversation: conv,
-    });
-  } catch (err: any) {
-    console.error('Chat message send error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to send message' });
-  }
-});
-
-// 5. POST /api/chat/typing/:sessionId -> Update typing status
-app.post('/api/chat/typing/:sessionId', (req: Request, res: Response) => {
-  try {
-    const { sessionId } = req.params;
-    const { isTyping, who } = req.body;
-
-    const conversations = getChatConversationsFromFile();
-    const conv = conversations.find((c) => c.id === sessionId);
-
-    if (conv) {
-      if (who === 'owner') {
-        conv.ownerTyping = Boolean(isTyping);
-      } else {
-        conv.clientTyping = Boolean(isTyping);
-      }
-      broadcastChatEvent('typing', { sessionId, who, isTyping: Boolean(isTyping) });
-    }
-
-    return res.json({ success: true });
+    return res.status(201).json({ success: true, message: newMessage });
   } catch (err) {
     return res.status(500).json({ success: false });
   }
 });
 
-// 6. POST /api/chat/read/:sessionId -> Mark messages as read
-app.post('/api/chat/read/:sessionId', (req: Request, res: Response) => {
-  try {
-    const { sessionId } = req.params;
-    const { reader } = req.body; // 'client' or 'owner'
-
-    const conversations = getChatConversationsFromFile();
-    const conv = conversations.find((c) => c.id === sessionId);
-
-    if (conv) {
-      if (reader === 'owner') {
-        conv.unreadByOwner = 0;
-        conv.messages.forEach((m) => {
-          if (m.sender === 'client') m.read = true;
-        });
-      } else {
-        conv.unreadByClient = 0;
-        conv.messages.forEach((m) => {
-          if (m.sender === 'owner') m.read = true;
-        });
-      }
-      saveChatConversationsToFile(conversations);
-      broadcastChatEvent('read_receipt', { sessionId, reader });
-    }
-
-    return res.json({ success: true });
-  } catch (err) {
-    return res.status(500).json({ success: false });
-  }
-});
-
-// 7. GET /api/chat/admin/conversations -> Fetch all conversations for Owner Panel
-app.get('/api/chat/admin/conversations', (req: Request, res: Response) => {
-  try {
-    const search = ((req.query.search as string) || '').toLowerCase().trim();
-    let conversations = getChatConversationsFromFile();
-
-    if (search) {
-      conversations = conversations.filter(
-        (c) =>
-          c.clientName.toLowerCase().includes(search) ||
-          c.clientEmail.toLowerCase().includes(search) ||
-          c.messages.some((m) => m.text.toLowerCase().includes(search))
-      );
-    }
-
-    const totalUnread = conversations.reduce((acc, c) => acc + (c.unreadByOwner || 0), 0);
-
-    return res.json({
-      success: true,
-      conversations,
-      totalCount: conversations.length,
-      totalUnread,
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: 'Failed to fetch conversations' });
-  }
-});
-
-// 8. DELETE /api/chat/admin/conversations/:sessionId -> Delete conversation
-app.delete('/api/chat/admin/conversations/:sessionId', (req: Request, res: Response) => {
-  try {
-    const { sessionId } = req.params;
-    let conversations = getChatConversationsFromFile();
-    conversations = conversations.filter((c) => c.id !== sessionId);
-    saveChatConversationsToFile(conversations);
-
-    broadcastChatEvent('conversation_deleted', { sessionId });
-    return res.json({ success: true, message: 'Conversation deleted' });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: 'Failed to delete conversation' });
-  }
-});
-
-// 9. POST /api/chat/admin/verify -> Verify Owner PIN
-app.post('/api/chat/admin/verify', (req: Request, res: Response) => {
-  const { pin } = req.body;
-  const validPins = ['7860', '1234', process.env.ADMIN_PIN].filter(Boolean);
-  if (validPins.includes(String(pin).trim())) {
-    return res.json({ success: true, authenticated: true });
-  }
-  return res.status(401).json({ success: false, authenticated: false, message: 'Invalid Owner Access PIN' });
-});
-
-// ==========================================
-// ORDER SYSTEM (MongoDB + Socket.io)
-// ==========================================
-
-// MongoDB Connection
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
-} else {
-  console.warn('MONGODB_URI not provided. Skipping MongoDB connection.');
-}
-// Order Model
-const OrderSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  projectType: String,
-  message: String,
-  status: { type: String, default: 'unread' },
-  createdAt: { type: Date, default: Date.now }
-});
-const Order = mongoose.model('Order', OrderSchema);
-
-// Socket.io events
-io.on('connection', (socket) => {
-  console.log('Admin client connected:', socket.id);
-});
-
-// API Routes
-app.post('/api/orders', async (req: Request, res: Response) => {
-  if (!mongoose.connection.readyState) {
-      return res.status(503).json({ error: 'Database not connected' });
-  }
-  try {
-    const newOrder = new Order(req.body);
-    await newOrder.save();
-    io.emit('new_order', newOrder); // Emit real-time event
-    res.status(201).json(newOrder);
-  } catch (err) {
-    console.error('Order save error:', err);
-    res.status(500).json({ error: 'Failed to save order' });
-  }
-});
-
-app.get('/api/orders', async (req: Request, res: Response) => {
-  if (!mongoose.connection.readyState) {
-      return res.json([]);
-  }
-  try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch orders' });
-  }
-});
-
-app.patch('/api/orders/:id', async (req: Request, res: Response) => {
-  if (!mongoose.connection.readyState) {
-      return res.status(503).json({ error: 'Database not connected' });
-  }
-  try {
-    const { status } = req.body;
-    const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
-    res.json(order);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to update order' });
-  }
+// Admin stats (simplified)
+app.get('/api/admin/server-status', (_req: Request, res: Response) => {
+  res.json({
+    status: 'online',
+    backend: 'Vite + Express (Supabase Synced)',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // ==========================================
@@ -1276,7 +263,7 @@ async function startServer() {
   }
 
   httpServer.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Full-Stack Backend Server running at http://0.0.0.0:${PORT}`);
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
   });
 }
 

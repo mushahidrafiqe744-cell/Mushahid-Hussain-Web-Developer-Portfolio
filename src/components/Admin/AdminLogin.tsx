@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, ArrowRight, Mail, AlertCircle, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 const ADMIN_IMAGE = '/assets/images/mushahid_admin_profile.jpg';
 
@@ -9,7 +10,7 @@ interface AdminLoginProps {
 }
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
-  const [username, setUsername] = useState('Mushahid Hussain');
+  const [email, setEmail] = useState('mushahidrafiqe744@gmail.com');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,52 +26,27 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
       return;
     }
 
+    if (!supabase) {
+        setErrorMsg('Supabase is not configured. Please check your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+        return;
+    }
+
     setLoading(true);
 
     try {
-      const payload = { username: username.trim(), email: username.trim(), password: password.trim() };
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      // 1. Supabase Authentication
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
       });
 
-      const data = await res.json().catch(() => null);
+      if (error) throw error;
 
-      if (res.ok && data && data.success) {
-        const token = data.token || `adm_${Date.now()}`;
-        sessionStorage.setItem('admin_token', token);
-        localStorage.setItem('admin_token', token);
-        localStorage.setItem('admin_user', JSON.stringify(data.user || { name: 'Mushahid Hussain', username: 'Mushahid Hussain' }));
-        
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        } else {
-          navigate('/admin');
-        }
-        return;
-      }
-
-      // Fallback local verification
-      const cleanUser = username.trim().toLowerCase();
-      const cleanPass = password.trim();
-
-      const userOk =
-        cleanUser.includes('mushahid') ||
-        cleanUser === 'admin' ||
-        cleanUser === 'mushahid hussain' ||
-        cleanUser === 'mushahidrafiqe744@gmail.com';
-
-      const passOk =
-        cleanPass === 'Mushahid6611@' ||
-        cleanPass.toLowerCase() === 'mushahid6611@' ||
-        cleanPass === '7860';
-
-      if (userOk && passOk) {
-        const token = `adm_verified_${Date.now()}`;
-        sessionStorage.setItem('admin_token', token);
-        localStorage.setItem('admin_token', token);
-        localStorage.setItem('admin_user', JSON.stringify({ name: 'Mushahid Hussain', role: 'Administrator' }));
+      if (data?.session) {
+        // Store session info
+        sessionStorage.setItem('admin_token', data.session.access_token);
+        localStorage.setItem('admin_token', data.session.access_token);
+        localStorage.setItem('admin_user', JSON.stringify(data.user));
         
         if (onLoginSuccess) {
           onLoginSuccess();
@@ -78,27 +54,16 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           navigate('/admin');
         }
       } else {
-        setErrorMsg('Ghalat password ya username! Sahih password enter karein.');
+        setErrorMsg('Authentication failed. Please try again.');
       }
-    } catch (err) {
-      const cleanUser = username.trim().toLowerCase();
-      const cleanPass = password.trim();
-
-      const userOk = cleanUser.includes('mushahid') || cleanUser === 'admin';
-      const passOk = cleanPass === 'Mushahid6611@' || cleanPass.toLowerCase() === 'mushahid6611@' || cleanPass === '7860';
-
-      if (userOk && passOk) {
-        const token = `adm_offline_${Date.now()}`;
-        sessionStorage.setItem('admin_token', token);
-        localStorage.setItem('admin_token', token);
-        localStorage.setItem('admin_user', JSON.stringify({ name: 'Mushahid Hussain', role: 'Administrator' }));
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        } else {
-          navigate('/admin');
-        }
+    } catch (err: any) {
+      console.error('[ADMIN LOGIN] Error:', err);
+      
+      // Fallback for demo/development if Supabase is not fully set up but user is testing
+      if (err.message?.includes('Invalid login credentials') || err.message?.includes('Email not confirmed')) {
+          setErrorMsg('Ghalat password ya email! Please use your Supabase credentials.');
       } else {
-        setErrorMsg('Ghalat password! Access denied. Sahih password enter karein.');
+          setErrorMsg(err.message || 'Ghalat password! Access denied.');
       }
     } finally {
       setLoading(false);
@@ -123,7 +88,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
             </Link>
             <div className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
               <Lock className="w-3 h-3 text-amber-600" />
-              <span>Protected Admin</span>
+              <span>Supabase Protected</span>
             </div>
           </div>
 
@@ -145,7 +110,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
 
           <h2 className="text-xl font-black text-[#0A3D22] mb-0.5">Admin Security Lock</h2>
           <p className="text-xs text-gray-600 font-medium mb-4">
-            Admin panel open karne ke liye password enter karein
+            Supabase account se login karein
           </p>
 
           {errorMsg && (
@@ -158,13 +123,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           <div className="w-full space-y-3.5 mb-5 text-left">
             <div>
               <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1">
-                Admin Username
+                Admin Email (Supabase)
               </label>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Mushahid Hussain"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-semibold text-gray-900 focus:outline-hidden focus:border-[#0A3D22] focus:bg-white transition-all"
                 required
               />
@@ -173,9 +138,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider">
-                  Admin Password <span className="text-red-500">*</span>
+                  Password <span className="text-red-500">*</span>
                 </label>
-                <span className="text-[10px] text-gray-400 font-medium">Required to view</span>
+                <span className="text-[10px] text-gray-400 font-medium">Supabase Auth</span>
               </div>
               <div className="relative">
                 <input
@@ -208,9 +173,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
             className="w-full bg-[#0A3D22] hover:bg-[#114D2C] text-[#50E364] p-3.5 rounded-xl font-bold text-sm tracking-wide transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 hover:scale-[1.01]"
           >
             <Mail className="w-4 h-4" />
-            <span>{loading ? 'Verifying Password...' : 'Unlock & Open Admin'}</span>
+            <span>{loading ? 'Authenticating...' : 'Sign In with Supabase'}</span>
             <ArrowRight className="w-4 h-4 text-[#50E364]" />
           </button>
+          
+          <p className="mt-4 text-[10px] text-gray-400 font-medium italic">
+            Note: Admin user must be created in your Supabase project first.
+          </p>
         </form>
       </div>
     </div>

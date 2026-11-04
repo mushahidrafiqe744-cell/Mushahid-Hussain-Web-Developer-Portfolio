@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { cmsService } from '../../services/cms';
-import { Plus, Trash2, Edit, Save, Star, User } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, Star, User, Image, CheckCircle } from 'lucide-react';
 
 export const ManageTestimonials: React.FC = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     role: '',
     company: '',
     message: '',
     avatarUrl: '',
+    rating: 5,
   });
 
   useEffect(() => {
@@ -27,6 +29,11 @@ export const ManageTestimonials: React.FC = () => {
     }
   };
 
+  const showNotification = (msg: string) => {
+    setSuccessMsg(msg);
+    setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -37,30 +44,51 @@ export const ManageTestimonials: React.FC = () => {
       };
       if (editingItem) {
         await cmsService.updateData('testimonials', editingItem.id, payload);
+        showNotification('Testimonial updated successfully!');
       } else {
         await cmsService.insertData('testimonials', payload);
+        showNotification('New testimonial added successfully!');
       }
       setIsFormOpen(false);
       setEditingItem(null);
-      setFormData({ name: '', role: '', company: '', message: '', avatarUrl: '' });
+      setFormData({ name: '', role: '', company: '', message: '', avatarUrl: '', rating: 5 });
       loadTestimonials();
     } catch (e) {
-      alert('Saved testimonial.');
+      showNotification('Failed to save testimonial');
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const url = await cmsService.uploadFile('images', file);
+      setFormData((prev) => ({ ...prev, avatarUrl: url }));
+    } catch (err) {
+      showNotification('Failed to upload client image');
     }
   };
 
   const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this review?')) return;
     try {
-      setTestimonials((prev) => prev.filter((t) => String(t.id) !== String(id)));
       await cmsService.deleteData('testimonials', id);
+      showNotification('Testimonial deleted successfully!');
       loadTestimonials();
     } catch (e) {
-      console.warn('Failed to delete testimonial', e);
+      showNotification('Failed to delete testimonial');
     }
   };
 
   return (
     <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-2xs max-w-4xl space-y-6">
+      {successMsg && (
+        <div className="p-4 rounded-2xl bg-[#0A3D22] text-[#50E364] flex items-center gap-2 font-bold text-sm shadow-md animate-fade-in">
+          <CheckCircle className="w-5 h-5" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between pb-4 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <Star className="w-6 h-6 text-[#50E364]" />
@@ -72,7 +100,7 @@ export const ManageTestimonials: React.FC = () => {
         <button
           onClick={() => {
             setEditingItem(null);
-            setFormData({ name: '', role: '', company: '', message: '', avatarUrl: '' });
+            setFormData({ name: '', role: '', company: '', message: '', avatarUrl: '', rating: 5 });
             setIsFormOpen(true);
           }}
           className="bg-[#0A3D22] text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-md hover:bg-[#114D2C]"
@@ -94,7 +122,7 @@ export const ManageTestimonials: React.FC = () => {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm"
+                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
               />
             </div>
 
@@ -107,36 +135,70 @@ export const ManageTestimonials: React.FC = () => {
                 placeholder="e.g. CEO at TechCorp"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm"
+                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-              Feedback Message / Review
+              Feedback Message
             </label>
             <textarea
               rows={3}
               required
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm"
+              className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm"
             />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Rating (1-5)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={formData.rating}
+                onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
+                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Client Photo (URL or Upload)
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  placeholder="URL..."
+                  value={formData.avatarUrl}
+                  onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
+                  className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm"
+                />
+                <label className="p-2.5 bg-gray-200 hover:bg-gray-300 rounded-xl cursor-pointer">
+                  <Image size={18} />
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-2 pt-2">
             <button
               type="submit"
-              className="bg-[#0A3D22] text-white px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              className="bg-[#0A3D22] text-white px-6 py-2.5 rounded-xl text-xs font-bold uppercase flex items-center gap-2 cursor-pointer shadow-md"
             >
-              <Save size={16} className="text-[#50E364]" />
+              <Save size={18} className="text-[#50E364]" />
               <span>Save Testimonial</span>
             </button>
             <button
               type="button"
               onClick={() => setIsFormOpen(false)}
-              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer"
+              className="bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold text-xs cursor-pointer"
             >
               Cancel
             </button>
@@ -144,44 +206,27 @@ export const ManageTestimonials: React.FC = () => {
         </form>
       )}
 
-      <div className="grid gap-4">
-        {testimonials.length === 0 ? (
-          <p className="text-xs text-gray-500 py-4 text-center">No testimonials added yet.</p>
-        ) : (
-          testimonials.map((t) => (
-            <div
-              key={t.id}
-              className="p-4 rounded-2xl border border-gray-100 bg-gray-50 flex items-center justify-between"
-            >
-              <div className="space-y-1">
-                <div className="font-bold text-sm text-gray-900">{t.name}</div>
-                <div className="text-xs text-[#0A3D22] font-semibold">{t.role || t.company}</div>
-                <p className="text-xs text-gray-600 italic">"{t.message}"</p>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => {
-                    setEditingItem(t);
-                    setFormData(t);
-                    setIsFormOpen(true);
-                  }}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl cursor-pointer"
-                  title="Edit"
-                >
-                  <Edit size={18} />
-                </button>
-                <button
-                  onClick={() => handleDelete(t.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-xl cursor-pointer"
-                  title="Delete"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {testimonials.map((t: any) => (
+          <div
+            key={t.id}
+            className="p-4 rounded-2xl border border-gray-100 bg-gray-50 flex items-center justify-between hover:border-[#50E364]/30 transition-all shadow-2xs"
+          >
+            <div className="flex items-center gap-4 min-w-0">
+                <div className="w-10 h-10 rounded-full bg-[#0A3D22] text-white flex items-center justify-center font-bold shrink-0">
+                    {t.avatarUrl ? <img src={t.avatarUrl} className="w-full h-full rounded-full object-cover"/> : (t.name ? t.name[0] : 'U')}
+                </div>
+                <div className="min-w-0">
+                    <h4 className="font-bold text-sm text-gray-900 truncate">{t.name}</h4>
+                    <p className="text-[10px] text-gray-500 line-clamp-1">{t.role || t.company}</p>
+                </div>
             </div>
-          ))
-        )}
+            <div className="flex gap-1 ml-4 shrink-0">
+                <button onClick={() => { setEditingItem(t); setFormData({ ...t, message: t.message || t.review }); setIsFormOpen(true); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors"><Edit size={16}/></button>
+                <button onClick={() => handleDelete(t.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg cursor-pointer transition-colors"><Trash2 size={16}/></button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

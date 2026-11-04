@@ -8,6 +8,7 @@ interface NavbarProps {
   activeSection: SectionId;
   onSelectSection: (section: SectionId) => void;
   onOpenResume: () => void;
+  customLinks?: string[];
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -15,21 +16,37 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeSection,
   onSelectSection,
   onOpenResume,
+  customLinks,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navLinks: { id: SectionId; label: string }[] = [
+  // Use custom links from settings if available, otherwise default ones
+  const defaultNavLinks: { id: SectionId; label: string }[] = [
     { id: 'about', label: 'About' },
     { id: 'services', label: 'Services' },
     { id: 'skills', label: 'Skills' },
     { id: 'experience', label: 'Experience' },
-    { id: 'courses', label: 'Courses' },
-    { id: 'why-choose-me', label: 'Why Me' },
-    { id: 'testimonials', label: 'Reviews' },
     { id: 'projects', label: 'Projects' },
-    { id: 'resume', label: 'Resume' },
+    { id: 'testimonials', label: 'Reviews' },
     { id: 'contact', label: 'Contact' },
   ];
+
+  let navLinks = defaultNavLinks;
+  
+  if (customLinks && Array.isArray(customLinks) && customLinks.length > 0) {
+      const SECTION_LABEL_MAP: Record<string, SectionId> = {
+          'about': 'about', 'services': 'services', 'skills': 'skills', 
+          'experience': 'experience', 'projects': 'projects', 
+          'testimonials': 'testimonials', 'reviews': 'testimonials', 
+          'contact': 'contact', 'resume': 'resume'
+      };
+      
+      navLinks = customLinks.map(label => {
+          const lowerLabel = label.toLowerCase().trim();
+          const id = SECTION_LABEL_MAP[lowerLabel] || (lowerLabel as SectionId);
+          return { id, label };
+      });
+  }
 
   const handleNavClick = (id: SectionId) => {
     onSelectSection(id);
@@ -41,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-50 bg-[#F8F5EE]/95 backdrop-blur-md border-b border-[#11261B]/10 transition-all shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 sm:py-2 flex items-center justify-between h-14 sm:h-16">
         
-        {/* Brand Logo with Running Circular Line - Clicking this opens the Hero Section */}
+        {/* Brand Logo */}
         <a
           href="#home"
           onClick={(e) => {
@@ -52,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           title="Click to go to Home Section"
         >
           <div className="relative transition-transform duration-300 group-hover:scale-105 shrink-0 scale-90 -ml-1">
-            <EmblemLogo size="sm" showSubtitle={false} interactive={true} />
+            <EmblemLogo size="sm" showSubtitle={false} interactive={true} name={profile.name} title={profile.title} />
           </div>
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-1">
@@ -61,12 +78,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
             <span className="text-[9px] sm:text-[10px] tracking-widest uppercase font-bold text-[#5C6E61] mt-0.5 leading-none whitespace-nowrap">
-              WEB DEVELOPER
+              {profile.title || 'WEB DEVELOPER'}
             </span>
           </div>
         </a>
 
-        {/* Main Nav Links (Without ALL button) */}
+        {/* Main Nav Links */}
         <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {navLinks.map((link) => {
             const isActive = activeSection === link.id;
@@ -99,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="#resume"
             onClick={(e) => {
               e.preventDefault();
-              handleNavClick('resume');
+              onOpenResume();
             }}
             className={`hidden sm:inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold tracking-wide rounded-lg border transition-all shadow-2xs cursor-pointer ${
               activeSection === 'resume'
@@ -127,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Send className="w-3 h-3" />
           </a>
 
-          {/* Mobile Menu Hamburger Button */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-1.5 text-[#11261B] hover:bg-[#11261B]/5 rounded-lg transition-colors cursor-pointer"
@@ -139,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#F8F5EE] border-b border-[#11261B]/10 px-4 pt-3 pb-6 space-y-1.5 shadow-xl animate-fade-in">
           <a

@@ -5,7 +5,12 @@ import {
   initialServices,
   initialSkillGroups,
   initialTestimonials,
+  initialCourses,
 } from '../data/portfolioData';
+
+/**
+ * CMS Service: Purely Supabase-driven for Real-time Portfolio Management
+ */
 
 const notifyCmsUpdated = () => {
   if (typeof window !== 'undefined') {
@@ -13,35 +18,12 @@ const notifyCmsUpdated = () => {
   }
 };
 
-// Fallback initial state for each domain
+// Fallback initial state for each domain (used if Supabase is empty or failing)
 const getFallbackData = (table: string) => {
-  const stored = localStorage.getItem(`cms_fallback_${table}`);
+  const stored = localStorage.getItem(`cms_cache_${table}`);
   if (stored !== null) {
     try {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        if (table === 'testimonials' && parsed.length > 0) {
-          const hasBlankReview = parsed.some(
-            (item: any) => !(item.review || item.feedback || item.message || '').trim()
-          );
-          if (!hasBlankReview && parsed.length >= initialTestimonials.length) {
-            return parsed;
-          }
-        } else if (table === 'projects' && parsed.length >= initialProjects.length) {
-          return parsed.map((p: any) => ({
-            ...p,
-            image: p.image || p.imageUrl || '/assets/images/biztop_full_web_1790852703068.jpg',
-            imageUrl: p.imageUrl || p.image || '/assets/images/biztop_full_web_1790852703068.jpg',
-          }));
-        } else if ((table === 'profiles' || table === 'hero' || table === 'about') && parsed.length > 0) {
-          if (parsed[0] && (!parsed[0].avatarUrl || parsed[0].avatarUrl.includes('i.pinimg.com'))) {
-            parsed[0].avatarUrl = '/assets/images/mushahid_admin_profile.jpg';
-          }
-          return parsed;
-        } else if (table !== 'projects') {
-          return parsed;
-        }
-      }
+      return JSON.parse(stored);
     } catch (e) {
       console.warn(`Failed to parse cached cms_${table}`, e);
     }
@@ -52,21 +34,8 @@ const getFallbackData = (table: string) => {
     initial = [initialProfile];
   } else if (table === 'projects') {
     initial = initialProjects.map((p: any) => ({
-      id: p.id,
-      title: p.title,
-      description: p.description,
-      category: p.category,
-      categoryLabel: p.categoryLabel || p.category,
-      year: p.year,
-      metrics: p.metrics,
-      technologies: p.technologies || [],
-      image: p.image || p.imageUrl,
+      ...p,
       imageUrl: p.imageUrl || p.image,
-      link: p.liveUrl || p.githubUrl || '#',
-      liveUrl: p.liveUrl || '#',
-      githubUrl: p.githubUrl || '#',
-      featured: p.featured ?? true,
-      hidden: p.hidden ?? false,
     }));
   } else if (table === 'skills') {
     initial = initialSkillGroups.flatMap((group: any, gIdx) =>
@@ -92,42 +61,13 @@ const getFallbackData = (table: string) => {
       role: t.role,
       company: t.company,
       review: (t.review || t.feedback || '').trim(),
-      feedback: (t.review || t.feedback || '').trim(),
-      message: (t.review || t.feedback || '').trim(),
-      avatar: t.avatar || t.avatarUrl || '',
       avatarUrl: t.avatar || t.avatarUrl || '',
       avatarColor: t.avatarColor || '#EA580C',
-      avatarLetter: t.avatarLetter || t.name.charAt(0).toUpperCase() || 'U',
-      date: t.date || 'Recent',
-      flag: t.flag || '⭐',
       rating: t.rating || 5,
-      metricsResult: t.metricsResult || '',
-      tags: t.tags || ['Web App', 'React', 'TypeScript'],
-      project: t.project || 'Web Application',
-      location: t.location || 'Global',
+      date: t.date || 'Recent',
+      tags: t.tags || [],
       platform: t.platform || 'google',
     }));
-  } else if (table === 'messages') {
-    initial = [
-      {
-        id: 'msg_1',
-        name: 'Ahmed Khan',
-        email: 'ahmed.khan@example.com',
-        projectType: 'Business Website',
-        message: 'Can you build a business website for my agency?',
-        status: 'unread',
-        createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-      },
-      {
-        id: 'msg_2',
-        name: 'Sara Ali',
-        email: 'sara.ali@example.com',
-        projectType: 'Full-Stack Web App',
-        message: 'Great portfolio! I would like to consult regarding a React app.',
-        status: 'read',
-        createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-      },
-    ];
   } else if (table === 'settings' || table === 'site_settings') {
     initial = [
       {
@@ -140,235 +80,183 @@ const getFallbackData = (table: string) => {
         navbarItems: ['Home', 'About', 'Services', 'Skills', 'Projects', 'Contact'],
       },
     ];
+  } else if (table === 'experiences') {
+    initial = [
+        {
+          role: 'Full-Stack Web Developer',
+          company: 'Freelance & Independent Contractor',
+          period: '2024 – Present',
+          location: 'Remote Worldwide',
+          badge: 'Current Role',
+          description: 'Architecting and shipping responsive web apps, SaaS platforms, and headless e-commerce stores.',
+          achievements: [
+            'Built 30+ production web applications.',
+            'Engineered high-concurrency REST & GraphQL APIs.'
+          ],
+          stack: ['React', 'Next.js', 'TypeScript', 'Node.js'],
+          displayOrder: 0
+        }
+    ];
+  } else if (table === 'courses') {
+      initial = initialCourses;
+  } else if (table === 'why_us') {
+      initial = [
+          { type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
+          { type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
+      ];
   }
 
-  localStorage.setItem(`cms_fallback_${table}`, JSON.stringify(initial));
   return initial;
 };
 
-const setFallbackData = (table: string, data: any[]) => {
-  localStorage.setItem(`cms_fallback_${table}`, JSON.stringify(data));
-  notifyCmsUpdated();
+const setCacheData = (table: string, data: any[]) => {
+  localStorage.setItem(`cms_cache_${table}`, JSON.stringify(data));
 };
 
-// Set up Supabase Realtime Listener if Supabase is active
+// Set up Supabase Realtime Listener
 if (supabase && typeof window !== 'undefined') {
   try {
     supabase
-      .channel('public_portfolio_cms')
-      .on('postgres_changes', { event: '*', schema: 'public' }, () => {
+      .channel('portfolio_realtime_full')
+      .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+        console.log('[CMS REALTIME] Change detected:', payload);
         notifyCmsUpdated();
       })
       .subscribe();
   } catch (e) {
-    console.warn('Realtime channel setup error', e);
+    console.warn('Supabase Realtime setup failed', e);
   }
 }
 
 export const cmsService = {
-  // Fetch data with Server-First persistence
+  // Fetch data from Supabase (Primary) with local cache fallback
   async fetchData(table: string): Promise<any[]> {
-    // 1. First try Backend Server API
-    try {
-      const res = await fetch(`/api/cms/${table}`);
-      if (res.ok) {
-        const json = await res.json();
-        const data = Array.isArray(json) ? json : (json.data || []);
-        if (Array.isArray(data) && data.length > 0) {
-          localStorage.setItem(`cms_fallback_${table}`, JSON.stringify(data));
-          return data;
-        }
-      }
-    } catch (err) {
-      console.warn(`[CMS CLIENT] Backend fetch for ${table} unavailable, falling back:`, err);
-    }
-
-    // 2. Supabase if configured
+    const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    
     if (supabase) {
       try {
-        const { data, error } = await supabase.from(table).select('*');
+        let query = supabase.from(normTable).select('*');
+        
+        if (normTable === 'experiences' || normTable === 'courses' || normTable === 'why_us') {
+            query = query.order('displayOrder', { ascending: true });
+        } else {
+            query = query.order('createdAt', { ascending: false });
+        }
+
+        const { data, error } = await query;
+          
         if (!error && data && data.length > 0) {
+          setCacheData(normTable, data);
           return data;
+        }
+        
+        if (!error && data && data.length === 0) {
+            return getFallbackData(normTable);
         }
       } catch (err) {
-        console.warn(`Supabase fetch failed for table ${table}`, err);
+        console.warn(`Supabase fetch failed for table ${normTable}`, err);
       }
     }
 
-    // 3. Cached / Local fallback
-    return getFallbackData(table);
+    return getFallbackData(normTable);
   },
 
-  // Insert data with Server persistence
+  // Insert data to Supabase
   async insertData(table: string, data: any): Promise<any[]> {
-    const newItem = {
-      id: data.id || `${table.substring(0, 4)}_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      createdAt: new Date().toISOString(),
-      ...data,
-    };
-
-    // 1. Save to Backend Server
-    try {
-      const res = await fetch(`/api/cms/${table}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newItem),
-      });
-      if (res.ok) {
-        const savedItem = await res.json();
-        const current = getFallbackData(table);
-        const updated = [savedItem, ...current.filter((i: any) => i.id !== savedItem.id)];
-        setFallbackData(table, updated);
-        notifyCmsUpdated();
-        return [savedItem];
-      }
-    } catch (err) {
-      console.warn(`[CMS CLIENT] Backend insert failed for ${table}:`, err);
-    }
-
-    // 2. Supabase fallback
+    const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    
     if (supabase) {
       try {
-        const { data: inserted, error } = await supabase.from(table).insert(newItem).select();
-        if (!error && inserted) {
+        const { data: inserted, error } = await supabase
+          .from(normTable)
+          .insert({
+            ...data,
+            updatedAt: new Date().toISOString()
+          })
+          .select();
+          
+        if (error) throw error;
+        if (inserted) {
           notifyCmsUpdated();
           return inserted;
         }
       } catch (err) {
-        console.warn(`Supabase insert failed for ${table}`, err);
+        console.error(`Supabase insert failed for ${normTable}`, err);
+        throw err;
       }
     }
-
-    // 3. Local fallback
-    const current = getFallbackData(table);
-    const updated = [newItem, ...current];
-    setFallbackData(table, updated);
-    return [newItem];
+    
+    throw new Error('Supabase not configured for insert');
   },
 
-  // Update data with Server persistence
+  // Update data in Supabase
   async updateData(table: string, id: string, data: any): Promise<any[]> {
-    // 1. Update on Backend Server
-    try {
-      const res = await fetch(`/api/cms/${table}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const updatedItem = await res.json();
-        const current = getFallbackData(table);
-        const updated = current.map((item: any) =>
-          String(item.id) === String(id) ? { ...item, ...updatedItem } : item
-        );
-        setFallbackData(table, updated);
-        notifyCmsUpdated();
-        return [updatedItem];
-      }
-    } catch (err) {
-      console.warn(`[CMS CLIENT] Backend update failed for ${table}/${id}:`, err);
-    }
-
-    // 2. Supabase fallback
+    const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    
     if (supabase) {
       try {
-        const { data: updated, error } = await supabase.from(table).update(data).eq('id', id).select();
-        if (!error && updated) {
+        const { data: updated, error } = await supabase
+          .from(normTable)
+          .update({
+            ...data,
+            updatedAt: new Date().toISOString()
+          })
+          .eq('id', id)
+          .select();
+          
+        if (error) throw error;
+        if (updated) {
           notifyCmsUpdated();
           return updated;
         }
       } catch (err) {
-        console.warn(`Supabase update failed for ${table}`, err);
+        console.error(`Supabase update failed for ${normTable}`, err);
+        throw err;
       }
     }
-
-    // 3. Local fallback
-    const current = getFallbackData(table);
-    const updated = current.map((item: any) => (String(item.id) === String(id) ? { ...item, ...data } : item));
-    setFallbackData(table, updated);
-    return [data];
+    
+    throw new Error('Supabase not configured for update');
   },
 
-  // Delete data with Server persistence
+  // Delete data from Supabase
   async deleteData(table: string, id: string): Promise<boolean> {
-    // 1. Delete on Backend Server
-    try {
-      const res = await fetch(`/api/cms/${table}/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        const current = getFallbackData(table);
-        const updated = current.filter((item: any) => String(item.id) !== String(id));
-        setFallbackData(table, updated);
+    const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    
+    if (supabase) {
+      try {
+        const { error } = await supabase.from(normTable).delete().eq('id', id);
+        if (error) throw error;
         notifyCmsUpdated();
         return true;
-      }
-    } catch (err) {
-      console.warn(`[CMS CLIENT] Backend delete failed for ${table}/${id}:`, err);
-    }
-
-    // 2. Supabase fallback
-    if (supabase) {
-      try {
-        const { error } = await supabase.from(table).delete().eq('id', id);
-        if (!error) {
-          notifyCmsUpdated();
-        }
       } catch (err) {
-        console.warn(`Supabase delete failed for ${table}`, err);
+        console.error(`Supabase delete failed for ${normTable}`, err);
+        throw err;
       }
     }
-
-    // 3. Local fallback
-    const current = getFallbackData(table);
-    const updated = current.filter((item: any) => String(item.id) !== String(id));
-    setFallbackData(table, updated);
-    return true;
+    
+    return false;
   },
 
-  // Permanent server file upload via Backend POST /api/upload
+  // Supabase Storage Upload
   async uploadFile(bucket: string, file: File, path?: string): Promise<string> {
-    let base64Data = '';
-    try {
-      base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: base64Data,
-          fileName: path || file.name,
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        if (data.url) {
-          return data.url;
-        }
-      }
-    } catch (err) {
-      console.warn('[CMS CLIENT] Backend upload failed, checking fallbacks:', err);
+    if (!supabase) {
+        return URL.createObjectURL(file);
     }
 
-    // 2. Supabase storage fallback
     const fileName = path || `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-    if (supabase) {
-      try {
-        const { error } = await supabase.storage.from(bucket).upload(fileName, file, { upsert: true });
-        if (!error) {
-          const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
-          return data.publicUrl;
-        }
-      } catch (err) {
-        console.warn('Supabase storage upload failed', err);
-      }
+    
+    try {
+      const { error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, { upsert: true, cacheControl: '3600' });
+        
+      if (error) throw error;
+      
+      const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      return data.publicUrl;
+    } catch (err) {
+      console.error('Supabase storage upload failed', err);
+      throw err;
     }
-
-    // 3. Robust Base64 or Object URL fallback
-    return base64Data || URL.createObjectURL(file);
   },
 };

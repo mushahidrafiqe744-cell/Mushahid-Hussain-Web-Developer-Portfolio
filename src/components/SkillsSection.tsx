@@ -22,27 +22,23 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [displayScore, setDisplayScore] = useState(0);
 
-  // Smooth number counting from 0% to skill.score on hover
   useEffect(() => {
     let animationFrameId: number;
     let startTime: number | null = null;
-    const duration = 1200; // 1.2 seconds for a luxurious slow run
+    const duration = 1200;
 
     if (isHovered) {
       const step = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const progress = Math.min((timestamp - startTime) / duration, 1);
-        // Easing function (easeOutCubic)
         const easeOut = 1 - Math.pow(1 - progress, 3);
         setDisplayScore(Math.round(easeOut * skill.score));
-
         if (progress < 1) {
           animationFrameId = requestAnimationFrame(step);
         }
       };
       animationFrameId = requestAnimationFrame(step);
     } else {
-      // Reset smoothly to 0% when cursor leaves
       setDisplayScore(0);
     }
 
@@ -57,7 +53,6 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
       onMouseLeave={() => setIsHovered(false)}
       className="bg-white p-5 rounded-2xl border border-[#11261B]/10 shadow-xs hover:border-[#C5A059] hover:shadow-xl transition-all duration-500 group cursor-pointer relative overflow-hidden"
     >
-      {/* Header with Icon, Name, and Level */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div
@@ -83,7 +78,6 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
         </span>
       </div>
 
-      {/* Score Header & 0% to Target Progress Meter */}
       <div className="mb-3">
         <div className="flex justify-between items-center text-[10px] font-bold text-[#11261B] mb-1.5">
           <span className="text-[#5C6E61] uppercase tracking-wider text-[9px]">
@@ -96,10 +90,7 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
           </span>
         </div>
 
-        {/* The Track Line - starts at 0%, slowly fills up on hover */}
         <div className="relative w-full bg-[#E5DEC9] h-2.5 rounded-full overflow-hidden shadow-inner">
-          
-          {/* Animated Fill Bar (0% -> target% with slow 1.2s cubic ease) */}
           <div
             className="h-full rounded-full relative overflow-hidden bg-gradient-to-r from-[#B0893F] via-[#C5A059] to-[#DFC285]"
             style={{
@@ -110,7 +101,6 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
               filter: isHovered ? 'brightness(1.1) drop-shadow(0 0 5px rgba(197, 160, 89, 0.7))' : 'none',
             }}
           >
-            {/* Travelling Light Beam when running */}
             {isHovered && (
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/90 to-transparent w-full h-full -skew-x-12 running-line-beam" />
             )}
@@ -122,7 +112,6 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
         {skill.desc}
       </p>
 
-      {/* Bottom subtle gold indicator line that expands on hover */}
       <div
         className="absolute bottom-0 left-0 h-[2.5px] bg-gradient-to-r from-[#C5A059] via-[#DFC285] to-[#11261B]"
         style={{
@@ -134,23 +123,47 @@ const SkillCard: React.FC<{ skill: SkillItemData }> = ({ skill }) => {
   );
 };
 
-export const SkillsSection: React.FC<SkillsSectionProps> = () => {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'frontend' | 'backend' | 'database' | 'devops'>('all');
+export const SkillsSection: React.FC<SkillsSectionProps> = ({ skillGroups }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const detailedSkills: SkillItemData[] = [
-    { name: 'React', category: 'frontend', level: 'Expert', score: 95, exp: '3+ Years', short: 'Re', bg: '#23272f', color: '#149eca', desc: 'Hooks, Suspense, Server Components, State Management' },
-    { name: 'Next.js', category: 'frontend', level: 'Expert', score: 92, exp: '3 Years', short: 'Nx', bg: '#000000', color: '#ffffff', desc: 'App Router, SSR, SSG, API Routes, Optimization' },
-    { name: 'TypeScript', category: 'frontend', level: 'Advanced', score: 90, exp: '3 Years', short: 'TS', bg: '#3178c6', color: '#ffffff', desc: 'Strict Typing, Generics, Utility Types, Interface Design' },
-    { name: 'Node.js', category: 'backend', level: 'Advanced', score: 88, exp: '3 Years', short: 'Node', bg: '#339933', color: '#ffffff', desc: 'Event Loop, Streams, REST Architecture, Microservices' },
-    { name: 'Express.js', category: 'backend', level: 'Advanced', score: 90, exp: '3 Years', short: 'Ex', bg: '#1f2937', color: '#e5e7eb', desc: 'Middleware, Routing, Error Handling, JWT Auth' },
-    { name: 'Tailwind CSS', category: 'frontend', level: 'Expert', score: 98, exp: '3+ Years', short: 'TW', bg: '#38bdf8', color: '#ffffff', desc: 'JIT, Responsive Design, Fluid Breakpoints, Custom Design Tokens' },
-    { name: 'PostgreSQL', category: 'database', level: 'Advanced', score: 85, exp: '2+ Years', short: 'SQL', bg: '#4169e1', color: '#ffffff', desc: 'Relational Schemas, Indexing, Transactions, Drizzle/Prisma' },
-    { name: 'MongoDB', category: 'database', level: 'Proficient', score: 82, exp: '2 Years', short: 'MD', bg: '#13aa52', color: '#ffffff', desc: 'Document Modeling, Aggregation Pipelines, Mongoose' },
-    { name: 'Redis', category: 'database', level: 'Proficient', score: 80, exp: '2 Years', short: 'RD', bg: '#dc382d', color: '#ffffff', desc: 'In-memory Caching, Session Stores, Rate Limiting' },
-    { name: 'Git & GitHub', category: 'devops', level: 'Expert', score: 94, exp: '3+ Years', short: 'Git', bg: '#f05032', color: '#ffffff', desc: 'Branching Models, GitHub Actions, Pull Requests, Rebase' },
-    { name: 'Docker', category: 'devops', level: 'Proficient', score: 78, exp: '1.5 Years', short: 'Doc', bg: '#2496ed', color: '#ffffff', desc: 'Containerization, Docker Compose, Multi-stage Builds' },
-    { name: 'GraphQL & REST', category: 'backend', level: 'Advanced', score: 86, exp: '2+ Years', short: 'API', bg: '#e535ab', color: '#ffffff', desc: 'Schema Stitching, Queries, Mutations, OpenAPI Specs' },
-  ];
+  // Convert skillGroups into flat detailedSkills
+  const detailedSkills: SkillItemData[] = skillGroups.flatMap(group => 
+    (group.skills || group.items || []).map(item => {
+        const score = item.levelPercentage || 85;
+        let level = 'Intermediate';
+        if (score >= 90) level = 'Expert';
+        else if (score >= 80) level = 'Advanced';
+        else if (score >= 70) level = 'Proficient';
+        
+        // Simple color generation based on name
+        const colors = [
+            { bg: '#23272f', color: '#149eca' }, // Dark Blue
+            { bg: '#3178c6', color: '#ffffff' }, // Blue
+            { bg: '#1f2937', color: '#e5e7eb' }, // Gray
+            { bg: '#339933', color: '#ffffff' }, // Green
+            { bg: '#dc382d', color: '#ffffff' }, // Red
+            { bg: '#4169e1', color: '#ffffff' }, // Royal Blue
+            { bg: '#e535ab', color: '#ffffff' }, // Pink
+            { bg: '#38bdf8', color: '#ffffff' }, // Light Blue
+        ];
+        const colorIdx = (item.name.length + item.name.charCodeAt(0)) % colors.length;
+        const colorSet = colors[colorIdx];
+
+        return {
+            name: item.name,
+            category: group.category.toLowerCase(),
+            level: level,
+            score: score,
+            exp: 'Professional',
+            short: item.name.substring(0, 2),
+            bg: colorSet.bg,
+            color: colorSet.color,
+            desc: `Specialized expertise in ${item.name} development and architectural implementation.`
+        };
+    })
+  );
+
+  const categories = Array.from(new Set(['all', ...skillGroups.map(g => g.category.toLowerCase())]));
 
   const engineeringPractices = [
     { title: 'Modular Architecture', desc: 'DRY, SOLID, reusable component design patterns.' },
@@ -169,7 +182,6 @@ export const SkillsSection: React.FC<SkillsSectionProps> = () => {
     <section id="skills" className="py-20 bg-[#F2EDE2] border-b border-[#11261B]/10 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.25em] uppercase text-[#C5A059] mb-2">
             <Sparkles className="w-3.5 h-3.5" />
@@ -181,41 +193,32 @@ export const SkillsSection: React.FC<SkillsSectionProps> = () => {
           </h2>
           <div className="w-16 h-1 bg-[#C5A059] mx-auto mb-4 rounded-full" />
           <p className="text-[#5C6E61] text-base sm:text-lg leading-relaxed">
-            A battle-tested set of languages, frameworks, libraries, and engineering practices. Hover over any skill to watch the proficiency meter run.
+            A battle-tested set of languages, frameworks, libraries, and engineering practices.
           </p>
         </div>
 
-        {/* Category Tabs */}
         <div className="flex items-center justify-center gap-2 mb-10 overflow-x-auto pb-2">
-          {[
-            { id: 'all', label: 'All Technologies' },
-            { id: 'frontend', label: 'Frontend' },
-            { id: 'backend', label: 'Backend & APIs' },
-            { id: 'database', label: 'Databases & Caching' },
-            { id: 'devops', label: 'DevOps & Git' },
-          ].map((cat) => (
+          {categories.map((cat) => (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id as any)}
-              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap shadow-2xs cursor-pointer ${
-                selectedCategory === cat.id
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap shadow-2xs cursor-pointer capitalize ${
+                selectedCategory === cat
                   ? 'bg-[#11261B] text-white shadow-sm'
                   : 'bg-white text-[#5C6E61] hover:text-[#11261B] hover:bg-[#F8F5EE] border border-[#11261B]/10'
               }`}
             >
-              {cat.label}
+              {cat === 'all' ? 'All Technologies' : cat}
             </button>
           ))}
         </div>
 
-        {/* Skills Cards Grid - Starts at 0%, slowly fills up to target% on hover */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-16">
           {filtered.map((skill) => (
             <SkillCard key={skill.name} skill={skill} />
           ))}
         </div>
 
-        {/* Engineering Principles Section */}
         <div className="bg-[#11261B] text-white p-8 sm:p-10 rounded-2xl border border-[#C5A059]/30 shadow-lg relative overflow-hidden">
           <div className="max-w-3xl mb-8">
             <div className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#C5A059] mb-1">

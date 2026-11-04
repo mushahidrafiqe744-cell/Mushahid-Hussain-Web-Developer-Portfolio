@@ -37,7 +37,7 @@ export const initialProfile: DeveloperProfile = {
   linkedin: 'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
   tiktok: 'https://www.tiktok.com/@mushahidrafiqe699',
   twitter: 'https://twitter.com/mushahiddev',
-  avatarUrl: adminProfileImg,
+  avatarUrl: 'https://i.pinimg.com/1200x/0c/b3/9e/0cb39e700962bebdce9925a2c566b1a1.jpg',
   yearsOfExperience: '8+ Years',
   projectsCompleted: '50+',
   happyClients: '99%',

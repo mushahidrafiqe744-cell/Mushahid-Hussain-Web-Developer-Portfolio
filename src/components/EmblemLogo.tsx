@@ -5,7 +5,8 @@ interface EmblemLogoProps {
   className?: string;
   showSubtitle?: boolean;
   interactive?: boolean;
-  nameAround?: string;
+  name?: string;
+  title?: string;
 }
 
 export const EmblemLogo: React.FC<EmblemLogoProps> = ({
@@ -13,10 +14,18 @@ export const EmblemLogo: React.FC<EmblemLogoProps> = ({
   className = '',
   showSubtitle = true,
   interactive = true,
-  nameAround = '• 𝕄𝕦𝕤𝕙𝕒𝕙𝕚𝕕 ℍ𝕦𝕤𝕤𝕒𝕚𝕟 • 𝕎𝕖𝕓 𝔻𝕖𝕧𝕖𝕝𝕠𝕡𝕖𝕣 •',
+  name = 'Mushahid Hussain',
+  title = 'Web Developer',
 }) => {
   const uniqueId = useId().replace(/:/g, '-');
   const textPathId = `circle-text-path-${uniqueId}`;
+
+  // Create circular text: "• Name • Title •"
+  const nameAround = `• ${name} • ${title} •`;
+  
+  // Get initials
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const firstName = name.split(' ')[0];
 
   // Dimensions & typography scale configs for various sizes
   const config = {
@@ -185,25 +194,25 @@ export const EmblemLogo: React.FC<EmblemLogoProps> = ({
         />
       </svg>
 
-      {/* Center Core Monogram Content (MH, Mushahid, Divider, WEB DEVELOPER) */}
+      {/* Center Core Monogram Content (Initials, First Name, Divider, Title) */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none z-10 px-2">
-        {/* Monogram Initials "MH" */}
+        {/* Monogram Initials */}
         <div
           className={`font-display font-black leading-none tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-[#EBD8A8] via-[#C5A059] to-[#A38038] drop-shadow-xs transition-transform duration-300 ${
             interactive ? 'group-hover:scale-105' : ''
           } ${config.initialsSize}`}
           style={{ letterSpacing: '0.06em' }}
         >
-          MH
+          {initials}
         </div>
 
-        {/* Cursive Name "Mushahid" */}
+        {/* Cursive Name */}
         <div
           className={`font-script text-white font-normal leading-none select-none drop-shadow-xs transition-colors duration-300 ${
             interactive ? 'group-hover:text-[#DFC285]' : ''
           } ${config.scriptSize}`}
         >
-          Mushahid
+          {firstName}
         </div>
 
         {/* Small Divider Line & Subtitle */}
@@ -211,11 +220,11 @@ export const EmblemLogo: React.FC<EmblemLogoProps> = ({
           <>
             <div className={`h-[1px] bg-gradient-to-r from-transparent via-[#C5A059] to-transparent my-1 ${config.lineWidth}`} />
 
-            {/* Subtext "WEB DEVELOPER" */}
+            {/* Subtext Title */}
             <div
               className={`font-sans font-bold uppercase text-[#DFC285]/90 select-none leading-none ${config.subtextSize}`}
             >
-              WEB DEVELOPER
+              {title}
             </div>
           </>
         )}

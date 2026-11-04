@@ -12,6 +12,9 @@ export const ManageHero: React.FC = () => {
     badge: 'CRAFTING SCALABLE & INTUITIVE WEB EXPERIENCES.',
     bioHero: 'I build high-performance web applications, responsive interfaces, and robust backend services.',
     avatarUrl: DEFAULT_AVATAR,
+    projectsCompleted: '30+',
+    yearsOfExperience: '8+',
+    happyClients: '99%',
   });
 
   const [saving, setSaving] = useState(false);
@@ -34,6 +37,9 @@ export const ManageHero: React.FC = () => {
           badge: data[0].badge || 'CRAFTING SCALABLE & INTUITIVE WEB EXPERIENCES.',
           bioHero: data[0].bioHero || 'I build high-performance web applications...',
           avatarUrl: validAvatar,
+          projectsCompleted: data[0].projectsCompleted || '30+',
+          yearsOfExperience: data[0].yearsOfExperience || '8+',
+          happyClients: data[0].happyClients || '99%',
         });
       }
     } catch (e) {
@@ -135,6 +141,44 @@ export const ManageHero: React.FC = () => {
               type="text"
               value={formData.badge}
               onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-hidden focus:border-[#0A3D22]"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Projects Count
+            </label>
+            <input
+              type="text"
+              value={formData.projectsCompleted}
+              onChange={(e) => setFormData({ ...formData, projectsCompleted: e.target.value })}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-hidden focus:border-[#0A3D22]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Years Experience
+            </label>
+            <input
+              type="text"
+              value={formData.yearsOfExperience}
+              onChange={(e) => setFormData({ ...formData, yearsOfExperience: e.target.value })}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-hidden focus:border-[#0A3D22]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+              Satisfaction %
+            </label>
+            <input
+              type="text"
+              value={formData.happyClients}
+              onChange={(e) => setFormData({ ...formData, happyClients: e.target.value })}
               className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 focus:outline-hidden focus:border-[#0A3D22]"
             />
           </div>

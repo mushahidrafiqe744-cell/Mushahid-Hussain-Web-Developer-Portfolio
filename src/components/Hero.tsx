@@ -200,7 +200,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
 
             {/* Left Side: Floating Emblem Badge with Running 360° Circular Text & Dashed Line */}
             <div className="hidden sm:block absolute -top-4 -left-6 z-20 transition-transform duration-300 hover:scale-110 cursor-pointer drop-shadow-2xl animate-float">
-              <EmblemLogo size="md" showSubtitle={true} interactive={true} />
+              <EmblemLogo size="md" showSubtitle={true} interactive={true} name={profile.name} title={profile.title} />
             </div>
 
             {/* Right Side: Floating Full-Stack Developer Badge */}

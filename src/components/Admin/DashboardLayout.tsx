@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut, Lock } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut, Lock, Briefcase, GraduationCap, Zap } from 'lucide-react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { cmsService } from '../../services/cms';
@@ -12,7 +12,6 @@ export const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const [adminAvatar, setAdminAvatar] = useState(ADMIN_IMAGE_URL);
   
-  // Strict Auth State: Check if valid admin session exists in session or local storage
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return Boolean(
       sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token')
@@ -40,9 +39,7 @@ export const DashboardLayout: React.FC = () => {
     if (supabase) {
       try {
         await supabase.auth.signOut();
-      } catch (e) {
-        // ignore
-      }
+      } catch (e) {}
     }
     sessionStorage.removeItem('admin_token');
     localStorage.removeItem('admin_token');
@@ -51,7 +48,6 @@ export const DashboardLayout: React.FC = () => {
     navigate('/admin');
   };
 
-  // If user is not authenticated, DO NOT show the admin dashboard! Render password login screen directly.
   if (!isAuthenticated) {
     return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
   }
@@ -61,25 +57,26 @@ export const DashboardLayout: React.FC = () => {
     { name: 'Hero Section', path: '/admin/hero', icon: Globe },
     { name: 'About Me', path: '/admin/about', icon: User },
     { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
-    { name: 'Skills', path: '/admin/skills', icon: BookOpen },
+    { name: 'Career Journey', path: '/admin/experience', icon: Briefcase },
+    { name: 'Skills & Tech', path: '/admin/skills', icon: BookOpen },
     { name: 'Services', path: '/admin/services', icon: Layers },
+    { name: 'Certifications', path: '/admin/courses', icon: GraduationCap },
     { name: 'Testimonials', path: '/admin/testimonials', icon: Award },
-    { name: 'Contact Messages', path: '/admin/messages', icon: MessageSquare },
-    { name: 'Website Settings', path: '/admin/settings', icon: Settings },
+    { name: 'Value Prop', path: '/admin/why-us', icon: Zap },
+    { name: 'Messages', path: '/admin/messages', icon: MessageSquare },
+    { name: 'Settings & SEO', path: '/admin/settings', icon: Settings },
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0A3D22] text-white flex flex-col shrink-0">
-        <div className="p-6 flex items-center gap-3 border-b border-white/10">
+      <aside className="w-64 bg-[#0A3D22] text-white flex flex-col shrink-0 overflow-y-auto">
+        <div className="p-6 flex items-center gap-3 border-b border-white/10 sticky top-0 bg-[#0A3D22] z-10">
           <img
             src={adminAvatar || ADMIN_IMAGE_URL}
             alt="Mushahid Hussain"
             referrerPolicy="no-referrer"
-            onError={(e) => {
-              e.currentTarget.src = ADMIN_IMAGE_URL;
-            }}
+            onError={(e) => { e.currentTarget.src = ADMIN_IMAGE_URL; }}
             className="w-11 h-11 rounded-full object-cover border-2 border-[#50E364] shadow-sm"
           />
           <div>
@@ -88,7 +85,7 @@ export const DashboardLayout: React.FC = () => {
           </div>
         </div>
         
-        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 py-4 space-y-1">
           {navItems.map((item) => (
             <Link 
               key={item.name} 
@@ -101,7 +98,7 @@ export const DashboardLayout: React.FC = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/10 space-y-2">
+        <div className="p-4 border-t border-white/10 space-y-2 sticky bottom-0 bg-[#0A3D22]">
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-2.5 w-full bg-red-500/10 hover:bg-red-500/20 rounded-xl text-sm font-bold text-red-300 transition-colors cursor-pointer border border-red-500/20"
@@ -133,7 +130,7 @@ export const DashboardLayout: React.FC = () => {
                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 px-3.5 py-2 rounded-full border border-gray-200 transition-all cursor-pointer"
              >
                <Lock size={13} />
-               <span>Lock Admin</span>
+               <span>Lock</span>
              </button>
              
              <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
@@ -141,19 +138,19 @@ export const DashboardLayout: React.FC = () => {
                  src={adminAvatar || ADMIN_IMAGE_URL}
                  alt="Admin Avatar"
                  referrerPolicy="no-referrer"
-                 onError={(e) => {
-                   e.currentTarget.src = ADMIN_IMAGE_URL;
-                 }}
+                 onError={(e) => { e.currentTarget.src = ADMIN_IMAGE_URL; }}
                  className="w-9 h-9 rounded-full object-cover border border-[#50E364]"
                />
-               <div className="text-left">
+               <div className="text-left hidden sm:block">
                  <div className="text-xs font-bold text-gray-900">Mushahid Hussain</div>
                  <div className="text-[10px] text-gray-500 font-semibold">Administrator</div>
                </div>
              </div>
           </div>
         </header>
-        <Outlet />
+        <div className="animate-fade-in">
+            <Outlet />
+        </div>
       </main>
     </div>
   );

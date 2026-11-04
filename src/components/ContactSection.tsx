@@ -25,6 +25,7 @@ import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
 import { CountryCurrency, WORLD_COUNTRIES } from '../data/worldCountries';
 import { CountryCurrencyModal } from './CountryCurrencyModal';
+import { cmsService } from '../services/cms';
 
 interface ContactSectionProps {
   profile: DeveloperProfile;
@@ -290,31 +291,18 @@ Message:
 ${payload.message}`;
     const mailtoUrl = `mailto:${profile.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
-    // 1. Send to backend database in background
+    // 1. Send to Supabase database in background
     try {
-      // Existing inquiries sync
-      fetch('/api/inquiries', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }).catch((err) => console.warn('Backend sync note:', err));
-
-      // New real-time order notification
-      fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: payload.name,
-          email: payload.email,
-          projectType: payload.projectType,
-          message: payload.message
-        }),
-      }).catch((err) => console.warn('Real-time order sync note:', err));
-    } catch (e) {}
+      await cmsService.insertData('messages', {
+        name: payload.name,
+        email: payload.email,
+        projectType: payload.projectType,
+        message: payload.message,
+        status: 'unread'
+      });
+    } catch (e) {
+      console.warn('Supabase sync note:', e);
+    }
 
     const ref = `INQ-${Date.now().toString().slice(-4)}`;
     setInquiryRefId(ref);

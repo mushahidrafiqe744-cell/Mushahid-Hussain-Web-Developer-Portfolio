@@ -53,9 +53,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
               <span>ABOUT ME</span>
             </div>
 
-            {/* Massive Display Name: I'm Mushahid! */}
+            {/* Massive Display Name: I'm {profile.name}! */}
             <h2 className="font-display text-5xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.05] text-white mb-6 select-none">
-              I'm <span className="bg-gradient-to-r from-white via-[#DFC285] to-[#C5A059] bg-clip-text text-transparent drop-shadow-sm font-extrabold">Mushahid!</span>
+              I'm <span className="bg-gradient-to-r from-white via-[#DFC285] to-[#C5A059] bg-clip-text text-transparent drop-shadow-sm font-extrabold">{profile.name.split(' ')[0]}!</span>
             </h2>
 
             {/* Small green bar separator */}
@@ -63,10 +63,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
 
             {/* Bio Paragraph */}
             <p className="text-[#A3B8A8] text-sm sm:text-base leading-relaxed mb-4 max-w-lg">
-              I am a passionate Full-Stack Web Developer specializing in modern React ecosystems, TypeScript, Node.js, Next.js, and high-converting responsive interfaces. My focus is writing clean, scalable, and maintainable code that delivers outstanding user experiences and business results.
+              {profile.bioAbout}
             </p>
             <p className="text-[#5C6E61] text-xs sm:text-sm leading-relaxed mb-8 max-w-lg">
-              With a background in modern web engineering and UI/UX design principles, I bridge the gap between technical architecture and intuitive digital experiences. Whether creating bespoke applications or optimizing legacy codebases, I bring precision and dedication to every line of code.
+              {profile.bioHero}
             </p>
 
             {/* CTA Buttons */}
@@ -227,8 +227,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
               
               {/* Portrait Image */}
               <img 
-                src={cvPortrait} 
-                alt="Mushahid Hussain Portrait" 
+                src={profile.avatarUrl || cvPortrait} 
+                alt={`${profile.name} Portrait`} 
                 className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-108"
               />
 
@@ -241,11 +241,11 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
                   className="text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#DFC285] via-[#FFF5D6] to-[#C5A059] leading-tight drop-shadow-[0_2px_4px_rgba(3,12,6,0.9)]"
                   style={{ fontFamily: "'Alex Brush', cursive" }}
                 >
-                  Mushahid Hussain
+                  {profile.name}
                 </span>
                 
                 <span className="text-[9px] uppercase tracking-[0.35em] text-white/80 font-bold mt-1.5 drop-shadow-md">
-                  WEB DEVELOPER
+                  {profile.title || 'WEB DEVELOPER'}
                 </span>
               </div>
             </div>

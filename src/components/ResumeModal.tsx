@@ -9,6 +9,7 @@ interface ResumeModalProps {
   profile: DeveloperProfile;
   projects: Project[];
   skillGroups: SkillGroup[];
+  experiences: any[];
   courses?: CourseCertification[];
 }
 
@@ -18,6 +19,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
   profile,
   projects,
   skillGroups,
+  experiences,
   courses = [],
 }) => {
   useEffect(() => {
@@ -39,6 +41,15 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
   };
 
   const handleDownloadMarkdown = () => {
+    const skillLines = skillGroups.map(group => {
+      const skills = (group.skills || group.items || []).map((s: any) => s.name).join(', ');
+      return `- **${group.category}**: ${skills}`;
+    }).join('\n');
+
+    const expLines = experiences.map(exp => {
+      return `### ${exp.role} (${exp.period})\n- ${exp.company}\n- ${exp.description}`;
+    }).join('\n\n');
+
     const content = `# ${profile.name} - ${profile.title}
 Email: ${profile.email} | Phone: ${profile.phone} | Location: ${profile.location}
 GitHub: ${profile.github} | LinkedIn: ${profile.linkedin}
@@ -51,18 +62,12 @@ ${profile.bioAbout}
 ---
 
 ## TECHNICAL SKILLS
-- **Core Languages & Frameworks**: React, Next.js, TypeScript, JavaScript (ES6+), Node.js, Express, HTML5/CSS3, Tailwind CSS
-- **Databases & Cloud**: PostgreSQL, MongoDB, Redis, Supabase, Docker, Vercel
-- **Engineering Competencies**: Full-Stack Architecture, REST & GraphQL APIs, State Management (Zustand/Redux), Authentication (OAuth/JWT), SEO & Web Vitals Optimization
+${skillLines}
 
 ---
 
 ## WORK EXPERIENCE
-### Freelance Web & Full-Stack Developer (2024 – Present)
-- Designed and engineered 30+ responsive, production-ready web applications for global clients.
-- Implemented headless e-commerce storefronts with Stripe payment integration, achieving Lighthouse 98 scores.
-- Architected RESTful and GraphQL API backends with JWT authentication and Redis caching.
-- Collaborated directly with founders and product teams to translate Figma wireframes into performant, accessible React components.
+${expLines}
 
 ---
 
@@ -145,7 +150,7 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
           {/* Header */}
           <div className="border-b-2 border-[#11261B] pb-6 mb-6 flex gap-6">
             <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-[#C5A059]/20">
-              <img src={cvPortrait} alt={profile.name} className="w-full h-full object-cover" />
+              <img src={profile.avatarUrl || cvPortrait} alt={profile.name} className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 flex-1">
               <div>
@@ -160,7 +165,7 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
               {/* Contact Chips */}
               <div className="text-xs text-[#5C6E61] space-y-1 sm:text-right">
                 <div>{profile.email} · {profile.phone}</div>
-                <div>{profile.location} · {profile.github.replace('https://', '')}</div>
+                <div>{profile.location} · {profile.github?.replace('https://', '')}</div>
               </div>
             </div>
           </div>
@@ -172,7 +177,7 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
               <span>Professional Summary</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#11261B]/80 leading-relaxed">
-              {profile.bioAbout} Experienced in translating complex business and product requirements into clean, high-performance web applications with modular component design, type safety, and optimized database pipelines.
+              {profile.bioAbout}
             </p>
           </div>
 
@@ -183,22 +188,14 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
               <span>Technical Skills</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 text-xs">
-              <div>
-                <span className="font-bold text-[#11261B]">Frontend: </span>
-                <span className="text-[#5C6E61]">React, Next.js, TypeScript, JavaScript (ES6+), Tailwind CSS, HTML5/CSS3</span>
-              </div>
-              <div>
-                <span className="font-bold text-[#11261B]">Backend: </span>
-                <span className="text-[#5C6E61]">Node.js, Express, REST APIs, GraphQL, Authentication (JWT/OAuth)</span>
-              </div>
-              <div>
-                <span className="font-bold text-[#11261B]">Databases & Cloud: </span>
-                <span className="text-[#5C6E61]">PostgreSQL, MongoDB, Redis, Supabase, Docker, Vercel, Git</span>
-              </div>
-              <div>
-                <span className="font-bold text-[#11261B]">Architecture & Best Practices: </span>
-                <span className="text-[#5C6E61]">Responsive Design, Core Web Vitals, SEO, CI/CD, Unit Testing</span>
-              </div>
+              {skillGroups.map((group, idx) => (
+                <div key={idx}>
+                  <span className="font-bold text-[#11261B]">{group.category}: </span>
+                  <span className="text-[#5C6E61]">
+                    {(group.skills || group.items || []).map((s: any) => s.name).join(', ')}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -210,20 +207,18 @@ ${courses.map((c) => `- **${c.title}** — ${c.institution} (${c.period}) | Link
             </h2>
 
             <div className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-sm text-[#11261B]">Freelance Web & Full-Stack Developer</span>
-                  <span className="text-[#5C6E61] font-medium">2024 – Present</span>
+              {experiences.map((exp) => (
+                <div key={exp.id}>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-sm text-[#11261B]">{exp.role}</span>
+                    <span className="text-[#5C6E61] font-medium">{exp.period}</span>
+                  </div>
+                  <div className="text-xs text-[#C5A059] font-semibold mb-1.5">{exp.company}</div>
+                  <p className="text-xs text-[#11261B]/80 leading-relaxed pl-1">
+                    {exp.description}
+                  </p>
                 </div>
-                <div className="text-xs text-[#C5A059] font-semibold mb-1.5">Remote / Independent Contracting</div>
-                
-                <ul className="list-disc list-inside text-xs text-[#11261B]/80 space-y-1 pl-1">
-                  <li>Engineered over 30+ responsive web applications, single-page apps, and custom landing platforms.</li>
-                  <li>Delivered headless e-commerce stores with Stripe checkout and automated inventory synchronization.</li>
-                  <li>Constructed scalable RESTful API services in Express & TypeScript with rate limiting and database indexing.</li>
-                  <li>Achieved 95+ average Google Lighthouse scores across Core Web Vitals, accessibility, and SEO audits.</li>
-                </ul>
-              </div>
+              ))}
             </div>
           </div>
 
