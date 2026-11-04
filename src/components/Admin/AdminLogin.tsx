@@ -59,11 +59,16 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
     } catch (err: any) {
       console.error('[ADMIN LOGIN] Error:', err);
       
-      // Fallback for demo/development if Supabase is not fully set up but user is testing
-      if (err.message?.includes('Invalid login credentials') || err.message?.includes('Email not confirmed')) {
-          setErrorMsg('Ghalat password ya email! Please use your Supabase credentials.');
+      const msg = err.message || '';
+      
+      if (msg === 'Failed to fetch') {
+          setErrorMsg('Network Error: Supabase se connect nahi ho raha. Check karein ke URL sahi hai aur "https://" laga hua hai. Browser Console (F12) check karein.');
+      } else if (msg.includes('Invalid login credentials')) {
+          setErrorMsg('Ghalat password ya email! Pehle Supabase Dashboard mein ja kar Authentication -> Users mein ye user banayein.');
+      } else if (msg.includes('Email not confirmed')) {
+          setErrorMsg('Email confirm nahi hui. Supabase Dashboard mein "Confirm Email" off karein ya email verify karein.');
       } else {
-          setErrorMsg(err.message || 'Ghalat password! Access denied.');
+          setErrorMsg(msg || 'Login fail ho gaya. Supabase project status check karein.');
       }
     } finally {
       setLoading(false);

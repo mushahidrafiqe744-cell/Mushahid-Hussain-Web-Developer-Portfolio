@@ -10,6 +10,10 @@ const __dirname = path.dirname(__filename);
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    define: {
+      'process.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL),
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY),
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
