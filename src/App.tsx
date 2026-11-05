@@ -40,6 +40,7 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ProjectModal } from './components/ProjectModal';
 import { ResumeModal } from './components/ResumeModal';
+import { MushahidAIChatbot } from './components/MushahidAIChatbot';
 
 const SECTION_HASH_MAP: Record<string, SectionId> = {
   hero: 'hero', home: 'hero', about: 'about', services: 'services',
@@ -178,6 +179,7 @@ function PortfolioMain() {
       <Footer profile={profile} onSelectSection={handleSelectSection} />
       <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
       <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} profile={profile} projects={projects} skillGroups={skills} experiences={experiences} courses={courses} />
+      <MushahidAIChatbot />
     </div>
   );
 }
