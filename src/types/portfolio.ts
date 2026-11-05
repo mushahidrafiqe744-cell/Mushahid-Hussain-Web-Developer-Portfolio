@@ -9,6 +9,7 @@ export type SectionId =
   | 'testimonials'
   | 'projects'
   | 'resume'
+  | 'feedback'
   | 'contact';
 
 export interface Testimonial {

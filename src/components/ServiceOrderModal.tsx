@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Mail,
 } from 'lucide-react';
+import { SaveToggle } from './SaveToggle';
 
 export interface ServiceItemData {
   id: string;
@@ -116,8 +117,7 @@ ${service.deliverables.slice(0, 3).map((d) => `• ${d}`).join('\n')}
 _Order submitted via Developer Portfolio_`;
   };
 
-  const handleSendOrder = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendOrder = () => {
     const message = generateMessage();
     
     if (contactMethod === 'whatsapp') {
@@ -214,7 +214,7 @@ _Order submitted via Developer Portfolio_`;
         </div>
 
         {/* Modal Form Content */}
-        <form onSubmit={handleSendOrder} className="p-5 sm:p-7 max-h-[72vh] overflow-y-auto space-y-5">
+        <div className="p-5 sm:p-7 max-h-[72vh] overflow-y-auto space-y-5">
           {/* Deliverables summary */}
           <div className="bg-[#F2EDE2] p-3.5 rounded-xl border border-[#11261B]/10">
             <div className="text-xs font-bold text-[#11261B] uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -403,13 +403,12 @@ _Order submitted via Developer Portfolio_`;
 
           {/* Buttons: Submit & Quick Action */}
           <div className="pt-2 space-y-2.5">
-            <button
-              type="submit"
-              className="w-full py-4 px-6 rounded-2xl bg-[#11261B] hover:bg-[#1A3828] active:scale-[0.99] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all cursor-pointer group"
-            >
-              <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              <span>Send Order via {contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}</span>
-            </button>
+            <SaveToggle
+              idleText={`Send Order via ${contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}`}
+              savedText="Opening Application..."
+              loadingDuration={1400}
+              onClick={handleSendOrder}
+            />
 
             <div className="flex items-center justify-between pt-1">
               <button
@@ -427,7 +426,7 @@ _Order submitted via Developer Portfolio_`;
               </span>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

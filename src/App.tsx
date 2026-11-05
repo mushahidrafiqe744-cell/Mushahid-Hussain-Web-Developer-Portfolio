@@ -37,10 +37,12 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { ResumeSection } from './components/ResumeSection';
 import { ContactSection } from './components/ContactSection';
+import { FeedbackModal } from './components/FeedbackModal';
 import { Footer } from './components/Footer';
 import { ProjectModal } from './components/ProjectModal';
 import { ResumeModal } from './components/ResumeModal';
-import { MushahidAIChatbot } from './components/MushahidAIChatbot';
+import { ScrollIsland } from './components/ScrollIsland';
+import { SCROLL_TOPICS } from './data/scrollTopics';
 
 const SECTION_HASH_MAP: Record<string, SectionId> = {
   hero: 'hero', home: 'hero', about: 'about', services: 'services',
@@ -54,7 +56,7 @@ const SECTION_TITLES: Record<SectionId, string> = {
   skills: 'Technical Skills & Stack', experience: 'Professional Experience',
   courses: 'Certifications & Accreditations', 'why-choose-me': 'Why Choose Me',
   testimonials: 'Client Feedback', projects: 'Featured Projects',
-  resume: 'Resume & Credentials', contact: 'Contact Me',
+  resume: 'Resume & Credentials', feedback: 'Leave Feedback', contact: 'Contact Me',
 };
 
 const getInitialSection = (): SectionId => {
@@ -76,6 +78,7 @@ function PortfolioMain() {
   const [activeSection, setActiveSection] = useState<SectionId>(() => getInitialSection());
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   const loadCmsFrontendData = async () => {
     try {
@@ -162,7 +165,14 @@ function PortfolioMain() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F5EE] text-[#11261B]" style={{ fontFamily: settings?.fontFamily || 'Inter, sans-serif' }}>
-      <Navbar profile={profile} activeSection={activeSection} onSelectSection={handleSelectSection} onOpenResume={() => setIsResumeModalOpen(true)} customLinks={settings?.navbarItems} />
+      <Navbar 
+        profile={profile} 
+        activeSection={activeSection} 
+        onSelectSection={handleSelectSection} 
+        onOpenResume={() => setIsResumeModalOpen(true)} 
+        onOpenFeedback={() => setIsFeedbackModalOpen(true)}
+        customLinks={settings?.navbarItems} 
+      />
       <main className="flex-1">
         {activeSection === 'hero' && <Hero profile={profile} onOpenSection={handleSelectSection} onOpenResume={() => setIsResumeModalOpen(true)} />}
         {activeSection === 'about' && <AboutSection profile={profile} />}
@@ -171,7 +181,7 @@ function PortfolioMain() {
         {activeSection === 'experience' && <ExperienceSection profile={profile} experiences={experiences} />}
         {activeSection === 'courses' && <CoursesSection courses={courses} />}
         {activeSection === 'why-choose-me' && <WhyChooseMeSection pillars={whyUs.pillars} workflow={whyUs.workflow} />}
-        {activeSection === 'testimonials' && <TestimonialsSection testimonials={testimonials} onOpenContact={() => handleSelectSection('contact')} />}
+        {activeSection === 'testimonials' && <TestimonialsSection testimonials={testimonials} onOpenContact={() => handleSelectSection('contact')} onOpenFeedback={() => setIsFeedbackModalOpen(true)} />}
         {activeSection === 'projects' && <ProjectsSection projects={projects.filter((p: any) => !p.hidden)} onSelectProject={setSelectedProject} />}
         {activeSection === 'resume' && <ResumeSection profile={profile} projects={projects.filter((p: any) => !p.hidden)} skillGroups={skills} experiences={experiences} courses={courses} onOpenFullModal={() => setIsResumeModalOpen(true)} />}
         {activeSection === 'contact' && <ContactSection profile={profile} onOpenResume={() => setIsResumeModalOpen(true)} />}
@@ -179,7 +189,8 @@ function PortfolioMain() {
       <Footer profile={profile} onSelectSection={handleSelectSection} />
       <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
       <ResumeModal isOpen={isResumeModalOpen} onClose={() => setIsResumeModalOpen(false)} profile={profile} projects={projects} skillGroups={skills} experiences={experiences} courses={courses} />
-      <MushahidAIChatbot />
+      <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
+      <ScrollIsland topics={SCROLL_TOPICS} />
     </div>
   );
 }

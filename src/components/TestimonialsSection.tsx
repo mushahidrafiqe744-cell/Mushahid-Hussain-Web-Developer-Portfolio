@@ -17,6 +17,7 @@ import { Testimonial } from '../types/portfolio';
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
   onOpenContact?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 // Google 4-Color Icon SVG
@@ -119,6 +120,7 @@ const GoogleReviewCard: React.FC<{ item: Testimonial }> = ({ item }) => {
 export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   testimonials,
   onOpenContact,
+  onOpenFeedback,
 }) => {
   const [viewMode, setViewMode] = useState<'wall' | 'slider'>('wall');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -298,19 +300,13 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               <span>Hover over any review card to pause and read.</span>
             </div>
 
-            <a
-              href="#contact"
-              onClick={(e) => {
-                if (onOpenContact) {
-                  e.preventDefault();
-                  onOpenContact();
-                }
-              }}
+            <button
+              onClick={onOpenFeedback}
               className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#11261B] text-[#DFC285] hover:text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer hover:scale-105"
             >
               <span>Work With Me & Leave Feedback</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </button>
           </div>
 
         </div>
@@ -466,19 +462,13 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 ))}
               </div>
 
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  if (onOpenContact) {
-                    e.preventDefault();
-                    onOpenContact();
-                  }
-                }}
+              <button
+                onClick={onOpenFeedback}
                 className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-[#11261B] text-[#11261B] hover:text-[#DFC285] text-xs font-bold uppercase tracking-wider transition-all border border-[#11261B]/15 shadow-2xs hover:shadow-md cursor-pointer group"
               >
-                <span>Start Your Project</span>
+                <span>Leave Your Feedback</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </a>
+              </button>
             </div>
 
             {/* Bottom Client Navigation Thumbnails Grid */}

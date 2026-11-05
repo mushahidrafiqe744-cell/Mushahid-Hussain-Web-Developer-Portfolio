@@ -21,6 +21,7 @@ import {
   Tag,
   CheckCircle2
 } from 'lucide-react';
+import { SaveToggle } from './SaveToggle';
 import { DeveloperProfile } from '../types/portfolio';
 import { HoverCounter } from './HoverCounter';
 import { CountryCurrency, WORLD_COUNTRIES } from '../data/worldCountries';
@@ -88,8 +89,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
 
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'takeoff' | 'flying' | 'delivered'>('idle');
-  const [flightProgress, setFlightProgress] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [inquiryRefId, setInquiryRefId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -239,14 +238,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendInquiry = async () => {
     if (isSubmitting) return;
+
+    // Simple validation check before proceeding
+    if (!formData.name || !formData.email || !formData.message) {
+      setSubmitError('Please fill in all required fields (Name, Email, Message).');
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitError(null);
-    setAnimationPhase('takeoff');
-    setFlightProgress(15);
 
     const payload = {
       name: formData.name.trim(),
@@ -307,37 +309,22 @@ ${payload.message}`;
     const ref = `INQ-${Date.now().toString().slice(-4)}`;
     setInquiryRefId(ref);
 
-    // Step 2: Flying Airplane Phase
-    setTimeout(() => {
-      setAnimationPhase('flying');
-      setFlightProgress(65);
-    }, 450);
-
-    // Step 3: Delivered & Checkmark Pop Phase
-    setTimeout(() => {
-      setAnimationPhase('delivered');
-      setFlightProgress(100);
-    }, 1250);
-
-    // Step 4: Open WhatsApp/Email and switch to completed screen
-    setTimeout(() => {
-      if (contactMethod === 'whatsapp') {
-        window.open(whatsappUrl, '_blank');
-      } else {
-        window.location.href = mailtoUrl;
-      }
-      setIsSubmitting(false);
-      setAnimationPhase('idle');
-      setFlightProgress(0);
-      setSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        projectType: 'Full-Stack Web App',
-        budget: selectedCountry.defaultBudget,
-        message: '',
-      });
-    }, 1850);
+    // Open WhatsApp/Email and switch to completed screen
+    if (contactMethod === 'whatsapp') {
+      window.open(whatsappUrl, '_blank');
+    } else {
+      window.location.href = mailtoUrl;
+    }
+    
+    setIsSubmitting(false);
+    setSubmitted(true);
+    setFormData({
+      name: '',
+      email: '',
+      projectType: 'Full-Stack Web App',
+      budget: selectedCountry.defaultBudget,
+      message: '',
+    });
   };
 
   const titleChars = "Let's Work Together!".split('');
@@ -619,7 +606,7 @@ ${payload.message}`;
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-6">
                 {submitError && (
                   <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
                     <span className="font-bold">Error:</span>
@@ -910,84 +897,15 @@ ${payload.message}`;
                   />
                 </div>
 
-                {/* Pinterest-Inspired Paper Airplane Flight Micro-Interaction Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`group relative overflow-hidden w-full py-4 px-6 rounded-full text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-500 flex items-center justify-between shadow-xl hover:shadow-2xl cursor-pointer disabled:cursor-not-allowed select-none border border-[#C5A059]/30 ${
-                    animationPhase === 'delivered'
-                      ? 'bg-[#059669] ring-4 ring-[#10B981]/40 scale-[1.02]'
-                      : animationPhase === 'flying' || animationPhase === 'takeoff'
-                      ? 'bg-[#0D1F16] ring-2 ring-[#C5A059] scale-[1.01]'
-                      : 'bg-[#11261B] hover:bg-[#1A3828] hover:scale-[1.01] animate-shimmer'
-                  }`}
-                >
-                  {/* Progress Line on bottom of the button during flight */}
-                  {isSubmitting && (
-                    <div
-                      className="absolute bottom-0 left-0 h-1.5 bg-gradient-to-r from-[#C5A059] via-[#50E364] to-[#25D366] transition-all duration-300 ease-out rounded-full shadow-sm"
-                      style={{ width: `${flightProgress}%` }}
-                    />
-                  )}
-
-                  {/* Wind Lines Streamers during Flight */}
-                  {(animationPhase === 'takeoff' || animationPhase === 'flying') && (
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden flex flex-col justify-around opacity-40">
-                      <div className="w-16 h-[2px] bg-white rounded-full animate-wind-line-1" />
-                      <div className="w-24 h-[1.5px] bg-[#C5A059] rounded-full animate-wind-line-2 ml-auto" />
-                      <div className="w-12 h-[2px] bg-white rounded-full animate-wind-line-1" />
-                    </div>
-                  )}
-
-                  {/* Dynamic Button Content based on Flight Phase */}
-                  {animationPhase === 'delivered' ? (
-                    <div className="w-full flex items-center justify-center gap-2.5 animate-check-pop py-0.5">
-                      <div className="w-7 h-7 rounded-full bg-white text-[#059669] flex items-center justify-center shadow-md">
-                        <Check className="w-4 h-4 stroke-[3]" />
-                      </div>
-                      <span className="text-white font-extrabold tracking-wide">
-                        Inquiry Delivered! Opening {contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email App'}...
-                      </span>
-                    </div>
-                  ) : animationPhase === 'flying' ? (
-                    <div className="w-full flex items-center justify-center gap-3 py-0.5">
-                      <div className="relative flex items-center">
-                        <div className="w-6 h-6 rounded-full bg-[#C5A059]/20 flex items-center justify-center animate-ping absolute" />
-                        <SendHorizontal className="w-5 h-5 text-[#DFC285] animate-plane-fly drop-shadow-md" />
-                      </div>
-                      <span className="text-[#DFC285] animate-pulse">
-                        Transmitting Scope to {contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email App'}... 🚀
-                      </span>
-                    </div>
-                  ) : animationPhase === 'takeoff' ? (
-                    <div className="w-full flex items-center justify-center gap-3 py-0.5">
-                      <div className="w-6 h-6 rounded-full bg-[#C5A059] flex items-center justify-center animate-spin">
-                        <Sparkles className="w-3.5 h-3.5 text-[#11261B]" />
-                      </div>
-                      <span className="text-[#DFC285]">
-                        Folding & Launching Inquiry...
-                      </span>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Left: WhatsApp / Zap Circular Badge */}
-                      <div className="w-8 h-8 rounded-full bg-[#25D366] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform shrink-0">
-                        <Zap className="w-4 h-4 text-white fill-white" />
-                      </div>
-
-                      {/* Center: Main Call to Action Label */}
-                      <span className="font-extrabold text-xs sm:text-sm tracking-wider uppercase text-white px-2">
-                        SEND PROJECT INQUIRY (VIA {contactMethod === 'whatsapp' ? 'WHATSAPP' : 'EMAIL'})
-                      </span>
-
-                      {/* Right: Floating Paper Airplane Icon Badge */}
-                      <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center group-hover:translate-x-1.5 group-hover:-translate-y-0.5 transition-all duration-300 shrink-0">
-                        <Send className="w-4 h-4 text-[#DFC285] airplane-hover-glide" />
-                      </div>
-                    </>
-                  )}
-                </button>
-              </form>
+                {/* SaveToggle replacement for the flight button */}
+                <SaveToggle
+                  idleText={`SEND PROJECT INQUIRY (VIA ${contactMethod === 'whatsapp' ? 'WHATSAPP' : 'EMAIL'})`}
+                  savedText={`Opening ${contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}...`}
+                  loadingDuration={1400}
+                  onClick={handleSendInquiry}
+                  className="mt-4"
+                />
+              </div>
             )}
 
           </div>
