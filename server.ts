@@ -285,7 +285,15 @@ app.post('/api/ai/chat', async (req: Request, res: Response) => {
     return res.json({ reply: response.text });
   } catch (err: any) {
     console.error('AI Chat Error:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    
+    // Check for 403 Permission Denied (suspended project or invalid key)
+    if (err.message?.includes('403') || err.status === 403) {
+      return res.status(403).json({ 
+        reply: "AI key error: Aapka Gemini API project shayad suspend ho gaya hai ya key invalid hai. Meharbani karke AI Studio ke 'Secrets' (🔒) panel mein ja kar 'GEMINI_API_KEY' check karein ya naya key select karein." 
+      });
+    }
+
+    return res.status(500).json({ reply: "I'm sorry, I'm having trouble thinking right now. Please try again later or contact Mushahid directly." });
   }
 });
 
