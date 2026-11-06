@@ -3,7 +3,6 @@ import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, Code2, Layers, 
 import { DeveloperProfile, SectionId } from '../types/portfolio';
 import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
-import heroPortrait from '../assets/images/hero_new_portrait.jpg';
 import pin1Img from '../assets/images/pin1_new.jpg';
 import pin2Img from '../assets/images/pin2_new.jpg';
 
@@ -185,7 +184,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 
                 {/* Hero Developer Portrait */}
                 <img
-                  src={heroPortrait}
+                  src={profile.avatarUrl}
                   alt={profile.name}
                   className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                 />

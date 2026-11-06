@@ -37,7 +37,7 @@ export const initialProfile: DeveloperProfile = {
   linkedin: 'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
   tiktok: 'https://www.tiktok.com/@mushahidrafiqe699',
   twitter: 'https://twitter.com/mushahiddev',
-  avatarUrl: 'https://i.pinimg.com/1200x/0c/b3/9e/0cb39e700962bebdce9925a2c566b1a1.jpg',
+  avatarUrl: 'https://i.pinimg.com/736x/69/0e/ee/690eee1da722bcf952fa4893995ac008.jpg',
   yearsOfExperience: '8+ Years',
   projectsCompleted: '50+',
   happyClients: '99%',
@@ -96,13 +96,58 @@ export const initialServices: Service[] = [
 
 export const initialSkillGroups: SkillGroup[] = [
   {
-    category: 'Core Tech Stack',
+    category: 'Frontend Development',
     skills: [
       { name: 'React 19 & Next.js 15', levelPercentage: 96, iconName: 'Code' },
       { name: 'TypeScript & JavaScript (ES6+)', levelPercentage: 95, iconName: 'FileCode' },
       { name: 'Tailwind CSS & Modern UI', levelPercentage: 98, iconName: 'Palette' },
+      { name: 'Redux, Zustand & State Mgmt', levelPercentage: 92, iconName: 'Boxes' },
+      { name: 'HTML5 & Semantic SEO', levelPercentage: 98, iconName: 'Globe' },
+      { name: 'SASS & CSS Animation', levelPercentage: 94, iconName: 'Wind' },
+    ],
+  },
+  {
+    category: 'Backend & Database',
+    skills: [
       { name: 'Node.js & Express APIs', levelPercentage: 92, iconName: 'Server' },
-      { name: 'PostgreSQL, Supabase & MongoDB', levelPercentage: 90, iconName: 'Database' },
+      { name: 'PostgreSQL & Supabase', levelPercentage: 90, iconName: 'Database' },
+      { name: 'MongoDB & NoSQL', levelPercentage: 88, iconName: 'Database' },
+      { name: 'REST & GraphQL APIs', levelPercentage: 94, iconName: 'Share2' },
+      { name: 'Authentication (JWT, OAuth)', levelPercentage: 90, iconName: 'Shield' },
+      { name: 'Prisma & Drizzle ORM', levelPercentage: 85, iconName: 'Layers' },
+    ],
+  },
+  {
+    category: 'Tools & DevOps',
+    skills: [
+      { name: 'Git & GitHub Workflow', levelPercentage: 96, iconName: 'GitBranch' },
+      { name: 'Docker & Containerization', levelPercentage: 82, iconName: 'Container' },
+      { name: 'Vercel, AWS & Cloud Hosting', levelPercentage: 88, iconName: 'Cloud' },
+      { name: 'CI/CD & Automation', levelPercentage: 80, iconName: 'Repeat' },
+      { name: 'Postman & API Testing', levelPercentage: 95, iconName: 'Activity' },
+      { name: 'Linux & Terminal Mastery', levelPercentage: 85, iconName: 'Terminal' },
+    ],
+  },
+  {
+    category: 'Cloud & Infrastructure',
+    skills: [
+      { name: 'AWS (S3, EC2, Lambda)', levelPercentage: 85, iconName: 'Cloud' },
+      { name: 'Google Cloud Platform (GCP)', levelPercentage: 82, iconName: 'Globe' },
+      { name: 'Firebase & App Engine', levelPercentage: 94, iconName: 'Flame' },
+      { name: 'Cloudflare & Edge Computing', levelPercentage: 90, iconName: 'Zap' },
+      { name: 'Terraform (IaC)', levelPercentage: 78, iconName: 'Cpu' },
+      { name: 'Nginx & Reverse Proxy', levelPercentage: 88, iconName: 'RefreshCw' },
+    ],
+  },
+  {
+    category: 'Design & Soft Skills',
+    skills: [
+      { name: 'Figma to Code Conversion', levelPercentage: 96, iconName: 'Figma' },
+      { name: 'UI/UX Design Principles', levelPercentage: 90, iconName: 'UserCheck' },
+      { name: 'Agile & Scrum Methodologies', levelPercentage: 85, iconName: 'Zap' },
+      { name: 'Performance Optimization', levelPercentage: 94, iconName: 'Gauge' },
+      { name: 'Cross-Browser Compatibility', levelPercentage: 98, iconName: 'Chrome' },
+      { name: 'Clean Code & Refactoring', levelPercentage: 95, iconName: 'Brush' },
     ],
   },
 ];
