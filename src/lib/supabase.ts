@@ -9,12 +9,24 @@ const getEnv = (key: string): string => {
   }
 };
 
-const supabaseUrl = getEnv('VITE_SUPABASE_URL');
-const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
+const DEFAULT_SUPABASE_URL = 'https://mmfbelknbomaoqnlvdgu.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'sb_publishable_P7GGPo7KD19rhp1btqrEwA_aGnXoc0B';
+
+const rawUrl = 
+  getEnv('VITE_SUPABASE_URL') || 
+  getEnv('NEXT_PUBLIC_SUPABASE_URL') || 
+  DEFAULT_SUPABASE_URL;
+
+const rawKey = 
+  getEnv('VITE_SUPABASE_ANON_KEY') || 
+  getEnv('VITE_SUPABASE_PUBLISHABLE_KEY') || 
+  getEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY') || 
+  getEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY') || 
+  DEFAULT_SUPABASE_KEY;
 
 // Clean up keys (remove accidental quotes or whitespace)
-const cleanUrl = supabaseUrl?.trim().replace(/^['"](.*)['"]$/, '$1') || '';
-const cleanKey = supabaseAnonKey?.trim().replace(/^['"](.*)['"]$/, '$1') || '';
+const cleanUrl = rawUrl?.trim().replace(/^['"](.*)['"]$/, '$1') || '';
+const cleanKey = rawKey?.trim().replace(/^['"](.*)['"]$/, '$1') || '';
 
 const isValidUrl = (url: string) => {
   try {
@@ -40,3 +52,4 @@ export const supabase = supabaseClient;
 if (!supabase) {
   console.warn('Supabase credentials are missing or invalid URL. Current URL:', cleanUrl || 'Empty');
 }
+
