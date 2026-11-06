@@ -26,16 +26,26 @@ export const ManageWhyUs: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingItem) {
-      await cmsService.updateData('why_us', editingItem.id, formData);
-    } else {
-      await cmsService.insertData('why_us', formData);
+    try {
+      if (editingItem) {
+        await cmsService.updateData('why_us', editingItem.id, formData);
+      } else {
+        await cmsService.insertData('why_us', formData);
+      }
+      setSuccessMsg('Value Proposition updated!');
+      setIsFormOpen(false);
+      setEditingItem(null);
+      loadData();
+      setTimeout(() => setSuccessMsg(''), 3000);
+    } catch (err: any) {
+      console.error('Save error:', err);
+      if (err.code === 'PGRST205' || err.message?.includes('why_us')) {
+        setSuccessMsg('Error: "why_us" table nahi mili. SQL setup script run karein.');
+      } else {
+        setSuccessMsg('Failed to save data. Table check karein.');
+      }
+      setTimeout(() => setSuccessMsg(''), 5000);
     }
-    setSuccessMsg('Value Proposition updated!');
-    setIsFormOpen(false);
-    setEditingItem(null);
-    loadData();
-    setTimeout(() => setSuccessMsg(''), 3000);
   };
 
   const pillars = items.filter(i => i.type === 'pillar');

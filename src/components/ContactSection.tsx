@@ -238,14 +238,30 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const validateForm = (): boolean => {
+    setSubmitError(null);
+    if (!formData.name.trim()) {
+      setSubmitError('Please enter your name.');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      setSubmitError('Please enter your email address.');
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setSubmitError('Please enter a valid email address.');
+      return false;
+    }
+    if (!formData.message.trim()) {
+      setSubmitError('Please enter your project details.');
+      return false;
+    }
+    return true;
+  };
+
   const handleSendInquiry = async () => {
     if (isSubmitting) return;
-
-    // Simple validation check before proceeding
-    if (!formData.name || !formData.email || !formData.message) {
-      setSubmitError('Please fill in all required fields (Name, Email, Message).');
-      return;
-    }
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -902,6 +918,7 @@ ${payload.message}`;
                   idleText={`SEND PROJECT INQUIRY (VIA ${contactMethod === 'whatsapp' ? 'WHATSAPP' : 'EMAIL'})`}
                   savedText={`Opening ${contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}...`}
                   loadingDuration={1400}
+                  onValidate={validateForm}
                   onClick={handleSendInquiry}
                   className="mt-4"
                 />

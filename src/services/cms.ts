@@ -15,6 +15,8 @@ import {
 const notifyCmsUpdated = () => {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('cms_data_updated'));
+    // Trigger sync across iframes/tabs
+    localStorage.setItem('cms_sync_trigger', Date.now().toString());
   }
 };
 
@@ -102,8 +104,8 @@ const getFallbackData = (table: string) => {
       initial = initialCourses;
   } else if (table === 'why_us') {
       initial = [
-          { type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
-          { type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
+          { id: 'pillar_1', type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
+          { id: 'workflow_1', type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
       ];
   }
 

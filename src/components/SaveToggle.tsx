@@ -8,6 +8,7 @@ interface SaveToggleProps {
   savedText?: string;
   loadingDuration?: number;
   successDuration?: number;
+  onValidate?: () => boolean;
   onClick?: () => void;
   className?: string;
 }
@@ -18,6 +19,7 @@ export const SaveToggle: React.FC<SaveToggleProps> = ({
   savedText = 'Order Sent',
   loadingDuration = 1200,
   successDuration = 1500,
+  onValidate,
   onClick,
   className = '',
 }) => {
@@ -26,6 +28,11 @@ export const SaveToggle: React.FC<SaveToggleProps> = ({
   const handleClick = async () => {
     if (status !== 'idle') return;
 
+    // Optional validation before starting animation
+    if (onValidate && !onValidate()) {
+      return;
+    }
+
     setStatus('loading');
 
     // Simulate loading
@@ -33,7 +40,7 @@ export const SaveToggle: React.FC<SaveToggleProps> = ({
 
     setStatus('success');
 
-    // Trigger the actual action (like opening WhatsApp)
+    // Trigger the actual action (like opening WhatsApp) after success state
     if (onClick) onClick();
 
     // Reset back to idle after success duration

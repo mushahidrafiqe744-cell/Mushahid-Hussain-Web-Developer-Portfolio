@@ -149,7 +149,19 @@ function PortfolioMain() {
   useEffect(() => {
     loadCmsFrontendData();
     window.addEventListener('cms_data_updated', loadCmsFrontendData);
-    return () => window.removeEventListener('cms_data_updated', loadCmsFrontendData);
+    
+    // Cross-window/iframe sync
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'cms_sync_trigger') {
+        loadCmsFrontendData();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('cms_data_updated', loadCmsFrontendData);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   useEffect(() => {

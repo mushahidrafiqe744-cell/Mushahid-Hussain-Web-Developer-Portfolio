@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut, Lock, Briefcase, GraduationCap, Zap } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut, Lock, Briefcase, GraduationCap, Zap, LayoutGrid } from 'lucide-react';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { cmsService } from '../../services/cms';
@@ -17,6 +17,24 @@ export const DashboardLayout: React.FC = () => {
       sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token')
     );
   });
+
+  const [showSplitPreview, setShowSplitPreview] = useState(false);
+
+  const PATH_TO_SECTION: Record<string, string> = {
+    '/admin/hero': 'hero',
+    '/admin/about': 'about',
+    '/admin/projects': 'projects',
+    '/admin/experience': 'experience',
+    '/admin/skills': 'skills',
+    '/admin/services': 'services',
+    '/admin/courses': 'courses',
+    '/admin/testimonials': 'testimonials',
+    '/admin/why-us': 'why-choose-me',
+    '/admin/settings': 'hero',
+  };
+
+  const currentSection = PATH_TO_SECTION[location.pathname] || 'hero';
+  const previewUrl = `/#${currentSection}`;
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -70,7 +88,7 @@ export const DashboardLayout: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0A3D22] text-white flex flex-col shrink-0 overflow-y-auto">
+      <aside className="w-64 bg-[#0A3D22] text-white flex flex-col shrink-0 overflow-y-auto border-r border-white/5">
         <div className="p-6 flex items-center gap-3 border-b border-white/10 sticky top-0 bg-[#0A3D22] z-10">
           <img
             src={adminAvatar || ADMIN_IMAGE_URL}
@@ -109,19 +127,35 @@ export const DashboardLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        <header className="flex justify-between items-center mb-8 bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs">
-          <h2 className="text-xl font-bold text-gray-800">
-            {navItems.find(i => i.path === location.pathname)?.name || 'Dashboard'}
-          </h2>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="flex justify-between items-center bg-white p-4 border-b border-gray-100 shadow-2xs z-20">
+          <div className="flex items-center gap-4">
+            <h2 className="text-xl font-bold text-gray-800">
+              {navItems.find(i => i.path === location.pathname)?.name || 'Dashboard'}
+            </h2>
+            
+            {/* Split View Toggle */}
+            <button
+              onClick={() => setShowSplitPreview(!showSplitPreview)}
+              className={`hidden sm:inline-flex items-center gap-2 text-[10px] font-bold px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
+                showSplitPreview 
+                ? 'bg-[#0A3D22] text-[#50E364] border-[#0A3D22]' 
+                : 'bg-white text-gray-600 border-gray-200 hover:border-[#0A3D22]'
+              }`}
+            >
+              <LayoutGrid size={12} />
+              <span>{showSplitPreview ? 'Close Preview' : 'Split Preview'}</span>
+            </button>
+          </div>
+
           <div className="flex items-center gap-3">
              <Link
-               to="/"
+               to={previewUrl}
                className="inline-flex items-center gap-2 text-xs font-bold text-[#0A3D22] bg-[#EAF9EE] hover:bg-[#d5f5db] px-4 py-2 rounded-full border border-[#50E364]/40 transition-all cursor-pointer shadow-2xs"
              >
                <ExternalLink size={14} />
-               <span>Live Preview</span>
+               <span>Full Preview</span>
              </Link>
 
              <button
@@ -141,17 +175,55 @@ export const DashboardLayout: React.FC = () => {
                  onError={(e) => { e.currentTarget.src = ADMIN_IMAGE_URL; }}
                  className="w-9 h-9 rounded-full object-cover border border-[#50E364]"
                />
-               <div className="text-left hidden sm:block">
-                 <div className="text-xs font-bold text-gray-900">Mushahid Hussain</div>
-                 <div className="text-[10px] text-gray-500 font-semibold">Administrator</div>
-               </div>
              </div>
           </div>
         </header>
-        <div className="animate-fade-in">
-            <Outlet />
+
+        {/* Dynamic Split Layout */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left: Admin Forms */}
+          <main className={`flex-1 overflow-y-auto p-6 sm:p-8 transition-all duration-300 ${showSplitPreview ? 'sm:w-1/2 lg:w-2/5' : 'w-full'}`}>
+            <div className="animate-fade-in max-w-5xl mx-auto">
+                <Outlet />
+            </div>
+          </main>
+
+          {/* Right: Live Preview Iframe */}
+          {showSplitPreview && (
+            <aside className="hidden sm:block sm:w-1/2 lg:w-3/5 border-l border-gray-200 bg-gray-100 animate-slide-in-right">
+              <div className="h-full flex flex-col">
+                <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                    </div>
+                    <span className="text-[10px] font-mono text-gray-400 ml-4 truncate max-w-[200px]">
+                      {previewUrl}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => window.open(previewUrl, '_blank')}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 cursor-pointer"
+                    title="Open in new tab"
+                  >
+                    <ExternalLink size={14} />
+                  </button>
+                </div>
+                <div className="flex-1 relative bg-white">
+                  <iframe 
+                    src={previewUrl}
+                    key={previewUrl} // Force reload iframe when section changes
+                    className="absolute inset-0 w-full h-full border-none"
+                    title="Live Preview"
+                  />
+                </div>
+              </div>
+            </aside>
+          )}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

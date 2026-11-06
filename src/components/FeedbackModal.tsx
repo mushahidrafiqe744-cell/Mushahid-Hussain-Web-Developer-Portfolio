@@ -43,9 +43,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
 
   if (!isOpen) return null;
 
-  const handleSubmit = async () => {
-    if (!formData.name || !formData.email || !formData.feedback) return;
+  const validateForm = (): boolean => {
+    if (!formData.name.trim() || !formData.email.trim() || !formData.feedback.trim()) {
+      return false;
+    }
+    return true;
+  };
 
+  const handleSubmit = async () => {
     try {
       await cmsService.insertData('testimonials', {
         name: formData.name,
@@ -185,6 +190,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose })
                 <SaveToggle
                   idleText="Submit My Feedback"
                   savedText="Recording Review..."
+                  onValidate={validateForm}
                   onClick={handleSubmit}
                   loadingDuration={1500}
                 />

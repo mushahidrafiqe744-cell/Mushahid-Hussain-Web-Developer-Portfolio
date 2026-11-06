@@ -117,6 +117,13 @@ ${service.deliverables.slice(0, 3).map((d) => `• ${d}`).join('\n')}
 _Order submitted via Developer Portfolio_`;
   };
 
+  const validateForm = (): boolean => {
+    if (!clientName.trim()) {
+      return false;
+    }
+    return true;
+  };
+
   const handleSendOrder = () => {
     const message = generateMessage();
     
@@ -407,6 +414,7 @@ _Order submitted via Developer Portfolio_`;
               idleText={`Send Order via ${contactMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}`}
               savedText="Opening Application..."
               loadingDuration={1400}
+              onValidate={validateForm}
               onClick={handleSendOrder}
             />
 

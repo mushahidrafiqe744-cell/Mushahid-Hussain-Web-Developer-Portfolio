@@ -1,4 +1,4 @@
--- Supabase PostgreSQL Schema for Portfolio CMS (Full Update)
+-- Supabase PostgreSQL Schema for Portfolio CMS (Comprehensive Setup)
 
 /* 
   STEP 0: STORAGE SETUP
@@ -10,6 +10,9 @@
   6. Choose "Authenticated" for roles (so only logged-in admin can upload).
   7. Use "true" for all policy expressions.
 */
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. Profiles Table (Hero, About, Contact info, Stats)
 CREATE TABLE IF NOT EXISTS profiles (
@@ -27,30 +30,13 @@ CREATE TABLE IF NOT EXISTS profiles (
   github TEXT DEFAULT 'https://github.com/mushahidhussain',
   linkedin TEXT DEFAULT 'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
   tiktok TEXT DEFAULT 'https://www.tiktok.com/@mushahidrafiqe699',
-  avatarUrl TEXT DEFAULT 'https://i.pinimg.com/1200x/0c/b3/9e/0cb39e700962bebdce9925a2c566b1a1.jpg',
+  avatarUrl TEXT DEFAULT 'https://i.pinimg.com/736x/69/0e/ee/690eee1da722bcf952fa4893995ac008.jpg',
   projectsCompleted TEXT DEFAULT '50+',
   yearsOfExperience TEXT DEFAULT '8+',
   happyClients TEXT DEFAULT '99%',
   createdAt TIMESTAMPTZ DEFAULT NOW(),
   updatedAt TIMESTAMPTZ DEFAULT NOW()
 );
-
--- Initial Profile Seed
-INSERT INTO profiles (id, name, title, email, phone, whatsapp, github, linkedin, avatarUrl, projectsCompleted, yearsOfExperience, happyClients)
-VALUES (
-  '00000000-0000-0000-0000-000000000001',
-  'Mushahid Hussain',
-  'Web Developer',
-  'mushahidrafiqe744@gmail.com',
-  '03290725117',
-  '03290725117',
-  'https://github.com/mushahidhussain',
-  'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
-  'https://i.pinimg.com/1200x/0c/b3/9e/0cb39e700962bebdce9925a2c566b1a1.jpg',
-  '50+',
-  '8+',
-  '99%'
-) ON CONFLICT (id) DO NOTHING;
 
 -- 2. Projects Table
 CREATE TABLE IF NOT EXISTS projects (
@@ -65,7 +51,7 @@ CREATE TABLE IF NOT EXISTS projects (
   githubUrl TEXT DEFAULT '#',
   featured BOOLEAN DEFAULT true,
   hidden BOOLEAN DEFAULT false,
-  year TEXT DEFAULT '2024',
+  year TEXT DEFAULT '2025',
   metrics JSONB DEFAULT '{}',
   createdAt TIMESTAMPTZ DEFAULT NOW(),
   updatedAt TIMESTAMPTZ DEFAULT NOW()
@@ -103,10 +89,11 @@ CREATE TABLE IF NOT EXISTS testimonials (
   date TEXT DEFAULT 'Recent',
   tags TEXT[],
   platform TEXT DEFAULT 'google',
+  flag TEXT DEFAULT '🇵🇰',
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. Settings Table (SEO, Theme, Navbar)
+-- 6. Settings Table
 CREATE TABLE IF NOT EXISTS settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT DEFAULT 'Mushahid Hussain - Web Developer Portfolio',
@@ -163,7 +150,7 @@ CREATE TABLE IF NOT EXISTS courses (
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 10. Why Us Table (Pillars & Workflow)
+-- 10. Why Us Table
 CREATE TABLE IF NOT EXISTS why_us (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   type TEXT NOT NULL, -- 'pillar' or 'workflow'
@@ -213,3 +200,31 @@ CREATE POLICY "Admin update why_us" ON why_us FOR ALL USING (auth.role() = 'auth
 
 -- Public Message Insert
 CREATE POLICY "Public insert messages" ON messages FOR INSERT WITH CHECK (true);
+
+-- SEED DATA (Optional, recommended for first setup)
+INSERT INTO profiles (id, name, title, email, phone, whatsapp, avatarUrl, projectsCompleted, yearsOfExperience, happyClients)
+VALUES (
+  '00000000-0000-0000-0000-000000000001',
+  'Mushahid Hussain',
+  'Web Developer',
+  'mushahidrafiqe744@gmail.com',
+  '03290725117',
+  '03290725117',
+  'https://i.pinimg.com/736x/69/0e/ee/690eee1da722bcf952fa4893995ac008.jpg',
+  '50+',
+  '8+',
+  '99%'
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO testimonials (name, role, company, review, rating, date, platform, flag)
+VALUES 
+('Malik Saim', 'Web Client', 'Saim Solutions', 'king web developer ka', 5, '4 weeks ago', 'google', '🇵🇰'),
+('M Saleem', 'Business Owner', 'Saleem Traders', 'Nice', 5, '4 weeks ago', 'google', '🇵🇰'),
+('M Anass', 'Digital Creator', 'Anass Tech', 'Nice', 5, '4 weeks ago', 'google', '🇵🇰'),
+('umar janjua', 'Project Manager', 'Janjua Enterprises', 'Good', 5, '4 weeks ago', 'google', '🇵🇰'),
+('Abdullah Khan', 'Startup Founder', 'TechFlow', 'Excellent service and top-notch code quality. Mushahid is a pro at React and Supabase integrations.', 5, '2 months ago', 'google', '🇵🇰'),
+('Zeeshan Ahmed', 'Software Architect', 'Global Systems', 'The best full-stack developer I have worked with. Very professional and timely delivery.', 5, '1 month ago', 'google', '🇵🇰'),
+('Hamza Malik', 'E-commerce Manager', 'ShopRight', 'Transformed our store into a high-converting machine. The speed optimization is incredible.', 5, '3 weeks ago', 'google', '🇵🇰'),
+('Bilal Hassan', 'Product Designer', 'Creative Hub', 'Exceptional UI/UX implementation. The attention to detail is exactly what we needed.', 5, '5 weeks ago', 'google', '🇵🇰'),
+('Usman Ghani', 'Full Stack Dev', 'DevSquad', 'Very knowledgeable and helpful. Guided me through the entire deployment process.', 5, '2 weeks ago', 'google', '🇵🇰'),
+('Faisal Mehmood', 'IT Director', 'Enterprise Solutions', 'Robust and scalable solutions. Highly recommended for complex enterprise applications.', 5, '6 weeks ago', 'google', '🇵🇰');

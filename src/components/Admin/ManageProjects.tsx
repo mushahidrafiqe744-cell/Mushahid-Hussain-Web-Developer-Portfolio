@@ -12,11 +12,14 @@ export const ManageProjects: React.FC = () => {
     title: '',
     description: '',
     category: '',
+    categoryLabel: 'Web Application',
     technologies: '',
     imageUrl: '',
-    link: '',
+    liveUrl: '',
+    githubUrl: '',
     featured: true,
     hidden: false,
+    year: new Date().getFullYear().toString(),
   });
 
   useEffect(() => {
@@ -47,11 +50,27 @@ export const ManageProjects: React.FC = () => {
           : [],
       };
 
+      // Ensure we use the correct field names for the database
+      // formData might have 'link' but database needs 'liveUrl'
+      const dbPayload = {
+        title: payload.title,
+        description: payload.description,
+        category: payload.category,
+        categoryLabel: payload.categoryLabel,
+        technologies: payload.technologies,
+        imageUrl: payload.imageUrl,
+        liveUrl: payload.liveUrl || (payload as any).link || '#',
+        githubUrl: payload.githubUrl || '#',
+        featured: payload.featured,
+        hidden: payload.hidden,
+        year: payload.year,
+      };
+
       if (editingProject) {
-        await cmsService.updateData('projects', editingProject.id, payload);
+        await cmsService.updateData('projects', editingProject.id, dbPayload);
         showNotification('Project updated successfully!');
       } else {
-        await cmsService.insertData('projects', payload);
+        await cmsService.insertData('projects', dbPayload);
         showNotification('New project added successfully!');
       }
 
@@ -61,15 +80,23 @@ export const ManageProjects: React.FC = () => {
         title: '',
         description: '',
         category: '',
+        categoryLabel: 'Web Application',
         technologies: '',
         imageUrl: '',
-        link: '',
+        liveUrl: '',
+        githubUrl: '',
         featured: true,
         hidden: false,
+        year: new Date().getFullYear().toString(),
       });
       loadProjects();
-    } catch (e) {
-      showNotification('Failed to save project');
+    } catch (e: any) {
+      console.error('Save error:', e);
+      if (e.message?.includes('category')) {
+          showNotification('Error: "category" column nahi mila. Supabase projects table check karein.');
+      } else {
+          showNotification('Failed to save project: ' + (e.message || 'Unknown error'));
+      }
     }
   };
 
@@ -138,11 +165,14 @@ export const ManageProjects: React.FC = () => {
               title: '',
               description: '',
               category: '',
+              categoryLabel: 'Web Application',
               technologies: '',
               imageUrl: '',
-              link: '',
+              liveUrl: '',
+              githubUrl: '',
               featured: true,
               hidden: false,
+              year: new Date().getFullYear().toString(),
             });
             setIsFormOpen(true);
           }}
@@ -218,13 +248,49 @@ export const ManageProjects: React.FC = () => {
 
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                Live Demo / GitHub Link
+                Live Demo Link
               </label>
               <input
                 className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-sm"
-                placeholder="https://..."
-                value={formData.link}
-                onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                placeholder="https://live-site.com"
+                value={formData.liveUrl}
+                onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                GitHub Repo Link
+              </label>
+              <input
+                className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-sm"
+                placeholder="https://github.com/..."
+                value={formData.githubUrl}
+                onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Project Year
+              </label>
+              <input
+                className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-sm"
+                placeholder="2025"
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                Category Label
+              </label>
+              <input
+                className="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-sm"
+                placeholder="Web Application / Mobile App"
+                value={formData.categoryLabel}
+                onChange={(e) => setFormData({ ...formData, categoryLabel: e.target.value })}
               />
             </div>
           </div>
@@ -394,13 +460,16 @@ export const ManageProjects: React.FC = () => {
                         title: proj.title || '',
                         description: proj.description || '',
                         category: proj.category || '',
+                        categoryLabel: proj.categoryLabel || 'Web Application',
                         technologies: Array.isArray(proj.technologies)
                           ? proj.technologies.join(', ')
                           : proj.technologies || '',
                         imageUrl: proj.imageUrl || proj.image_url || '',
-                        link: proj.link || proj.liveUrl || '',
+                        liveUrl: proj.liveUrl || proj.link || '',
+                        githubUrl: proj.githubUrl || '',
                         featured: proj.featured ?? true,
                         hidden: proj.hidden ?? false,
+                        year: proj.year || new Date().getFullYear().toString(),
                       });
                       setIsFormOpen(true);
                     }}
