@@ -58,7 +58,7 @@ export const ScrollIsland: React.FC<ScrollIslandProps> = ({ topics, className = 
           initial={{ opacity: 0, y: 50, x: '-50%' }}
           animate={{ opacity: 1, y: 0, x: '-50%' }}
           exit={{ opacity: 0, y: 50, x: '-50%' }}
-          className={`fixed bottom-24 left-1/2 z-50 w-full max-w-xs sm:max-w-sm ${className}`}
+          className={`fixed bottom-20 sm:bottom-24 left-1/2 z-50 w-full max-w-xs sm:max-w-sm ${className}`}
         >
           <div className="mx-4 overflow-hidden bg-[#11261B]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl ring-1 ring-black/20">
             {/* Progress Bar */}

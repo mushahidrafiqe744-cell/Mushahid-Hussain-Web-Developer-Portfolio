@@ -177,7 +177,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
             <div className="absolute -inset-4 bg-gradient-to-br from-[#DFC285]/40 via-transparent to-[#11261B]/20 rounded-[180px_180px_40px_40px] blur-2xl -z-10 animate-pulse-glow" />
             
             {/* Arch Container with Float Animation & Exact Matching Gold-to-Forest Gradient Border */}
-            <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-[4/5] p-[3.5px] sm:p-[4px] rounded-t-[190px] rounded-b-[28px] bg-gradient-to-b from-[#E2C785] via-[#C5A059] via-35% via-[#7B8B67] via-65% to-[#11261B] shadow-[0_25px_60px_-15px_rgba(17,38,27,0.35)] interactive-image-card">
+            <div className="relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[380px] aspect-[4/5] p-[3px] sm:p-[4px] rounded-t-[190px] rounded-b-[28px] bg-gradient-to-b from-[#E2C785] via-[#C5A059] via-35% via-[#7B8B67] via-65% to-[#11261B] shadow-[0_25px_60px_-15px_rgba(17,38,27,0.35)] interactive-image-card">
               
               {/* Inner Arch Background */}
               <div className="w-full h-full rounded-t-[186px] rounded-b-[24px] overflow-hidden relative bg-[#11261B] group cursor-pointer shadow-inner">

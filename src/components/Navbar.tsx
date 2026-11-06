@@ -202,8 +202,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         )}
       </header>
 
-      {/* New Tooltip Floating Navbar */}
-      <TooltipNavbar items={navItems} className="hidden sm:block" />
+      {/* New Tooltip Floating Navbar - visible on all screens */}
+      <TooltipNavbar items={navItems} className="bottom-4 sm:bottom-8" />
     </>
   );
 };
