@@ -164,10 +164,23 @@ export const cmsService = {
     return getFallbackData(normTable);
   },
 
-  // Insert data to Supabase
+  // Helper to update local cache array
+  updateLocalCache(table: string, updateFn: (items: any[]) => any[]) {
+    const current = getFallbackData(table);
+    const updated = updateFn(current);
+    setCacheData(table, updated);
+  },
+
+  // Insert data to Supabase (with instant local fallback update)
   async insertData(table: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
-    
+    const newItem = {
+      id: data.id || `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
     if (supabase) {
       try {
         const { data: inserted, error } = await supabase
@@ -178,66 +191,76 @@ export const cmsService = {
           })
           .select();
           
-        if (error) throw error;
-        if (inserted) {
+        if (!error && inserted && inserted.length > 0) {
+          // Update cache with fresh Supabase data
+          const current = await this.fetchData(normTable);
           notifyCmsUpdated();
           return inserted;
         }
       } catch (err) {
-        console.error(`Supabase insert failed for ${normTable}`, err);
-        throw err;
+        console.warn(`Supabase insert failed for ${normTable}, applying local fallback`, err);
       }
     }
     
-    throw new Error('Supabase not configured for insert');
+    // Fallback: save to local cache so frontend updates instantly
+    this.updateLocalCache(normTable, (items) => [newItem, ...items]);
+    notifyCmsUpdated();
+    return [newItem];
   },
 
-  // Update data in Supabase
+  // Update data in Supabase (with instant local fallback update)
   async updateData(table: string, id: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
-    
+    const updatePayload = {
+      ...data,
+      updatedAt: new Date().toISOString()
+    };
+
     if (supabase) {
       try {
         const { data: updated, error } = await supabase
           .from(normTable)
-          .update({
-            ...data,
-            updatedAt: new Date().toISOString()
-          })
+          .update(updatePayload)
           .eq('id', id)
           .select();
           
-        if (error) throw error;
-        if (updated) {
+        if (!error && updated && updated.length > 0) {
           notifyCmsUpdated();
           return updated;
         }
       } catch (err) {
-        console.error(`Supabase update failed for ${normTable}`, err);
-        throw err;
+        console.warn(`Supabase update failed for ${normTable}, applying local fallback`, err);
       }
     }
     
-    throw new Error('Supabase not configured for update');
+    // Fallback: update local cache
+    this.updateLocalCache(normTable, (items) =>
+      items.map((item) => (String(item.id) === String(id) ? { ...item, ...updatePayload } : item))
+    );
+    notifyCmsUpdated();
+    return [{ id, ...updatePayload }];
   },
 
-  // Delete data from Supabase
+  // Delete data from Supabase (with instant local fallback update)
   async deleteData(table: string, id: string): Promise<boolean> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     
     if (supabase) {
       try {
         const { error } = await supabase.from(normTable).delete().eq('id', id);
-        if (error) throw error;
-        notifyCmsUpdated();
-        return true;
+        if (!error) {
+          notifyCmsUpdated();
+          return true;
+        }
       } catch (err) {
-        console.error(`Supabase delete failed for ${normTable}`, err);
-        throw err;
+        console.warn(`Supabase delete failed for ${normTable}, applying local fallback`, err);
       }
     }
     
-    return false;
+    // Fallback: remove from local cache
+    this.updateLocalCache(normTable, (items) => items.filter((item) => String(item.id) !== String(id)));
+    notifyCmsUpdated();
+    return true;
   },
 
   // Supabase Storage Upload
