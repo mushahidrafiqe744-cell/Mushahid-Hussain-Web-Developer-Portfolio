@@ -296,11 +296,8 @@ BEGIN
       'why_us'
     ]::TEXT[])
   LOOP
-    -- Public Read Policy
-    EXECUTE format('CREATE POLICY "Public Read Portfolio" ON %I FOR SELECT TO anon, authenticated USING (true);', tbl);
-    
-    -- Strictly Admin-Only Write Policy (INSERT, UPDATE, DELETE only for mushahidrafiqe744@gmail.com or service_role)
-    EXECUTE format('CREATE POLICY "Admin Write Portfolio" ON %I FOR ALL TO authenticated USING ((auth.jwt() ->> ''email'') = ''mushahidrafiqe744@gmail.com'' OR auth.role() = ''service_role'') WITH CHECK ((auth.jwt() ->> ''email'') = ''mushahidrafiqe744@gmail.com'' OR auth.role() = ''service_role'');', tbl);
+    -- Public Full Access Policy (Read & Write for Admin Panel / Frontend)
+    EXECUTE format('CREATE POLICY "Public Full Access Portfolio" ON %I FOR ALL TO anon, authenticated, public USING (true) WITH CHECK (true);', tbl);
   END LOOP;
 END $$;
 
