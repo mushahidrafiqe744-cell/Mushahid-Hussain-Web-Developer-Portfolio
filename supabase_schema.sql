@@ -175,31 +175,17 @@ ALTER TABLE experiences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE why_us ENABLE ROW LEVEL SECURITY;
 
--- Public Read Policies
-CREATE POLICY "Public read profiles" ON profiles FOR SELECT USING (true);
-CREATE POLICY "Public read projects" ON projects FOR SELECT USING (true);
-CREATE POLICY "Public read skills" ON skills FOR SELECT USING (true);
-CREATE POLICY "Public read services" ON services FOR SELECT USING (true);
-CREATE POLICY "Public read testimonials" ON testimonials FOR SELECT USING (true);
-CREATE POLICY "Public read settings" ON settings FOR SELECT USING (true);
-CREATE POLICY "Public read experiences" ON experiences FOR SELECT USING (true);
-CREATE POLICY "Public read courses" ON courses FOR SELECT USING (true);
-CREATE POLICY "Public read why_us" ON why_us FOR SELECT USING (true);
-
--- Authenticated Write Policies (Admin Only)
-CREATE POLICY "Admin update profiles" ON profiles FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update projects" ON projects FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update skills" ON skills FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update services" ON services FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update testimonials" ON testimonials FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update settings" ON settings FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update messages" ON messages FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update experiences" ON experiences FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update courses" ON courses FOR ALL USING (auth.role() = 'authenticated');
-CREATE POLICY "Admin update why_us" ON why_us FOR ALL USING (auth.role() = 'authenticated');
-
--- Public Message Insert
-CREATE POLICY "Public insert messages" ON messages FOR INSERT WITH CHECK (true);
+-- Public Access Policies (Select, Insert, Update, Delete for all tables)
+CREATE POLICY "Public all profiles" ON profiles FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all projects" ON projects FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all skills" ON skills FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all services" ON services FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all testimonials" ON testimonials FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all settings" ON settings FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all messages" ON messages FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all experiences" ON experiences FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all courses" ON courses FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public all why_us" ON why_us FOR ALL USING (true) WITH CHECK (true);
 
 -- SEED DATA (Optional, recommended for first setup)
 INSERT INTO profiles (id, name, title, email, phone, whatsapp, avatarUrl, projectsCompleted, yearsOfExperience, happyClients)

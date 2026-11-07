@@ -141,9 +141,11 @@ export const cmsService = {
         let query = supabase.from(normTable).select('*');
         
         if (normTable === 'experiences' || normTable === 'courses' || normTable === 'why_us') {
-            query = query.order('displayOrder', { ascending: true });
+          query = query.order('displayOrder', { ascending: true });
+        } else if (normTable === 'skills' || normTable === 'services') {
+          // Keep default table ordering if available
         } else {
-            query = query.order('createdAt', { ascending: false });
+          query = query.order('createdAt', { ascending: false });
         }
 
         const { data, error } = await query;
@@ -152,9 +154,16 @@ export const cmsService = {
           setCacheData(normTable, data);
           return data;
         }
-        
+
+        // If table in Supabase is empty, return local fallback and auto-seed Supabase in background
         if (!error && data && data.length === 0) {
-            return getFallbackData(normTable);
+          const fallback = getFallbackData(normTable);
+          if (fallback && fallback.length > 0 && normTable !== 'messages') {
+            supabase.from(normTable).upsert(fallback).then(({ error: seedErr }) => {
+              if (seedErr) console.warn(`Auto-seeding Supabase for ${normTable} failed:`, seedErr);
+            });
+          }
+          return fallback;
         }
       } catch (err) {
         console.warn(`Supabase fetch failed for table ${normTable}`, err);
@@ -171,13 +180,12 @@ export const cmsService = {
     setCacheData(table, updated);
   },
 
-  // Insert data to Supabase (with instant local fallback update)
+  // Insert data to Supabase (with instant cloud upsert)
   async insertData(table: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     const newItem = {
       id: data.id || `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       ...data,
-      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
@@ -185,20 +193,26 @@ export const cmsService = {
       try {
         const { data: inserted, error } = await supabase
           .from(normTable)
-          .insert({
-            ...data,
-            updatedAt: new Date().toISOString()
-          })
+          .insert(newItem)
           .select();
           
         if (!error && inserted && inserted.length > 0) {
-          // Update cache with fresh Supabase data
-          const current = await this.fetchData(normTable);
           notifyCmsUpdated();
           return inserted;
         }
+
+        // Upsert fallback in case of key collision or non-existent record
+        const { data: upserted, error: upsertErr } = await supabase
+          .from(normTable)
+          .upsert(newItem)
+          .select();
+
+        if (!upsertErr && upserted && upserted.length > 0) {
+          notifyCmsUpdated();
+          return upserted;
+        }
       } catch (err) {
-        console.warn(`Supabase insert failed for ${normTable}, applying local fallback`, err);
+        console.warn(`Supabase insert failed for ${normTable}, applying local cache`, err);
       }
     }
     
@@ -208,7 +222,7 @@ export const cmsService = {
     return [newItem];
   },
 
-  // Update data in Supabase (with instant local fallback update)
+  // Update data in Supabase (with automatic upsert for global cloud sync)
   async updateData(table: string, id: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     const updatePayload = {
@@ -218,6 +232,7 @@ export const cmsService = {
 
     if (supabase) {
       try {
+        // 1. Try standard update first
         const { data: updated, error } = await supabase
           .from(normTable)
           .update(updatePayload)
@@ -228,8 +243,20 @@ export const cmsService = {
           notifyCmsUpdated();
           return updated;
         }
+
+        // 2. If row does not exist in cloud database yet, upsert it so all browsers receive it!
+        const upsertPayload = { id, ...updatePayload };
+        const { data: upserted, error: upsertErr } = await supabase
+          .from(normTable)
+          .upsert(upsertPayload)
+          .select();
+
+        if (!upsertErr && upserted && upserted.length > 0) {
+          notifyCmsUpdated();
+          return upserted;
+        }
       } catch (err) {
-        console.warn(`Supabase update failed for ${normTable}, applying local fallback`, err);
+        console.warn(`Supabase update/upsert failed for ${normTable}`, err);
       }
     }
     
@@ -241,7 +268,7 @@ export const cmsService = {
     return [{ id, ...updatePayload }];
   },
 
-  // Delete data from Supabase (with instant local fallback update)
+  // Delete data from Supabase (with instant cloud & local sync)
   async deleteData(table: string, id: string): Promise<boolean> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     
@@ -253,7 +280,7 @@ export const cmsService = {
           return true;
         }
       } catch (err) {
-        console.warn(`Supabase delete failed for ${normTable}, applying local fallback`, err);
+        console.warn(`Supabase delete failed for ${normTable}`, err);
       }
     }
     

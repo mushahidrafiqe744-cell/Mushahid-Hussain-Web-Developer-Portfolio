@@ -253,8 +253,16 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
       setSubmitError('Please enter a valid email address.');
       return false;
     }
+    if (!formData.projectType.trim()) {
+      setSubmitError('Please select a project type.');
+      return false;
+    }
+    if (!formData.budget.trim()) {
+      setSubmitError('Please select an estimated budget.');
+      return false;
+    }
     if (!formData.message.trim()) {
-      setSubmitError('Please enter your project details.');
+      setSubmitError('Please enter your project details and requirements.');
       return false;
     }
     return true;
@@ -262,6 +270,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenR
 
   const handleSendInquiry = async () => {
     if (isSubmitting) return;
+
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
     setSubmitError(null);
@@ -315,6 +325,9 @@ ${payload.message}`;
         name: payload.name,
         email: payload.email,
         projectType: payload.projectType,
+        budget: payload.budget,
+        country: payload.country,
+        currency: payload.currency,
         message: payload.message,
         status: 'unread'
       });
