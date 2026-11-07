@@ -48,14 +48,13 @@ export const ManageAbout: React.FC = () => {
     setSaving(true);
     try {
       const data = await cmsService.fetchData('profiles');
-      const existingId = data && data[0] ? data[0].id : 'profile_1';
+      const existingId = data && data[0] ? data[0].id : '00000000-0000-0000-0000-000000000001';
       await cmsService.updateData('profiles', existingId, formData);
       setSuccessMsg(true);
       setTimeout(() => setSuccessMsg(false), 3000);
-    } catch (e) {
-      alert('About information saved locally.');
-      setSuccessMsg(true);
-      setTimeout(() => setSuccessMsg(false), 3000);
+    } catch (e: any) {
+      console.error('About save error:', e);
+      alert('Failed to save About Me section to Supabase: ' + (e.message || String(e)));
     } finally {
       setSaving(false);
     }

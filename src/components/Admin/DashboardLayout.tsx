@@ -11,6 +11,12 @@ export const DashboardLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [adminAvatar, setAdminAvatar] = useState(ADMIN_IMAGE_URL);
+  const [dbStatus, setDbStatus] = useState<{ loading: boolean; connected: boolean; message: string }>({
+    loading: true,
+    connected: false,
+    message: 'Testing Supabase connection...',
+  });
+  const [showDbModal, setShowDbModal] = useState(false);
   
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return Boolean(
@@ -36,8 +42,15 @@ export const DashboardLayout: React.FC = () => {
   const currentSection = PATH_TO_SECTION[location.pathname] || 'hero';
   const previewUrl = `/#${currentSection}`;
 
+  const checkSupabaseStatus = async () => {
+    setDbStatus({ loading: true, connected: false, message: 'Testing Supabase...' });
+    const res = await cmsService.testConnection();
+    setDbStatus({ loading: false, connected: res.connected, message: res.message });
+  };
+
   useEffect(() => {
     if (!isAuthenticated) return;
+    checkSupabaseStatus();
 
     const loadProfileImg = async () => {
       try {
@@ -135,6 +148,22 @@ export const DashboardLayout: React.FC = () => {
               {navItems.find(i => i.path === location.pathname)?.name || 'Dashboard'}
             </h2>
             
+            {/* Supabase Status Indicator Pill */}
+            <button
+              onClick={() => setShowDbModal(true)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-2xs ${
+                dbStatus.loading
+                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                  : dbStatus.connected
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                  : 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'
+              }`}
+              title="Click to check Supabase connection details"
+            >
+              <span className={`w-2 h-2 rounded-full ${dbStatus.loading ? 'bg-amber-400 animate-ping' : dbStatus.connected ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+              <span>{dbStatus.loading ? 'Testing DB...' : dbStatus.connected ? 'Supabase Connected' : 'DB Disconnected'}</span>
+            </button>
+
             {/* Split View Toggle */}
             <button
               onClick={() => setShowSplitPreview(!showSplitPreview)}
@@ -178,6 +207,42 @@ export const DashboardLayout: React.FC = () => {
              </div>
           </div>
         </header>
+
+        {/* Supabase Diagnostic Modal */}
+        {showDbModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-gray-100 space-y-4 text-left">
+              <div className="flex items-center justify-between border-b pb-3">
+                <h3 className="font-bold text-gray-900 text-base flex items-center gap-2">
+                  <span className={`w-3 h-3 rounded-full ${dbStatus.connected ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                  <span>Supabase Connection Diagnostics</span>
+                </h3>
+                <button onClick={() => setShowDbModal(false)} className="text-gray-400 hover:text-gray-600 font-bold text-sm">✕</button>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-mono space-y-2">
+                <div><strong>Status:</strong> {dbStatus.connected ? '🟢 ONLINE & ACTIVE' : '🔴 OFFLINE / WARN'}</div>
+                <div className="break-all"><strong>URL:</strong> https://mmfbelknbomaoqnlvdgu.supabase.co</div>
+                <div className="text-gray-700"><strong>Message:</strong> {dbStatus.message}</div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  onClick={checkSupabaseStatus}
+                  className="px-4 py-2 rounded-xl bg-[#0A3D22] text-[#50E364] font-bold text-xs hover:bg-[#114D2C] transition-all"
+                >
+                  Re-Test Connection
+                </button>
+                <button
+                  onClick={() => setShowDbModal(false)}
+                  className="px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Dynamic Split Layout */}
         <div className="flex-1 flex overflow-hidden">

@@ -10,6 +10,8 @@ import {
 
 /**
  * CMS Service: Purely Supabase-driven for Real-time Portfolio Management
+ * Uses clean PostgreSQL standard snake_case column names.
+ * Throws explicit errors on Cloud save failures (No fake localStorage fallbacks).
  */
 
 const notifyCmsUpdated = () => {
@@ -45,7 +47,19 @@ const toValidUUID = (id: any): string => {
   return generateUUID();
 };
 
-// Fallback initial state for each domain (used if Supabase is empty or failing)
+const cleanPayloadForTable = (payload: any, errorMessage: string) => {
+  const match = errorMessage.match(/Could not find the '([^']+)' column/i) || errorMessage.match(/column "([^"]+)" of relation/i);
+  if (match && match[1]) {
+    const missingCol = match[1];
+    const cleaned = { ...payload };
+    delete cleaned[missingCol];
+    console.warn(`[CMS CLEAN PAYLOAD] Stripped missing column '${missingCol}' from payload`);
+    return cleaned;
+  }
+  return payload;
+};
+
+// Fallback initial state for each domain (used if Supabase is empty or uninitialized)
 const getFallbackData = (table: string) => {
   const stored = localStorage.getItem(`cms_cache_${table}`);
   if (stored !== null) {
@@ -60,14 +74,14 @@ const getFallbackData = (table: string) => {
   if (table === 'profiles' || table === 'hero' || table === 'about') {
     initial = [{ ...initialProfile, id: '00000000-0000-0000-0000-000000000001' }];
   } else if (table === 'projects') {
-    initial = initialProjects.map((p: any, idx: number) => ({
+    initial = initialProjects.map((p: any) => ({
       ...p,
       id: isUUID(p.id) ? p.id : generateUUID(),
       imageUrl: p.imageUrl || p.image,
     }));
   } else if (table === 'skills') {
-    initial = initialSkillGroups.flatMap((group: any, gIdx) =>
-      ((group.skills || group.items || []) as any[]).map((s: any, sIdx: number) => ({
+    initial = initialSkillGroups.flatMap((group: any) =>
+      ((group.skills || group.items || []) as any[]).map((s: any) => ({
         id: generateUUID(),
         name: s.name,
         percentage: s.levelPercentage || 85,
@@ -110,32 +124,32 @@ const getFallbackData = (table: string) => {
     ];
   } else if (table === 'experiences') {
     initial = [
-        {
-          id: '00000000-0000-0000-0000-000000000003',
-          role: 'Full-Stack Web Developer',
-          company: 'Freelance & Independent Contractor',
-          period: '2024 – Present',
-          location: 'Remote Worldwide',
-          badge: 'Current Role',
-          description: 'Architecting and shipping responsive web apps, SaaS platforms, and headless e-commerce stores.',
-          achievements: [
-            'Built 30+ production web applications.',
-            'Engineered high-concurrency REST & GraphQL APIs.'
-          ],
-          stack: ['React', 'Next.js', 'TypeScript', 'Node.js'],
-          displayOrder: 0
-        }
+      {
+        id: '00000000-0000-0000-0000-000000000003',
+        role: 'Full-Stack Web Developer',
+        company: 'Freelance & Independent Contractor',
+        period: '2024 – Present',
+        location: 'Remote Worldwide',
+        badge: 'Current Role',
+        description: 'Architecting and shipping responsive web apps, SaaS platforms, and headless e-commerce stores.',
+        achievements: [
+          'Built 30+ production web applications.',
+          'Engineered high-concurrency REST & GraphQL APIs.'
+        ],
+        stack: ['React', 'Next.js', 'TypeScript', 'Node.js'],
+        displayOrder: 0
+      }
     ];
   } else if (table === 'courses') {
-      initial = initialCourses.map((c: any) => ({
-        ...c,
-        id: isUUID(c.id) ? c.id : generateUUID()
-      }));
+    initial = initialCourses.map((c: any) => ({
+      ...c,
+      id: isUUID(c.id) ? c.id : generateUUID()
+    }));
   } else if (table === 'why_us') {
-      initial = [
-          { id: '00000000-0000-0000-0000-000000000004', type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
-          { id: '00000000-0000-0000-0000-000000000005', type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
-      ];
+    initial = [
+      { id: '00000000-0000-0000-0000-000000000004', type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
+      { id: '00000000-0000-0000-0000-000000000005', type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
+    ];
   }
 
   return initial;
@@ -145,43 +159,168 @@ const setCacheData = (table: string, data: any[]) => {
   localStorage.setItem(`cms_cache_${table}`, JSON.stringify(data));
 };
 
+const mapDbToFrontend = (item: any) => {
+  if (!item || typeof item !== 'object') return item;
+  return {
+    ...item,
+    createdAt: item.created_at || item.createdAt || new Date().toISOString(),
+    updatedAt: item.updated_at || item.updatedAt || new Date().toISOString(),
+    imageUrl: item.image_url || item.imageUrl || item.image || '',
+    liveUrl: item.live_url || item.liveUrl || item.link || '#',
+    githubUrl: item.github_url || item.githubUrl || '#',
+    categoryLabel: item.category_label || item.categoryLabel || 'Web Application',
+    displayOrder: item.display_order ?? item.displayOrder ?? 0,
+    projectType: item.project_type || item.projectType || '',
+    avatarUrl: item.avatar_url || item.avatarUrl || item.avatar || '',
+    avatarColor: item.avatar_color || item.avatarColor || '#EA580C',
+    scriptSubhead: item.script_subhead || item.scriptSubhead || '',
+    bioHero: item.bio_hero || item.bioHero || '',
+    bioAbout: item.bio_about || item.bioAbout || '',
+    projectsCompleted: item.projects_completed || item.projectsCompleted || '50+',
+    yearsOfExperience: item.years_of_experience || item.yearsOfExperience || '8+',
+    happyClients: item.happy_clients || item.happyClients || '99%',
+    themePrimary: item.theme_primary || item.themePrimary || '#0A3D22',
+    themeAccent: item.theme_accent || item.themeAccent || '#50E364',
+    fontFamily: item.font_family || item.fontFamily || 'Inter',
+    navbarItems: item.navbar_items || item.navbarItems || ['Home', 'About', 'Services', 'Skills', 'Projects', 'Contact'],
+    faviconUrl: item.favicon_url || item.faviconUrl || '/favicon.ico',
+    institutionUrl: item.institution_url || item.institutionUrl || '',
+    badgeImage: item.badge_image || item.badgeImage || '',
+    badgeUrl: item.badge_url || item.badgeUrl || '',
+    credentialBadge: item.credential_badge || item.credentialBadge || '',
+    stepNumber: item.step_number ?? item.stepNumber ?? 1,
+  };
+};
+
+const preparePayloadForDb = (table: string, data: any) => {
+  const payload: any = { ...data };
+  const now = new Date().toISOString();
+
+  // 1. Populate clean PostgreSQL standard snake_case fields
+  payload.created_at = payload.created_at || payload.createdAt || now;
+  payload.updated_at = payload.updated_at || payload.updatedAt || now;
+
+  if (table === 'projects') {
+    payload.image_url = payload.image_url || payload.imageUrl || payload.image || '';
+    payload.category_label = payload.category_label || payload.categoryLabel || 'Web Application';
+    payload.live_url = payload.live_url || payload.liveUrl || payload.link || '#';
+    payload.github_url = payload.github_url || payload.githubUrl || '#';
+  }
+
+  if (table === 'experiences' || table === 'courses' || table === 'why_us') {
+    payload.display_order = payload.display_order ?? payload.displayOrder ?? 0;
+  }
+
+  if (table === 'why_us') {
+    payload.step_number = payload.step_number ?? payload.stepNumber ?? 1;
+  }
+
+  if (table === 'courses') {
+    payload.institution_url = payload.institution_url || payload.institutionUrl || '';
+    payload.badge_image = payload.badge_image || payload.badgeImage || '';
+    payload.badge_url = payload.badge_url || payload.badgeUrl || '';
+    payload.credential_badge = payload.credential_badge || payload.credentialBadge || '';
+  }
+
+  if (table === 'messages') {
+    payload.project_type = payload.project_type || payload.projectType || '';
+  }
+
+  if (table === 'profiles') {
+    payload.avatar_url = payload.avatar_url || payload.avatarUrl || '';
+    payload.script_subhead = payload.script_subhead || payload.scriptSubhead || '';
+    payload.bio_hero = payload.bio_hero || payload.bioHero || '';
+    payload.bio_about = payload.bio_about || payload.bioAbout || '';
+    payload.projects_completed = payload.projects_completed || payload.projectsCompleted || '';
+    payload.years_of_experience = payload.years_of_experience || payload.yearsOfExperience || '';
+    payload.happy_clients = payload.happy_clients || payload.happyClients || '';
+  }
+
+  if (table === 'testimonials') {
+    payload.avatar_url = payload.avatar_url || payload.avatarUrl || payload.avatar || '';
+    payload.avatar_color = payload.avatar_color || payload.avatarColor || '#EA580C';
+  }
+
+  if (table === 'settings') {
+    payload.theme_primary = payload.theme_primary || payload.themePrimary || '';
+    payload.theme_accent = payload.theme_accent || payload.themeAccent || '';
+    payload.font_family = payload.font_family || payload.fontFamily || '';
+    payload.navbar_items = payload.navbar_items || payload.navbarItems || [];
+    payload.favicon_url = payload.favicon_url || payload.faviconUrl || '';
+  }
+
+  // 2. Strip frontend camelCase aliases so PostgREST receives only clean snake_case fields
+  const camelCaseKeys = [
+    'createdAt', 'updatedAt', 'imageUrl', 'image', 'link', 'categoryLabel', 'liveUrl', 'githubUrl',
+    'displayOrder', 'projectType', 'avatarUrl', 'avatarColor', 'avatar', 'scriptSubhead', 'bioHero',
+    'bioAbout', 'projectsCompleted', 'yearsOfExperience', 'happyClients', 'themePrimary',
+    'themeAccent', 'fontFamily', 'navbarItems', 'faviconUrl', 'institutionUrl', 'badgeImage',
+    'badgeUrl', 'credentialBadge', 'stepNumber'
+  ];
+
+  for (const key of camelCaseKeys) {
+    delete payload[key];
+  }
+
+  return payload;
+};
+
 // Set up Supabase Realtime Listener
 if (supabase && typeof window !== 'undefined') {
   try {
     supabase
       .channel('portfolio_realtime_full')
       .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-        console.log('[CMS REALTIME EVENT DETECTED]', payload.eventType, payload.table);
+        console.log('[CMS REALTIME EVENT DETECTED]', payload.eventType, payload.table, payload.new);
         notifyCmsUpdated();
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[CMS REALTIME CHANNEL STATUS]', status);
+      });
   } catch (e) {
     console.warn('Supabase Realtime setup failed', e);
   }
 }
 
 export const cmsService = {
+  // Test connection to Supabase database
+  async testConnection(): Promise<{ connected: boolean; message: string; details?: any }> {
+    if (!supabase) {
+      return { connected: false, message: 'Supabase client is not initialized. Check .env credentials.' };
+    }
+    try {
+      const { data, error } = await supabase.from('profiles').select('id').limit(1);
+      if (error) {
+        return { connected: false, message: `Supabase Error: ${error.message} (Code: ${error.code})`, details: error };
+      }
+      return { connected: true, message: 'Supabase Cloud Database connected & live! Realtime channel active.', details: data };
+    } catch (err: any) {
+      return { connected: false, message: `Network/Fetch Exception: ${err.message || String(err)}` };
+    }
+  },
+
   // Fetch data from Supabase (Primary) with local cache fallback
   async fetchData(table: string): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     
     if (supabase) {
       try {
-        let query = supabase.from(normTable).select('*');
-        
-        if (normTable === 'experiences' || normTable === 'courses' || normTable === 'why_us') {
-          query = query.order('displayOrder', { ascending: true });
-        } else if (normTable === 'skills' || normTable === 'services') {
-          // Keep default table ordering if available
-        } else {
-          query = query.order('createdAt', { ascending: false });
-        }
-
-        const { data, error } = await query;
+        const { data, error } = await supabase.from(normTable).select('*');
           
-        if (!error && data && data.length > 0) {
-          setCacheData(normTable, data);
-          return data;
+        if (!error && data) {
+          const mapped = data.map(mapDbToFrontend);
+          
+          if (normTable === 'experiences' || normTable === 'courses' || normTable === 'why_us') {
+            mapped.sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+          } else {
+            mapped.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+          }
+
+          if (mapped.length > 0) {
+            console.log(`[CMS SUPABASE FETCH SUCCESS] ${normTable} loaded (${mapped.length} items)`);
+            setCacheData(normTable, mapped);
+            return mapped;
+          }
         }
 
         if (error) {
@@ -192,7 +331,7 @@ export const cmsService = {
         if (!error && data && data.length === 0) {
           const fallback = getFallbackData(normTable);
           if (fallback && fallback.length > 0 && normTable !== 'messages') {
-            const seedPayload = fallback.map((item: any) => ({
+            const seedPayload = fallback.map((item: any) => preparePayloadForDb(normTable, {
               ...item,
               id: isUUID(item.id) ? item.id : toValidUUID(item.id)
             }));
@@ -200,159 +339,175 @@ export const cmsService = {
               if (seedErr) console.warn(`[CMS AUTO-SEED WARN] ${normTable}:`, seedErr.message);
             });
           }
-          return fallback;
+          return fallback.map(mapDbToFrontend);
         }
       } catch (err) {
         console.warn(`[CMS SUPABASE FETCH EXCEPTION] ${normTable}:`, err);
       }
     }
 
-    return getFallbackData(normTable);
+    return getFallbackData(normTable).map(mapDbToFrontend);
   },
 
-  // Helper to update local cache array
-  updateLocalCache(table: string, updateFn: (items: any[]) => any[]) {
-    const current = getFallbackData(table);
-    const updated = updateFn(current);
-    setCacheData(table, updated);
-  },
-
-  // Insert data to Supabase (with instant cloud upsert)
+  // Insert data directly to Supabase Cloud (Strict: Throws error if cloud save fails)
   async insertData(table: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     const targetId = isUUID(data.id) ? data.id : generateUUID();
-    const newItem = {
+    let newItem = preparePayloadForDb(normTable, {
       ...data,
       id: targetId,
-      updatedAt: new Date().toISOString()
-    };
+    });
 
-    if (supabase) {
-      try {
-        const { data: inserted, error } = await supabase
-          .from(normTable)
-          .insert(newItem)
-          .select();
-          
-        if (!error && inserted && inserted.length > 0) {
-          console.log(`[CMS SUPABASE INSERT OK] ${normTable}:`, inserted[0]);
-          notifyCmsUpdated();
-          return inserted;
-        }
-
-        if (error) {
-          console.warn(`[CMS SUPABASE INSERT WARN] ${normTable}:`, error.message);
-        }
-
-        // Upsert fallback in case of key collision or non-existent record
-        const { data: upserted, error: upsertErr } = await supabase
-          .from(normTable)
-          .upsert(newItem)
-          .select();
-
-        if (!upsertErr && upserted && upserted.length > 0) {
-          console.log(`[CMS SUPABASE UPSERT OK] ${normTable}:`, upserted[0]);
-          notifyCmsUpdated();
-          return upserted;
-        }
-
-        if (upsertErr) {
-          console.error(`[CMS SUPABASE UPSERT ERR] ${normTable}:`, upsertErr.message);
-        }
-      } catch (err) {
-        console.error(`[CMS SUPABASE INSERT EXCEPTION] ${normTable}:`, err);
-      }
+    if (!supabase) {
+      throw new Error('Supabase client is not initialized');
     }
-    
-    // Fallback: save to local cache so frontend updates instantly
-    this.updateLocalCache(normTable, (items) => [newItem, ...items]);
-    notifyCmsUpdated();
-    return [newItem];
+
+    let { data: inserted, error } = await supabase
+      .from(normTable)
+      .insert(newItem)
+      .select();
+
+    // Clean retry if unknown column error occurs
+    if (error && error.message?.includes("Could not find the '")) {
+      newItem = cleanPayloadForTable(newItem, error.message);
+      const retry = await supabase.from(normTable).insert(newItem).select();
+      inserted = retry.data;
+      error = retry.error;
+    }
+      
+    if (!error && inserted && inserted.length > 0) {
+      console.log(`[CMS SUPABASE INSERT SUCCESS] ${normTable}:`, inserted[0]);
+      notifyCmsUpdated();
+      const mappedInserted = inserted.map(mapDbToFrontend);
+      const currentCache = getFallbackData(normTable);
+      setCacheData(normTable, [mappedInserted[0], ...currentCache]);
+      return mappedInserted;
+    }
+
+    // Upsert fallback in case of PK conflict
+    let { data: upserted, error: upsertErr } = await supabase
+      .from(normTable)
+      .upsert(newItem)
+      .select();
+
+    if (upsertErr && upsertErr.message?.includes("Could not find the '")) {
+      newItem = cleanPayloadForTable(newItem, upsertErr.message);
+      const retryUpsert = await supabase.from(normTable).upsert(newItem).select();
+      upserted = retryUpsert.data;
+      upsertErr = retryUpsert.error;
+    }
+
+    if (!upsertErr && upserted && upserted.length > 0) {
+      console.log(`[CMS SUPABASE UPSERT SUCCESS] ${normTable}:`, upserted[0]);
+      notifyCmsUpdated();
+      const mappedUpserted = upserted.map(mapDbToFrontend);
+      const currentCache = getFallbackData(normTable);
+      setCacheData(normTable, [mappedUpserted[0], ...currentCache]);
+      return mappedUpserted;
+    }
+
+    const finalErr = error || upsertErr;
+    console.error(`[CMS SUPABASE INSERT ERROR] ${normTable}:`, finalErr?.message);
+    throw new Error(finalErr?.message || 'Supabase Cloud Insert Failed');
   },
 
-  // Update data in Supabase (with automatic upsert for global cloud sync)
+  // Update data directly in Supabase Cloud (Strict: Throws error if cloud update fails)
   async updateData(table: string, id: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     const targetId = toValidUUID(id);
-    const updatePayload = {
+    let updatePayload = preparePayloadForDb(normTable, {
       ...data,
-      updatedAt: new Date().toISOString()
-    };
+      id: targetId
+    });
 
-    if (supabase) {
-      try {
-        // 1. Try standard update first
-        const { data: updated, error } = await supabase
-          .from(normTable)
-          .update(updatePayload)
-          .eq('id', targetId)
-          .select();
-          
-        if (!error && updated && updated.length > 0) {
-          console.log(`[CMS SUPABASE UPDATE OK] ${normTable}:`, updated[0]);
-          notifyCmsUpdated();
-          return updated;
-        }
-
-        // 2. If row does not exist in cloud database yet, upsert it so all browsers receive it!
-        const upsertPayload = { id: targetId, ...updatePayload };
-        const { data: upserted, error: upsertErr } = await supabase
-          .from(normTable)
-          .upsert(upsertPayload)
-          .select();
-
-        if (!upsertErr && upserted && upserted.length > 0) {
-          console.log(`[CMS SUPABASE UPSERT OK] ${normTable}:`, upserted[0]);
-          notifyCmsUpdated();
-          return upserted;
-        }
-
-        if (upsertErr) {
-          console.error(`[CMS SUPABASE UPDATE/UPSERT ERR] ${normTable}:`, upsertErr.message);
-        }
-      } catch (err) {
-        console.error(`[CMS SUPABASE UPDATE EXCEPTION] ${normTable}:`, err);
-      }
+    if (!supabase) {
+      throw new Error('Supabase client is not initialized');
     }
-    
-    // Fallback: update local cache
-    this.updateLocalCache(normTable, (items) =>
-      items.map((item) => (String(item.id) === String(id) || String(item.id) === String(targetId) ? { ...item, ...updatePayload } : item))
-    );
-    notifyCmsUpdated();
-    return [{ id: targetId, ...updatePayload }];
+
+    // 1. Try standard update first
+    let { data: updated, error } = await supabase
+      .from(normTable)
+      .update(updatePayload)
+      .eq('id', targetId)
+      .select();
+
+    if (error && error.message?.includes("Could not find the '")) {
+      updatePayload = cleanPayloadForTable(updatePayload, error.message);
+      const retry = await supabase.from(normTable).update(updatePayload).eq('id', targetId).select();
+      updated = retry.data;
+      error = retry.error;
+    }
+      
+    if (!error && updated && updated.length > 0) {
+      console.log(`[CMS SUPABASE UPDATE SUCCESS] ${normTable}:`, updated[0]);
+      notifyCmsUpdated();
+      const mappedUpdated = updated.map(mapDbToFrontend);
+      const currentCache = getFallbackData(normTable);
+      const newCache = currentCache.map((item: any) =>
+        String(item.id) === String(id) || String(item.id) === String(targetId) ? mappedUpdated[0] : item
+      );
+      setCacheData(normTable, newCache);
+      return mappedUpdated;
+    }
+
+    // 2. If row does not exist in cloud database yet, upsert it so all browsers receive it!
+    let upsertPayload = { id: targetId, ...updatePayload };
+    let { data: upserted, error: upsertErr } = await supabase
+      .from(normTable)
+      .upsert(upsertPayload)
+      .select();
+
+    if (upsertErr && upsertErr.message?.includes("Could not find the '")) {
+      upsertPayload = cleanPayloadForTable(upsertPayload, upsertErr.message);
+      const retryUpsert = await supabase.from(normTable).upsert(upsertPayload).select();
+      upserted = retryUpsert.data;
+      upsertErr = retryUpsert.error;
+    }
+
+    if (!upsertErr && upserted && upserted.length > 0) {
+      console.log(`[CMS SUPABASE UPSERT SUCCESS] ${normTable}:`, upserted[0]);
+      notifyCmsUpdated();
+      const mappedUpserted = upserted.map(mapDbToFrontend);
+      const currentCache = getFallbackData(normTable);
+      const newCache = currentCache.map((item: any) =>
+        String(item.id) === String(id) || String(item.id) === String(targetId) ? mappedUpserted[0] : item
+      );
+      setCacheData(normTable, newCache);
+      return mappedUpserted;
+    }
+
+    const finalErr = error || upsertErr;
+    console.error(`[CMS SUPABASE UPDATE ERROR] ${normTable}:`, finalErr?.message);
+    throw new Error(finalErr?.message || 'Supabase Cloud Update Failed');
   },
 
-  // Delete data from Supabase (with instant cloud & local sync)
+  // Delete data directly from Supabase Cloud (Strict: Throws error if cloud delete fails)
   async deleteData(table: string, id: string): Promise<boolean> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
     const targetId = toValidUUID(id);
     
-    if (supabase) {
-      try {
-        const { error } = await supabase.from(normTable).delete().eq('id', targetId);
-        if (!error) {
-          console.log(`[CMS SUPABASE DELETE OK] ${normTable}: ${targetId}`);
-          notifyCmsUpdated();
-          return true;
-        } else {
-          console.error(`[CMS SUPABASE DELETE ERR] ${normTable}:`, error.message);
-        }
-      } catch (err) {
-        console.error(`[CMS SUPABASE DELETE EXCEPTION] ${normTable}:`, err);
-      }
+    if (!supabase) {
+      throw new Error('Supabase client is not initialized');
     }
-    
-    // Fallback: remove from local cache
-    this.updateLocalCache(normTable, (items) => items.filter((item) => String(item.id) !== String(id) && String(item.id) !== String(targetId)));
-    notifyCmsUpdated();
-    return true;
+
+    const { error } = await supabase.from(normTable).delete().eq('id', targetId);
+    if (!error) {
+      console.log(`[CMS SUPABASE DELETE OK] ${normTable}: ${targetId}`);
+      notifyCmsUpdated();
+      const currentCache = getFallbackData(normTable);
+      const newCache = currentCache.filter((item: any) => String(item.id) !== String(id) && String(item.id) !== String(targetId));
+      setCacheData(normTable, newCache);
+      return true;
+    } else {
+      console.error(`[CMS SUPABASE DELETE ERR] ${normTable}:`, error.message);
+      throw new Error(error.message);
+    }
   },
 
   // Supabase Storage Upload
   async uploadFile(bucket: string, file: File, path?: string): Promise<string> {
     if (!supabase) {
-        return URL.createObjectURL(file);
+      return URL.createObjectURL(file);
     }
 
     const fileName = path || `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
