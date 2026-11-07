@@ -1,20 +1,13 @@
--- Supabase PostgreSQL Schema for Portfolio CMS (Comprehensive Setup)
+-- ==============================================================================
+-- SUPABASE SAFE MIGRATION & REALTIME SETUP SCRIPT
+-- Copy and paste this script into your Supabase Dashboard -> SQL Editor and click RUN.
+-- This script is 100% SAFE: It will NOT drop any tables or delete any data.
+-- ==============================================================================
 
-/* 
-  STEP 0: STORAGE SETUP
-  1. Go to Supabase Dashboard -> Storage
-  2. Create a new bucket named: images
-  3. IMPORTANT: Set bucket to PUBLIC (Check "Public bucket").
-  4. Go to "Policies" (under Storage in left menu).
-  5. Under "images" bucket, create a policy for "ALL" (Select, Insert, Update, Delete).
-  6. Choose "Authenticated" for roles (so only logged-in admin can upload).
-  7. Use "true" for all policy expressions.
-*/
-
--- Enable UUID extension
+-- STEP 1: Enable UUID Extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. Profiles Table (Hero, About, Contact info, Stats)
+-- STEP 2: Create Tables (If they do not exist)
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT DEFAULT 'Mushahid Hussain',
@@ -38,7 +31,6 @@ CREATE TABLE IF NOT EXISTS profiles (
   updatedAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Projects Table
 CREATE TABLE IF NOT EXISTS projects (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
@@ -57,7 +49,6 @@ CREATE TABLE IF NOT EXISTS projects (
   updatedAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Skills Table
 CREATE TABLE IF NOT EXISTS skills (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
@@ -67,7 +58,6 @@ CREATE TABLE IF NOT EXISTS skills (
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Services Table
 CREATE TABLE IF NOT EXISTS services (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
@@ -76,7 +66,6 @@ CREATE TABLE IF NOT EXISTS services (
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. Testimonials Table
 CREATE TABLE IF NOT EXISTS testimonials (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
@@ -93,7 +82,6 @@ CREATE TABLE IF NOT EXISTS testimonials (
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. Settings Table
 CREATE TABLE IF NOT EXISTS settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT DEFAULT 'Mushahid Hussain - Web Developer Portfolio',
@@ -107,18 +95,19 @@ CREATE TABLE IF NOT EXISTS settings (
   updatedAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 7. Messages Table
 CREATE TABLE IF NOT EXISTS messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   projectType TEXT,
+  budget TEXT,
+  country TEXT,
+  currency TEXT,
   message TEXT,
   status TEXT DEFAULT 'unread',
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 8. Experiences Table
 CREATE TABLE IF NOT EXISTS experiences (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   role TEXT NOT NULL,
@@ -133,7 +122,6 @@ CREATE TABLE IF NOT EXISTS experiences (
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 9. Courses Table
 CREATE TABLE IF NOT EXISTS courses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
@@ -150,20 +138,32 @@ CREATE TABLE IF NOT EXISTS courses (
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 10. Why Us Table
 CREATE TABLE IF NOT EXISTS why_us (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  type TEXT NOT NULL, -- 'pillar' or 'workflow'
+  type TEXT NOT NULL,
   title TEXT NOT NULL,
-  subtitle TEXT, -- for pillars
+  subtitle TEXT,
   description TEXT,
-  icon TEXT, -- for pillars
-  stepNumber INTEGER, -- for workflow
+  icon TEXT,
+  stepNumber INTEGER,
   displayOrder INTEGER DEFAULT 0,
   createdAt TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable RLS
+-- STEP 3: Safely Add Any Missing Columns (For existing databases)
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'saas';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS "categoryLabel" TEXT DEFAULT 'Web Application';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS "liveUrl" TEXT DEFAULT '#';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS "githubUrl" TEXT DEFAULT '#';
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS "featured" BOOLEAN DEFAULT true;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS "hidden" BOOLEAN DEFAULT false;
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS "year" TEXT DEFAULT '2025';
+
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS budget TEXT;
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS country TEXT;
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS currency TEXT;
+
+-- STEP 4: Enable Row Level Security (RLS) on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE skills ENABLE ROW LEVEL SECURITY;
@@ -175,19 +175,71 @@ ALTER TABLE experiences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE why_us ENABLE ROW LEVEL SECURITY;
 
--- Public Access Policies (Select, Insert, Update, Delete for all tables)
+-- STEP 5: Drop Old Conflicting Policies & Create Clean Public Policies
+DROP POLICY IF EXISTS "Public read profiles" ON profiles;
+DROP POLICY IF EXISTS "Admin update profiles" ON profiles;
+DROP POLICY IF EXISTS "Public all profiles" ON profiles;
 CREATE POLICY "Public all profiles" ON profiles FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read projects" ON projects;
+DROP POLICY IF EXISTS "Admin update projects" ON projects;
+DROP POLICY IF EXISTS "Public all projects" ON projects;
 CREATE POLICY "Public all projects" ON projects FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read skills" ON skills;
+DROP POLICY IF EXISTS "Admin update skills" ON skills;
+DROP POLICY IF EXISTS "Public all skills" ON skills;
 CREATE POLICY "Public all skills" ON skills FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read services" ON services;
+DROP POLICY IF EXISTS "Admin update services" ON services;
+DROP POLICY IF EXISTS "Public all services" ON services;
 CREATE POLICY "Public all services" ON services FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read testimonials" ON testimonials;
+DROP POLICY IF EXISTS "Admin update testimonials" ON testimonials;
+DROP POLICY IF EXISTS "Public all testimonials" ON testimonials;
 CREATE POLICY "Public all testimonials" ON testimonials FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read settings" ON settings;
+DROP POLICY IF EXISTS "Admin update settings" ON settings;
+DROP POLICY IF EXISTS "Public all settings" ON settings;
 CREATE POLICY "Public all settings" ON settings FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read messages" ON messages;
+DROP POLICY IF EXISTS "Public insert messages" ON messages;
+DROP POLICY IF EXISTS "Admin update messages" ON messages;
+DROP POLICY IF EXISTS "Public all messages" ON messages;
 CREATE POLICY "Public all messages" ON messages FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read experiences" ON experiences;
+DROP POLICY IF EXISTS "Admin update experiences" ON experiences;
+DROP POLICY IF EXISTS "Public all experiences" ON experiences;
 CREATE POLICY "Public all experiences" ON experiences FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read courses" ON courses;
+DROP POLICY IF EXISTS "Admin update courses" ON courses;
+DROP POLICY IF EXISTS "Public all courses" ON courses;
 CREATE POLICY "Public all courses" ON courses FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read why_us" ON why_us;
+DROP POLICY IF EXISTS "Admin update why_us" ON why_us;
+DROP POLICY IF EXISTS "Public all why_us" ON why_us;
 CREATE POLICY "Public all why_us" ON why_us FOR ALL USING (true) WITH CHECK (true);
 
--- SEED DATA (Optional, recommended for first setup)
+-- STEP 6: Enable Supabase Realtime Publication for Live Cross-Browser Updates
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    BEGIN
+      ALTER PUBLICATION supabase_realtime ADD TABLE profiles, projects, skills, services, testimonials, settings, messages, experiences, courses, why_us;
+    EXCEPTION WHEN OTHERS THEN
+      NULL; -- Ignore if tables are already in publication
+    END;
+  END IF;
+END $$;
+
+-- STEP 7: Seed Initial Profile Record (If not already present)
 INSERT INTO profiles (id, name, title, email, phone, whatsapp, avatarUrl, projectsCompleted, yearsOfExperience, happyClients)
 VALUES (
   '00000000-0000-0000-0000-000000000001',
@@ -202,15 +254,3 @@ VALUES (
   '99%'
 ) ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO testimonials (name, role, company, review, rating, date, platform, flag)
-VALUES 
-('Malik Saim', 'Web Client', 'Saim Solutions', 'king web developer ka', 5, '4 weeks ago', 'google', '🇵🇰'),
-('M Saleem', 'Business Owner', 'Saleem Traders', 'Nice', 5, '4 weeks ago', 'google', '🇵🇰'),
-('M Anass', 'Digital Creator', 'Anass Tech', 'Nice', 5, '4 weeks ago', 'google', '🇵🇰'),
-('umar janjua', 'Project Manager', 'Janjua Enterprises', 'Good', 5, '4 weeks ago', 'google', '🇵🇰'),
-('Abdullah Khan', 'Startup Founder', 'TechFlow', 'Excellent service and top-notch code quality. Mushahid is a pro at React and Supabase integrations.', 5, '2 months ago', 'google', '🇵🇰'),
-('Zeeshan Ahmed', 'Software Architect', 'Global Systems', 'The best full-stack developer I have worked with. Very professional and timely delivery.', 5, '1 month ago', 'google', '🇵🇰'),
-('Hamza Malik', 'E-commerce Manager', 'ShopRight', 'Transformed our store into a high-converting machine. The speed optimization is incredible.', 5, '3 weeks ago', 'google', '🇵🇰'),
-('Bilal Hassan', 'Product Designer', 'Creative Hub', 'Exceptional UI/UX implementation. The attention to detail is exactly what we needed.', 5, '5 weeks ago', 'google', '🇵🇰'),
-('Usman Ghani', 'Full Stack Dev', 'DevSquad', 'Very knowledgeable and helpful. Guided me through the entire deployment process.', 5, '2 weeks ago', 'google', '🇵🇰'),
-('Faisal Mehmood', 'IT Director', 'Enterprise Solutions', 'Robust and scalable solutions. Highly recommended for complex enterprise applications.', 5, '6 weeks ago', 'google', '🇵🇰');

@@ -20,6 +20,31 @@ const notifyCmsUpdated = () => {
   }
 };
 
+const isUUID = (str: any): boolean =>
+  typeof str === 'string' &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+
+export const generateUUID = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+const toValidUUID = (id: any): string => {
+  if (isUUID(id)) return id;
+  if (id === 'default_settings') return '00000000-0000-0000-0000-000000000002';
+  if (id === 'exp_default_1') return '00000000-0000-0000-0000-000000000003';
+  if (id === 'pillar_1') return '00000000-0000-0000-0000-000000000004';
+  if (id === 'workflow_1') return '00000000-0000-0000-0000-000000000005';
+  if (typeof id === 'string' && id.startsWith('skill_')) return generateUUID();
+  return generateUUID();
+};
+
 // Fallback initial state for each domain (used if Supabase is empty or failing)
 const getFallbackData = (table: string) => {
   const stored = localStorage.getItem(`cms_cache_${table}`);
@@ -33,16 +58,17 @@ const getFallbackData = (table: string) => {
 
   let initial: any[] = [];
   if (table === 'profiles' || table === 'hero' || table === 'about') {
-    initial = [initialProfile];
+    initial = [{ ...initialProfile, id: '00000000-0000-0000-0000-000000000001' }];
   } else if (table === 'projects') {
-    initial = initialProjects.map((p: any) => ({
+    initial = initialProjects.map((p: any, idx: number) => ({
       ...p,
+      id: isUUID(p.id) ? p.id : generateUUID(),
       imageUrl: p.imageUrl || p.image,
     }));
   } else if (table === 'skills') {
     initial = initialSkillGroups.flatMap((group: any, gIdx) =>
       ((group.skills || group.items || []) as any[]).map((s: any, sIdx: number) => ({
-        id: `skill_${gIdx}_${sIdx}`,
+        id: generateUUID(),
         name: s.name,
         percentage: s.levelPercentage || 85,
         category: group.category,
@@ -51,14 +77,14 @@ const getFallbackData = (table: string) => {
     );
   } else if (table === 'services') {
     initial = initialServices.map((s) => ({
-      id: s.id,
+      id: isUUID(s.id) ? s.id : generateUUID(),
       title: s.title,
       description: s.description,
       icon: s.iconName,
     }));
   } else if (table === 'testimonials') {
     initial = initialTestimonials.map((t) => ({
-      id: t.id,
+      id: isUUID(t.id) ? t.id : generateUUID(),
       name: t.name,
       role: t.role,
       company: t.company,
@@ -73,7 +99,7 @@ const getFallbackData = (table: string) => {
   } else if (table === 'settings' || table === 'site_settings') {
     initial = [
       {
-        id: 'default_settings',
+        id: '00000000-0000-0000-0000-000000000002',
         title: 'Mushahid Hussain - Web Developer Portfolio',
         description: 'Portfolio of Mushahid Hussain, Full-Stack Web Developer.',
         themePrimary: '#0A3D22',
@@ -85,7 +111,7 @@ const getFallbackData = (table: string) => {
   } else if (table === 'experiences') {
     initial = [
         {
-          id: 'exp_default_1',
+          id: '00000000-0000-0000-0000-000000000003',
           role: 'Full-Stack Web Developer',
           company: 'Freelance & Independent Contractor',
           period: '2024 – Present',
@@ -101,11 +127,14 @@ const getFallbackData = (table: string) => {
         }
     ];
   } else if (table === 'courses') {
-      initial = initialCourses;
+      initial = initialCourses.map((c: any) => ({
+        ...c,
+        id: isUUID(c.id) ? c.id : generateUUID()
+      }));
   } else if (table === 'why_us') {
       initial = [
-          { id: 'pillar_1', type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
-          { id: 'workflow_1', type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
+          { id: '00000000-0000-0000-0000-000000000004', type: 'pillar', title: 'Creative Architecture', subtitle: 'Clean & Scalable Code', description: 'Writing maintainable, modular TypeScript.', icon: 'Lightbulb', displayOrder: 0 },
+          { id: '00000000-0000-0000-0000-000000000005', type: 'workflow', title: 'Discovery & Scope', description: 'Understanding your goals.', stepNumber: 1, displayOrder: 10 }
       ];
   }
 
@@ -122,7 +151,7 @@ if (supabase && typeof window !== 'undefined') {
     supabase
       .channel('portfolio_realtime_full')
       .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-        console.log('[CMS REALTIME] Change detected:', payload);
+        console.log('[CMS REALTIME EVENT DETECTED]', payload.eventType, payload.table);
         notifyCmsUpdated();
       })
       .subscribe();
@@ -155,18 +184,26 @@ export const cmsService = {
           return data;
         }
 
+        if (error) {
+          console.warn(`[CMS SUPABASE FETCH WARN] ${normTable}:`, error.message);
+        }
+
         // If table in Supabase is empty, return local fallback and auto-seed Supabase in background
         if (!error && data && data.length === 0) {
           const fallback = getFallbackData(normTable);
           if (fallback && fallback.length > 0 && normTable !== 'messages') {
-            supabase.from(normTable).upsert(fallback).then(({ error: seedErr }) => {
-              if (seedErr) console.warn(`Auto-seeding Supabase for ${normTable} failed:`, seedErr);
+            const seedPayload = fallback.map((item: any) => ({
+              ...item,
+              id: isUUID(item.id) ? item.id : toValidUUID(item.id)
+            }));
+            supabase.from(normTable).upsert(seedPayload).then(({ error: seedErr }) => {
+              if (seedErr) console.warn(`[CMS AUTO-SEED WARN] ${normTable}:`, seedErr.message);
             });
           }
           return fallback;
         }
       } catch (err) {
-        console.warn(`Supabase fetch failed for table ${normTable}`, err);
+        console.warn(`[CMS SUPABASE FETCH EXCEPTION] ${normTable}:`, err);
       }
     }
 
@@ -183,9 +220,10 @@ export const cmsService = {
   // Insert data to Supabase (with instant cloud upsert)
   async insertData(table: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    const targetId = isUUID(data.id) ? data.id : generateUUID();
     const newItem = {
-      id: data.id || `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       ...data,
+      id: targetId,
       updatedAt: new Date().toISOString()
     };
 
@@ -197,8 +235,13 @@ export const cmsService = {
           .select();
           
         if (!error && inserted && inserted.length > 0) {
+          console.log(`[CMS SUPABASE INSERT OK] ${normTable}:`, inserted[0]);
           notifyCmsUpdated();
           return inserted;
+        }
+
+        if (error) {
+          console.warn(`[CMS SUPABASE INSERT WARN] ${normTable}:`, error.message);
         }
 
         // Upsert fallback in case of key collision or non-existent record
@@ -208,11 +251,16 @@ export const cmsService = {
           .select();
 
         if (!upsertErr && upserted && upserted.length > 0) {
+          console.log(`[CMS SUPABASE UPSERT OK] ${normTable}:`, upserted[0]);
           notifyCmsUpdated();
           return upserted;
         }
+
+        if (upsertErr) {
+          console.error(`[CMS SUPABASE UPSERT ERR] ${normTable}:`, upsertErr.message);
+        }
       } catch (err) {
-        console.warn(`Supabase insert failed for ${normTable}, applying local cache`, err);
+        console.error(`[CMS SUPABASE INSERT EXCEPTION] ${normTable}:`, err);
       }
     }
     
@@ -225,6 +273,7 @@ export const cmsService = {
   // Update data in Supabase (with automatic upsert for global cloud sync)
   async updateData(table: string, id: string, data: any): Promise<any[]> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    const targetId = toValidUUID(id);
     const updatePayload = {
       ...data,
       updatedAt: new Date().toISOString()
@@ -236,56 +285,66 @@ export const cmsService = {
         const { data: updated, error } = await supabase
           .from(normTable)
           .update(updatePayload)
-          .eq('id', id)
+          .eq('id', targetId)
           .select();
           
         if (!error && updated && updated.length > 0) {
+          console.log(`[CMS SUPABASE UPDATE OK] ${normTable}:`, updated[0]);
           notifyCmsUpdated();
           return updated;
         }
 
         // 2. If row does not exist in cloud database yet, upsert it so all browsers receive it!
-        const upsertPayload = { id, ...updatePayload };
+        const upsertPayload = { id: targetId, ...updatePayload };
         const { data: upserted, error: upsertErr } = await supabase
           .from(normTable)
           .upsert(upsertPayload)
           .select();
 
         if (!upsertErr && upserted && upserted.length > 0) {
+          console.log(`[CMS SUPABASE UPSERT OK] ${normTable}:`, upserted[0]);
           notifyCmsUpdated();
           return upserted;
         }
+
+        if (upsertErr) {
+          console.error(`[CMS SUPABASE UPDATE/UPSERT ERR] ${normTable}:`, upsertErr.message);
+        }
       } catch (err) {
-        console.warn(`Supabase update/upsert failed for ${normTable}`, err);
+        console.error(`[CMS SUPABASE UPDATE EXCEPTION] ${normTable}:`, err);
       }
     }
     
     // Fallback: update local cache
     this.updateLocalCache(normTable, (items) =>
-      items.map((item) => (String(item.id) === String(id) ? { ...item, ...updatePayload } : item))
+      items.map((item) => (String(item.id) === String(id) || String(item.id) === String(targetId) ? { ...item, ...updatePayload } : item))
     );
     notifyCmsUpdated();
-    return [{ id, ...updatePayload }];
+    return [{ id: targetId, ...updatePayload }];
   },
 
   // Delete data from Supabase (with instant cloud & local sync)
   async deleteData(table: string, id: string): Promise<boolean> {
     const normTable = table === 'hero' || table === 'about' ? 'profiles' : table;
+    const targetId = toValidUUID(id);
     
     if (supabase) {
       try {
-        const { error } = await supabase.from(normTable).delete().eq('id', id);
+        const { error } = await supabase.from(normTable).delete().eq('id', targetId);
         if (!error) {
+          console.log(`[CMS SUPABASE DELETE OK] ${normTable}: ${targetId}`);
           notifyCmsUpdated();
           return true;
+        } else {
+          console.error(`[CMS SUPABASE DELETE ERR] ${normTable}:`, error.message);
         }
       } catch (err) {
-        console.warn(`Supabase delete failed for ${normTable}`, err);
+        console.error(`[CMS SUPABASE DELETE EXCEPTION] ${normTable}:`, err);
       }
     }
     
     // Fallback: remove from local cache
-    this.updateLocalCache(normTable, (items) => items.filter((item) => String(item.id) !== String(id)));
+    this.updateLocalCache(normTable, (items) => items.filter((item) => String(item.id) !== String(id) && String(item.id) !== String(targetId)));
     notifyCmsUpdated();
     return true;
   },
