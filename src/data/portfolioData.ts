@@ -576,3 +576,51 @@ export const initialTestimonials: Testimonial[] = [
     platform: 'google',
   },
 ];
+
+export const initialExperiences = [
+  {
+    id: 'exp-1',
+    role: 'Senior Full-Stack Web Developer',
+    company: 'Enterprise Solutions & Advisory',
+    location: 'Remote / Global',
+    period: '2023 – Present',
+    badge: 'Current Role',
+    description: 'Leading full-stack web architecture, developing React & Next.js web applications, Supabase cloud integrations, and real-time backend API endpoints.',
+    achievements: [
+      'Architected 15+ production applications with 99.9% uptime',
+      'Implemented real-time Supabase database sync & strict RLS security policies',
+      'Optimized Lighthouse Core Web Vitals performance scores to 95+',
+    ],
+    stack: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Supabase', 'Node.js'],
+  },
+  {
+    id: 'exp-2',
+    role: 'Frontend & UI Software Engineer',
+    company: 'Digital Product Agency',
+    location: 'Lahore, Pakistan',
+    period: '2021 – 2023',
+    badge: 'Full-Time',
+    description: 'Built high-converting e-commerce web applications, SaaS dashboards, and responsive web platforms.',
+    achievements: [
+      'Developed 20+ custom web clients with responsive Tailwind & Framer Motion animations',
+      'Integrated payment gateways, real-time messaging widgets, and cloud databases',
+    ],
+    stack: ['React', 'JavaScript', 'Tailwind CSS', 'REST APIs', 'PostgreSQL'],
+  },
+];
+
+export const initialWhyUsPillars = [
+  { id: 'pillar-1', type: 'pillar', title: 'Clean Architecture', subtitle: 'Scalable Codebase', description: 'Writing modular, maintainable TypeScript & Next.js web apps.', icon: 'Lightbulb' },
+  { id: 'pillar-2', type: 'pillar', title: 'Core Web Speed', subtitle: 'Performance First', description: 'Optimizing load speed, bundle size & image delivery.', icon: 'Zap' },
+  { id: 'pillar-3', type: 'pillar', title: 'Pixel-Perfect UI', subtitle: 'Figma to Code', description: 'Crafting responsive, beautiful, accessible web interfaces.', icon: 'Sparkles' },
+  { id: 'pillar-4', type: 'pillar', title: 'Cloud Backend', subtitle: 'Supabase & APIs', description: 'Connecting secure databases, authentication & real-time sync.', icon: 'Shield' },
+  { id: 'pillar-5', type: 'pillar', title: 'Client Satisfaction', subtitle: 'Dedicated Support', description: 'Transparent communication, timely delivery & ongoing maintenance.', icon: 'Star' },
+];
+
+export const initialWhyUsWorkflow = [
+  { id: 'wf-1', type: 'workflow', stepNumber: 1, title: 'Discovery & Scope', description: 'Analyzing project requirements, target goals & architecture.' },
+  { id: 'wf-2', type: 'workflow', stepNumber: 2, title: 'UI/UX Architecture', description: 'Designing responsive wireframes, schema & component hierarchy.' },
+  { id: 'wf-3', type: 'workflow', stepNumber: 3, title: 'Agile Development', description: 'Building full-stack features with clean, typed React & API code.' },
+  { id: 'wf-4', type: 'workflow', stepNumber: 4, title: 'Testing & Launch', description: 'End-to-end verification, cloud deployment & live production.' },
+];
+

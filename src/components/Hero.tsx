@@ -5,6 +5,8 @@ import { EmblemLogo } from './EmblemLogo';
 import { HoverCounter } from './HoverCounter';
 import pin1Img from '../assets/images/pin1_new.jpg';
 import pin2Img from '../assets/images/pin2_new.jpg';
+import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
+import homePinterestImg from '../assets/images/home_pinterest_image.jpg';
 
 interface HeroProps {
   profile: DeveloperProfile;
@@ -184,7 +186,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 
                 {/* Hero Developer Portrait */}
                 <img
-                  src={profile.avatarUrl}
+                  src={(homePinterestImg as any)?.src || homePinterestImg || (heroPortrait as any)?.src || heroPortrait}
                   alt={profile.name}
                   className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                 />

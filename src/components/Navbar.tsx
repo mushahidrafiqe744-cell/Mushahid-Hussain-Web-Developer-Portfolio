@@ -43,17 +43,23 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const topTabs: DiscreteTab[] = [
+    { id: 'hero', label: 'Home', icon: <MdPsychology size={20} />, activeColor: 'text-[#C5A059]' },
     { id: 'about', label: 'About', icon: <MdPsychology size={20} />, activeColor: 'text-[#C5A059]' },
     { id: 'services', label: 'Services', icon: <MdDesignServices size={20} />, activeColor: 'text-[#C5A059]' },
-    { id: 'projects', label: 'Projects', icon: <MdWorkOutline size={20} />, activeColor: 'text-[#C5A059]' },
     { id: 'skills', label: 'Skills', icon: <HiOutlineLightBulb size={20} />, activeColor: 'text-[#C5A059]' },
+    { id: 'experience', label: 'Experience', icon: <MdWorkOutline size={20} />, activeColor: 'text-[#C5A059]' },
+    { id: 'courses', label: 'Courses', icon: <Star size={20} />, activeColor: 'text-[#C5A059]' },
+    { id: 'why-choose-me', label: 'Why Us', icon: <HiOutlineLightBulb size={20} />, activeColor: 'text-[#C5A059]' },
+    { id: 'projects', label: 'Projects', icon: <MdWorkOutline size={20} />, activeColor: 'text-[#C5A059]' },
+    { id: 'testimonials', label: 'Reviews', icon: <MdRateReview size={20} />, activeColor: 'text-[#C5A059]' },
     { id: 'contact', label: 'Contact', icon: <MdChatBubbleOutline size={20} />, activeColor: 'text-[#C5A059]' },
+    { id: 'all', label: 'All Sections', icon: <MdWorkOutline size={20} />, activeColor: 'text-[#C5A059]' },
   ];
 
   const navItems: TooltipNavbarItem[] = [
     {
       icon: <MessageCircle className="h-full w-full" />,
-      label: 'About Me',
+      label: 'About',
       labelHasKeyword: ['A'],
       isActive: activeSection === 'about',
       onClick: () => handleNavClick('about'),
@@ -66,19 +72,19 @@ export const Navbar: React.FC<NavbarProps> = ({
       onClick: () => handleNavClick('services'),
     },
     {
+      icon: <Circle className="h-full w-full" />,
+      label: 'Skills',
+      labelHasKeyword: ['S'],
+      isActive: activeSection === 'skills',
+      onClick: () => handleNavClick('skills'),
+    },
+    {
       icon: <Inbox className="h-full w-full" />,
       label: 'Projects',
       labelHasKeyword: ['P'],
       hasBadge: true,
       isActive: activeSection === 'projects',
       onClick: () => handleNavClick('projects'),
-    },
-    {
-      icon: <Circle className="h-full w-full" />,
-      label: 'Skills',
-      labelHasKeyword: ['S'],
-      isActive: activeSection === 'skills',
-      onClick: () => handleNavClick('skills'),
     },
     {
       icon: <Download className="h-full w-full" />,
@@ -112,16 +118,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="Click to go to Home Section"
           >
             <div className="relative transition-transform duration-300 group-hover:scale-105 shrink-0 scale-90 -ml-1">
-              <EmblemLogo size="sm" showSubtitle={false} interactive={true} name={profile.name} title={profile.title} />
+              <EmblemLogo size="sm" showSubtitle={false} interactive={true} name={profile?.name || 'Mushahid Hussain'} title={profile?.title || 'Web Developer'} />
             </div>
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-1">
                 <span className="font-display font-bold text-base sm:text-lg tracking-tight text-[#C5A059] group-hover:text-[#DFC285] transition-colors leading-none">
-                  {profile.name}
+                  {profile?.name || 'Mushahid Hussain'}
                 </span>
               </div>
               <span className="text-[9px] sm:text-[10px] tracking-widest uppercase font-bold text-[#5C6E61] mt-0.5 leading-none whitespace-nowrap">
-                {profile.title || 'WEB DEVELOPER'}
+                {profile?.title || 'WEB DEVELOPER'}
               </span>
             </div>
           </a>

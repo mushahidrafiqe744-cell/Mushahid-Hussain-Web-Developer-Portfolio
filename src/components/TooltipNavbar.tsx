@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export interface TooltipNavbarItem {
@@ -16,6 +16,9 @@ interface TooltipNavbarProps {
 }
 
 export const TooltipNavbar: React.FC<TooltipNavbarProps> = ({ items, className = '' }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const highlightKeyword = (text: string, keywords?: string[]) => {
@@ -84,7 +87,7 @@ export const TooltipNavbar: React.FC<TooltipNavbarProps> = ({ items, className =
                   <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#50E364] rounded-full border border-[#11261B] shadow-sm animate-pulse" />
                 )}
 
-                {item.isActive && (
+                {isMounted && item.isActive && (
                   <motion.div
                     layoutId="active-indicator"
                     className="absolute -bottom-1.5 w-1 h-1 bg-[#C5A059] rounded-full"

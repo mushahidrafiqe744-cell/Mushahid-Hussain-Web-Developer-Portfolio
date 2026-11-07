@@ -10,7 +10,8 @@ export type SectionId =
   | 'projects'
   | 'resume'
   | 'feedback'
-  | 'contact';
+  | 'contact'
+  | 'all';
 
 export interface Testimonial {
   id: string;
@@ -18,8 +19,8 @@ export interface Testimonial {
   role: string;
   company: string;
   project?: string;
-  avatar: string;
-  avatarUrl?: string;
+  avatar: string | any;
+  avatarUrl?: string | any;
   flag?: string;
   location?: string;
   rating: number;
@@ -59,8 +60,8 @@ export interface Project {
   description: string;
   longDescription?: string;
   fullOverview?: string;
-  image?: string;
-  imageUrl?: string;
+  image?: string | any;
+  imageUrl?: string | any;
   tags?: string[];
   technologies: string[];
   features?: string[];
@@ -109,7 +110,7 @@ export interface CourseCertification {
   verified: boolean;
   credentialBadge?: string;
   badgeUrl?: string;
-  badgeImage?: string;
+  badgeImage?: string | any;
   featured?: boolean;
 }
 
@@ -131,7 +132,7 @@ export interface DeveloperProfile {
   linkedin: string;
   twitter?: string;
   tiktok?: string;
-  avatarUrl: string;
+  avatarUrl: string | any;
   yearsOfExperience: string;
   projectsCompleted: string;
   happyClients: string;

@@ -1,15 +1,25 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, FolderKanban, BookOpen, Layers, User, MessageSquare, Settings, Globe, Award, ExternalLink, LogOut, Lock, Briefcase, GraduationCap, Zap, LayoutGrid } from 'lucide-react';
-import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { cmsService } from '../../services/cms';
-import { AdminLogin } from './AdminLogin';
 
 export const ADMIN_IMAGE_URL = '/assets/images/mushahid_admin_profile.jpg';
 
-export const DashboardLayout: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+interface DashboardLayoutProps {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  onLogout: () => void;
+  children: React.ReactNode;
+}
+
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  activeTab,
+  onTabChange,
+  onLogout,
+  children,
+}) => {
   const [adminAvatar, setAdminAvatar] = useState(ADMIN_IMAGE_URL);
   const [dbStatus, setDbStatus] = useState<{ loading: boolean; connected: boolean; message: string }>({
     loading: true,
@@ -17,30 +27,7 @@ export const DashboardLayout: React.FC = () => {
     message: 'Testing Supabase connection...',
   });
   const [showDbModal, setShowDbModal] = useState(false);
-  
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return Boolean(
-      sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token')
-    );
-  });
-
   const [showSplitPreview, setShowSplitPreview] = useState(false);
-
-  const PATH_TO_SECTION: Record<string, string> = {
-    '/admin/hero': 'hero',
-    '/admin/about': 'about',
-    '/admin/projects': 'projects',
-    '/admin/experience': 'experience',
-    '/admin/skills': 'skills',
-    '/admin/services': 'services',
-    '/admin/courses': 'courses',
-    '/admin/testimonials': 'testimonials',
-    '/admin/why-us': 'why-choose-me',
-    '/admin/settings': 'hero',
-  };
-
-  const currentSection = PATH_TO_SECTION[location.pathname] || 'hero';
-  const previewUrl = `/#${currentSection}`;
 
   const checkSupabaseStatus = async () => {
     setDbStatus({ loading: true, connected: false, message: 'Testing Supabase...' });
@@ -49,7 +36,6 @@ export const DashboardLayout: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) return;
     checkSupabaseStatus();
 
     const loadProfileImg = async () => {
@@ -64,38 +50,21 @@ export const DashboardLayout: React.FC = () => {
       }
     };
     loadProfileImg();
-  }, [isAuthenticated]);
-
-  const handleLogout = async () => {
-    if (supabase) {
-      try {
-        await supabase.auth.signOut();
-      } catch (e) {}
-    }
-    sessionStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
-    setIsAuthenticated(false);
-    navigate('/admin');
-  };
-
-  if (!isAuthenticated) {
-    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
-  }
+  }, []);
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { name: 'Hero Section', path: '/admin/hero', icon: Globe },
-    { name: 'About Me', path: '/admin/about', icon: User },
-    { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
-    { name: 'Career Journey', path: '/admin/experience', icon: Briefcase },
-    { name: 'Skills & Tech', path: '/admin/skills', icon: BookOpen },
-    { name: 'Services', path: '/admin/services', icon: Layers },
-    { name: 'Certifications', path: '/admin/courses', icon: GraduationCap },
-    { name: 'Testimonials', path: '/admin/testimonials', icon: Award },
-    { name: 'Value Prop', path: '/admin/why-us', icon: Zap },
-    { name: 'Messages', path: '/admin/messages', icon: MessageSquare },
-    { name: 'Settings & SEO', path: '/admin/settings', icon: Settings },
+    { name: 'Dashboard', key: 'overview', icon: LayoutDashboard },
+    { name: 'Hero Section', key: 'hero', icon: Globe },
+    { name: 'About Me', key: 'about', icon: User },
+    { name: 'Projects', key: 'projects', icon: FolderKanban },
+    { name: 'Career Journey', key: 'experiences', icon: Briefcase },
+    { name: 'Skills & Tech', key: 'skills', icon: BookOpen },
+    { name: 'Services', key: 'services', icon: Layers },
+    { name: 'Certifications', key: 'courses', icon: GraduationCap },
+    { name: 'Testimonials', key: 'testimonials', icon: Award },
+    { name: 'Value Prop', key: 'why_us', icon: Zap },
+    { name: 'Messages', key: 'messages', icon: MessageSquare },
+    { name: 'Settings & SEO', key: 'settings', icon: Settings },
   ];
 
   return (
@@ -118,20 +87,26 @@ export const DashboardLayout: React.FC = () => {
         
         <nav className="flex-1 px-4 py-4 space-y-1">
           {navItems.map((item) => (
-            <Link 
-              key={item.name} 
-              to={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm ${location.pathname === item.path ? 'bg-[#50E364] text-[#0A3D22] font-bold shadow-md' : 'hover:bg-white/10 text-gray-200'}`}
+            <button
+              key={item.name}
+              type="button"
+              onClick={() => onTabChange(item.key)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold text-sm cursor-pointer ${
+                activeTab === item.key
+                  ? 'bg-[#50E364] text-[#0A3D22] font-bold shadow-md'
+                  : 'hover:bg-white/10 text-gray-200'
+              }`}
             >
               <item.icon size={18} />
               <span>{item.name}</span>
-            </Link>
+            </button>
           ))}
         </nav>
 
         <div className="p-4 border-t border-white/10 space-y-2 sticky bottom-0 bg-[#0A3D22]">
           <button 
-            onClick={handleLogout}
+            type="button"
+            onClick={onLogout}
             className="flex items-center gap-3 px-4 py-2.5 w-full bg-red-500/10 hover:bg-red-500/20 rounded-xl text-sm font-bold text-red-300 transition-colors cursor-pointer border border-red-500/20"
           >
             <LogOut size={18} />
@@ -145,11 +120,12 @@ export const DashboardLayout: React.FC = () => {
         <header className="flex justify-between items-center bg-white p-4 border-b border-gray-100 shadow-2xs z-20">
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold text-gray-800">
-              {navItems.find(i => i.path === location.pathname)?.name || 'Dashboard'}
+              {navItems.find(i => i.key === activeTab)?.name || 'Dashboard'}
             </h2>
             
             {/* Supabase Status Indicator Pill */}
             <button
+              type="button"
               onClick={() => setShowDbModal(true)}
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-2xs ${
                 dbStatus.loading
@@ -166,6 +142,7 @@ export const DashboardLayout: React.FC = () => {
 
             {/* Split View Toggle */}
             <button
+              type="button"
               onClick={() => setShowSplitPreview(!showSplitPreview)}
               className={`hidden sm:inline-flex items-center gap-2 text-[10px] font-bold px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
                 showSplitPreview 
@@ -179,16 +156,19 @@ export const DashboardLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
-             <Link
-               to={previewUrl}
+             <a
+               href="/"
+               target="_blank"
+               rel="noreferrer"
                className="inline-flex items-center gap-2 text-xs font-bold text-[#0A3D22] bg-[#EAF9EE] hover:bg-[#d5f5db] px-4 py-2 rounded-full border border-[#50E364]/40 transition-all cursor-pointer shadow-2xs"
              >
                <ExternalLink size={14} />
                <span>Full Preview</span>
-             </Link>
+             </a>
 
              <button
-               onClick={handleLogout}
+               type="button"
+               onClick={onLogout}
                title="Lock admin session immediately"
                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 px-3.5 py-2 rounded-full border border-gray-200 transition-all cursor-pointer"
              >
@@ -217,7 +197,7 @@ export const DashboardLayout: React.FC = () => {
                   <span className={`w-3 h-3 rounded-full ${dbStatus.connected ? 'bg-emerald-500' : 'bg-red-500'}`} />
                   <span>Supabase Connection Diagnostics</span>
                 </h3>
-                <button onClick={() => setShowDbModal(false)} className="text-gray-400 hover:text-gray-600 font-bold text-sm">✕</button>
+                <button type="button" onClick={() => setShowDbModal(false)} className="text-gray-400 hover:text-gray-600 font-bold text-sm">✕</button>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 text-xs font-mono space-y-2">
@@ -228,12 +208,14 @@ export const DashboardLayout: React.FC = () => {
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
+                  type="button"
                   onClick={checkSupabaseStatus}
                   className="px-4 py-2 rounded-xl bg-[#0A3D22] text-[#50E364] font-bold text-xs hover:bg-[#114D2C] transition-all"
                 >
                   Re-Test Connection
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowDbModal(false)}
                   className="px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold text-xs"
                 >
@@ -249,7 +231,7 @@ export const DashboardLayout: React.FC = () => {
           {/* Left: Admin Forms */}
           <main className={`flex-1 overflow-y-auto p-6 sm:p-8 transition-all duration-300 ${showSplitPreview ? 'sm:w-1/2 lg:w-2/5' : 'w-full'}`}>
             <div className="animate-fade-in max-w-5xl mx-auto">
-                <Outlet />
+              {children}
             </div>
           </main>
 
@@ -265,21 +247,22 @@ export const DashboardLayout: React.FC = () => {
                       <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
                     </div>
                     <span className="text-[10px] font-mono text-gray-400 ml-4 truncate max-w-[200px]">
-                      {previewUrl}
+                      / (Live Website Preview)
                     </span>
                   </div>
-                  <button 
-                    onClick={() => window.open(previewUrl, '_blank')}
+                  <a 
+                    href="/"
+                    target="_blank"
+                    rel="noreferrer"
                     className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 cursor-pointer"
                     title="Open in new tab"
                   >
                     <ExternalLink size={14} />
-                  </button>
+                  </a>
                 </div>
                 <div className="flex-1 relative bg-white">
                   <iframe 
-                    src={previewUrl}
-                    key={previewUrl} // Force reload iframe when section changes
+                    src="/"
                     className="absolute inset-0 w-full h-full border-none"
                     title="Live Preview"
                   />

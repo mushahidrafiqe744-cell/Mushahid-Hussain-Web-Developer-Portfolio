@@ -34,49 +34,59 @@ interface ContactSectionProps {
 }
 
 export const ContactSection: React.FC<ContactSectionProps> = ({ profile, onOpenResume }) => {
-  // Detect default country & currency based on visitor timezone
-  const [selectedCountry, setSelectedCountry] = useState<CountryCurrency>(() => {
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timeZone.includes('Karachi') || timeZone.includes('Pakistan')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'PKR') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('Dubai') || timeZone.includes('Muscat')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'AED') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('Riyadh')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'SAR') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('London')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'GBP') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('Europe') || timeZone.includes('Berlin') || timeZone.includes('Paris')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'EUR') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('Calcutta') || timeZone.includes('Kolkata') || timeZone.includes('India')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'INR') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('Toronto') || timeZone.includes('Vancouver')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'CAD') || WORLD_COUNTRIES[0];
-      }
-      if (timeZone.includes('Sydney') || timeZone.includes('Melbourne')) {
-        return WORLD_COUNTRIES.find((c) => c.code === 'AUD') || WORLD_COUNTRIES[0];
-      }
-    } catch (e) {}
-    // Default to USD or first
-    return WORLD_COUNTRIES.find((c) => c.code === 'USD') || WORLD_COUNTRIES[1] || WORLD_COUNTRIES[0];
-  });
-
+  const [selectedCountry, setSelectedCountry] = useState<CountryCurrency>(WORLD_COUNTRIES[0]);
   const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     projectType: 'Custom Website (Business / Portfolio)',
-    budget: selectedCountry.defaultBudget,
+    budget: WORLD_COUNTRIES[0].defaultBudget,
     message: '',
   });
   const [contactMethod, setContactMethod] = useState<'whatsapp' | 'email'>('whatsapp');
+
+  React.useEffect(() => {
+    try {
+      if (typeof window === 'undefined') return;
+      const savedCode = localStorage.getItem('user_selected_country_code');
+      if (savedCode) {
+        const found = WORLD_COUNTRIES.find((c) => c.code === savedCode);
+        if (found) {
+          setSelectedCountry(found);
+          setFormData((prev) => ({ ...prev, budget: found.defaultBudget }));
+          return;
+        }
+      }
+
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      let matched: CountryCurrency | undefined;
+      if (timeZone.includes('Karachi') || timeZone.includes('Pakistan')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'PKR');
+      } else if (timeZone.includes('Dubai') || timeZone.includes('Muscat')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'AED');
+      } else if (timeZone.includes('Riyadh')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'SAR');
+      } else if (timeZone.includes('London')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'GBP');
+      } else if (timeZone.includes('Europe') || timeZone.includes('Berlin') || timeZone.includes('Paris')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'EUR');
+      } else if (timeZone.includes('Calcutta') || timeZone.includes('Kolkata') || timeZone.includes('India')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'INR');
+      } else if (timeZone.includes('Toronto') || timeZone.includes('Vancouver')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'CAD');
+      } else if (timeZone.includes('Sydney') || timeZone.includes('Melbourne')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'AUD');
+      } else if (timeZone.includes('America') || timeZone.includes('US')) {
+        matched = WORLD_COUNTRIES.find((c) => c.code === 'USD');
+      }
+
+      if (matched) {
+        setSelectedCountry(matched);
+        setFormData((prev) => ({ ...prev, budget: matched!.defaultBudget }));
+      }
+    } catch (e) {}
+  }, []);
 
   // Handle country selection
   const handleSelectCountry = (country: CountryCurrency) => {

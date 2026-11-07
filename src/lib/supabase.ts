@@ -3,9 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 // Robust lookup for Supabase credentials (Vite env, define replacement, or fallback)
 const getEnv = (key: string): string => {
   try {
-    return (import.meta.env[key] as string) || (process.env[key] as string) || '';
-  } catch (e) {
     return (process.env[key] as string) || '';
+  } catch (e) {
+    return '';
   }
 };
 

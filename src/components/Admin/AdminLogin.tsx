@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, ArrowRight, Mail, AlertCircle, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -15,11 +14,24 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('admin_saved_email');
+        if (saved) setEmail(saved);
+      }
+    } catch (e) {}
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (!email.trim()) {
+      setErrorMsg('Pehle Supabase Admin Email enter karein!');
+      return;
+    }
 
     if (!password.trim()) {
       setErrorMsg('Pehle password enter karein! Password ke baghair admin panel show nahi hoga.');
@@ -43,15 +55,16 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
       if (error) throw error;
 
       if (data?.session) {
-        // Store session info
+        // Store session info & remembered email
+        try {
+          localStorage.setItem('admin_saved_email', email.trim());
+        } catch (e) {}
         sessionStorage.setItem('admin_token', data.session.access_token);
         localStorage.setItem('admin_token', data.session.access_token);
         localStorage.setItem('admin_user', JSON.stringify(data.user));
         
         if (onLoginSuccess) {
           onLoginSuccess();
-        } else {
-          navigate('/admin');
         }
       } else {
         setErrorMsg('Authentication failed. Please try again.');
@@ -84,13 +97,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
         >
           {/* Top lock badge indicator */}
           <div className="w-full flex items-center justify-between mb-4">
-            <Link
-              to="/"
+            <a
+              href="/"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#0A3D22] transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Site</span>
-            </Link>
+            </a>
             <div className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
               <Lock className="w-3 h-3 text-amber-600" />
               <span>Supabase Protected</span>
@@ -127,15 +140,21 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
 
           <div className="w-full space-y-3.5 mb-5 text-left">
             <div>
-              <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1">
-                Admin Email (Supabase)
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+                  Admin Email <span className="text-red-500">*</span>
+                </label>
+                <span className="text-[10px] text-gray-400 font-medium">Editable</span>
+              </div>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@example.com"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-semibold text-gray-900 focus:outline-hidden focus:border-[#0A3D22] focus:bg-white transition-all"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errorMsg) setErrorMsg('');
+                }}
+                placeholder="Enter your Supabase admin email..."
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm font-semibold text-gray-900 focus:outline-hidden focus:ring-2 focus:ring-[#0A3D22]/20 focus:border-[#0A3D22] transition-all"
                 required
               />
             </div>

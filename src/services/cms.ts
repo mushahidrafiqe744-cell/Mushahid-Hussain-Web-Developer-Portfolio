@@ -61,12 +61,14 @@ const cleanPayloadForTable = (payload: any, errorMessage: string) => {
 
 // Fallback initial state for each domain (used if Supabase is empty or uninitialized)
 const getFallbackData = (table: string) => {
-  const stored = localStorage.getItem(`cms_cache_${table}`);
-  if (stored !== null) {
-    try {
-      return JSON.parse(stored);
-    } catch (e) {
-      console.warn(`Failed to parse cached cms_${table}`, e);
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem(`cms_cache_${table}`);
+    if (stored !== null) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.warn(`Failed to parse cached cms_${table}`, e);
+      }
     }
   }
 
@@ -156,7 +158,11 @@ const getFallbackData = (table: string) => {
 };
 
 const setCacheData = (table: string, data: any[]) => {
-  localStorage.setItem(`cms_cache_${table}`, JSON.stringify(data));
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(`cms_cache_${table}`, JSON.stringify(data));
+    } catch (e) {}
+  }
 };
 
 const mapDbToFrontend = (item: any) => {

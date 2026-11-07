@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { cmsService } from '../../services/cms';
 import {
@@ -6,24 +8,19 @@ import {
   Package,
   MessageSquare,
   Sparkles,
-  Plus,
   User,
-  Star,
-  Settings,
-  Edit,
-  Trash2,
   CheckCircle,
-  RotateCcw,
-  ArrowRight,
   Zap,
   Globe,
   Briefcase,
   GraduationCap
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-export const AdminOverview: React.FC = () => {
-  const navigate = useNavigate();
+interface AdminOverviewProps {
+  onNavigate?: (tab: string) => void;
+}
+
+export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate }) => {
   const [stats, setStats] = useState({
     projectsCount: 0,
     skillsCount: 0,
@@ -42,8 +39,6 @@ export const AdminOverview: React.FC = () => {
     avatarUrl: LOCAL_ADMIN_IMAGE,
   });
 
-  const [recentProjects, setRecentProjects] = useState<any[]>([]);
-  const [recentMessages, setRecentMessages] = useState<any[]>([]);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -72,9 +67,6 @@ export const AdminOverview: React.FC = () => {
         experienceCount: experiences?.length || 0,
         coursesCount: courses?.length || 0
       });
-
-      setRecentProjects((projects || []).slice(0, 3));
-      setRecentMessages((messages || []).slice(0, 3));
 
       if (profile && profile[0]) {
         const p = profile[0];
@@ -199,7 +191,11 @@ export const AdminOverview: React.FC = () => {
               <Sparkles className="w-5 h-5 text-[#50E364]" />
               <span>Quick Hero Update</span>
             </div>
-            <button onClick={() => navigate('/admin/hero')} className="text-xs font-bold text-[#0A3D22] hover:underline">Full Editor ↗</button>
+            {onNavigate && (
+              <button type="button" onClick={() => onNavigate('hero')} className="text-xs font-bold text-[#0A3D22] hover:underline cursor-pointer">
+                Full Editor ↗
+              </button>
+            )}
           </div>
 
           <form onSubmit={handleHeroSave} className="space-y-4">
@@ -232,12 +228,17 @@ export const AdminOverview: React.FC = () => {
           </div>
           <div className="grid grid-cols-2 gap-3">
             {[
-                { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
-                { name: 'Experience', path: '/admin/experience', icon: Briefcase },
-                { name: 'Courses', path: '/admin/courses', icon: GraduationCap },
-                { name: 'Value Prop', path: '/admin/why-us', icon: Zap },
+                { name: 'Projects', key: 'projects', icon: FolderKanban },
+                { name: 'Experience', key: 'experiences', icon: Briefcase },
+                { name: 'Courses', key: 'courses', icon: GraduationCap },
+                { name: 'Value Prop', key: 'why_us', icon: Zap },
             ].map(item => (
-                <button key={item.name} onClick={() => navigate(item.path)} className="p-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 transition-all text-left border border-emerald-100 group">
+                <button
+                  type="button"
+                  key={item.name}
+                  onClick={() => onNavigate && onNavigate(item.key)}
+                  className="p-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100 transition-all text-left border border-emerald-100 group cursor-pointer"
+                >
                     <div className="w-8 h-8 rounded-lg bg-[#0A3D22] text-[#50E364] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                         <item.icon className="w-4 h-4" />
                     </div>

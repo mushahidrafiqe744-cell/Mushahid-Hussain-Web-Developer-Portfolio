@@ -42,24 +42,9 @@ export const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({
   onOpenOwnerPanel,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [sessionId, setSessionId] = useState<string>(() => {
-    try {
-      const saved = localStorage.getItem('portfolio_chat_session_id');
-      if (saved) return saved;
-      const newId = `chat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-      localStorage.setItem('portfolio_chat_session_id', newId);
-      return newId;
-    } catch (e) {
-      return `chat_${Date.now()}`;
-    }
-  });
-
-  const [clientName, setClientName] = useState<string>(() => {
-    return localStorage.getItem('portfolio_chat_client_name') || '';
-  });
-  const [clientEmail, setClientEmail] = useState<string>(() => {
-    return localStorage.getItem('portfolio_chat_client_email') || '';
-  });
+  const [sessionId, setSessionId] = useState<string>('');
+  const [clientName, setClientName] = useState<string>('');
+  const [clientEmail, setClientEmail] = useState<string>('');
   const [showIdentityForm, setShowIdentityForm] = useState<boolean>(false);
 
   const [conversation, setConversation] = useState<ChatConversation | null>(null);
@@ -69,7 +54,7 @@ export const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOwnerTyping, setIsOwnerTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [isMuted, setIsMuted] = useState(() => chatSound.getMuted());
+  const [isMuted, setIsMuted] = useState(false);
   const [selectedImageModal, setSelectedImageModal] = useState<string | null>(null);
   const [pendingAttachment, setPendingAttachment] = useState<{
     name: string;
@@ -82,8 +67,26 @@ export const LiveChatWidget: React.FC<LiveChatWidgetProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const savedId = localStorage.getItem('portfolio_chat_session_id');
+      const activeId = savedId || `chat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      localStorage.setItem('portfolio_chat_session_id', activeId);
+      setSessionId(activeId);
+
+      const savedName = localStorage.getItem('portfolio_chat_client_name') || '';
+      const savedEmail = localStorage.getItem('portfolio_chat_client_email') || '';
+      setClientName(savedName);
+      setClientEmail(savedEmail);
+
+      setIsMuted(chatSound.getMuted());
+    } catch (e) {}
+  }, []);
+
   // Initialize or fetch conversation
   useEffect(() => {
+    if (!sessionId) return;
     const initChat = async () => {
       try {
         const res = await fetch('/api/chat/init', {

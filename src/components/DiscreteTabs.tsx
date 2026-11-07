@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export interface DiscreteTab {
@@ -23,6 +23,9 @@ export const DiscreteTabs: React.FC<DiscreteTabsProps> = ({
   activeTab: controlledActiveTab,
   className = '',
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
   const [localActiveTab, setLocalActiveTab] = useState(defaultTab || tabs[0]?.id);
   const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : localActiveTab;
 
@@ -50,7 +53,7 @@ export const DiscreteTabs: React.FC<DiscreteTabsProps> = ({
                 : 'text-[#5C6E61] hover:text-[#11261B] hover:bg-white/50 px-3'
             }`}
           >
-            {isActive && (
+            {isMounted && isActive && (
               <motion.div
                 layoutId="discrete-tab-pill"
                 className="absolute inset-0 bg-white shadow-sm border border-[#C5A059]/20 rounded-xl"

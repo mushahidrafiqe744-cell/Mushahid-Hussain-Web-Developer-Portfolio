@@ -214,8 +214,8 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skillGroups }) => 
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-16">
-          {filtered.map((skill) => (
-            <SkillCard key={skill.name} skill={skill} />
+          {filtered.map((skill, index) => (
+            <SkillCard key={`${skill.category}-${skill.name}-${index}`} skill={skill} />
           ))}
         </div>
 

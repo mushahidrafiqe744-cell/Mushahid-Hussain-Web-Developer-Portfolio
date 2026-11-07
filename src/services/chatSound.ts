@@ -5,8 +5,10 @@ class ChatSoundService {
 
   constructor() {
     try {
-      const saved = localStorage.getItem('chat_sound_muted');
-      this.isMuted = saved === 'true';
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('chat_sound_muted');
+        this.isMuted = saved === 'true';
+      }
     } catch (e) {}
   }
 
