@@ -165,13 +165,37 @@ const setCacheData = (table: string, data: any[]) => {
   }
 };
 
+const ORIGINAL_PROJECT_IMAGES: Record<string, string> = {
+  'proj-1': '/assets/images/biztop_preview_1790852688158.jpg',
+  'proj-2': '/assets/images/meer_royal_decor_full_web_1791025431587.jpg',
+  'proj-3': '/assets/images/aqsa_ramzan_portfolio_1790343419861.jpg',
+  'proj-4': '/assets/images/novara_store_1790426084840.jpg',
+  'proj-5': '/assets/images/grand_pavilion_1790426037130.jpg',
+  'proj-6': '/assets/images/quaid_tribute_1790426054480.jpg',
+  'proj-7': '/assets/images/al_quran_portal_1790426071295.jpg',
+  'proj-8': '/assets/images/mba_academy_preview_1790339491378.jpg',
+  'proj-9': '/assets/images/raheem_rehab_preview_1790343771657.jpg',
+  'proj-10': '/assets/images/al_noor_textile_1790426098523.jpg',
+  'proj-11': '/assets/images/real_estate_web_1791805973161.jpg',
+  'proj-12': '/assets/images/restaurant_web_1791805986623.jpg',
+  'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
+  'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
+};
+
 const mapDbToFrontend = (item: any) => {
   if (!item || typeof item !== 'object') return item;
+  let rawImg = item.image_url || item.imageUrl || item.image || '';
+  if (typeof rawImg === 'object' && rawImg?.src) rawImg = rawImg.src;
+  if (item.id && ORIGINAL_PROJECT_IMAGES[item.id] && (typeof rawImg === 'string' && (rawImg.includes('_full_web_') || !rawImg))) {
+    rawImg = ORIGINAL_PROJECT_IMAGES[item.id];
+  }
+
   return {
     ...item,
     createdAt: item.created_at || item.createdAt || new Date().toISOString(),
     updatedAt: item.updated_at || item.updatedAt || new Date().toISOString(),
-    imageUrl: item.image_url || item.imageUrl || item.image || '',
+    imageUrl: rawImg,
+    image: rawImg,
     liveUrl: item.live_url || item.liveUrl || item.link || '#',
     githubUrl: item.github_url || item.githubUrl || '#',
     categoryLabel: item.category_label || item.categoryLabel || 'Web Application',

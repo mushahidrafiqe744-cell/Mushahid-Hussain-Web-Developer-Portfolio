@@ -37,9 +37,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavClick = (id: SectionId) => {
-    onSelectSection(id);
     setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    onSelectSection(id);
   };
 
   const topTabs: DiscreteTab[] = [
@@ -53,7 +52,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'projects', label: 'Projects', icon: <MdWorkOutline size={20} />, activeColor: 'text-[#C5A059]' },
     { id: 'testimonials', label: 'Reviews', icon: <MdRateReview size={20} />, activeColor: 'text-[#C5A059]' },
     { id: 'contact', label: 'Contact', icon: <MdChatBubbleOutline size={20} />, activeColor: 'text-[#C5A059]' },
-    { id: 'all', label: 'All Sections', icon: <MdWorkOutline size={20} />, activeColor: 'text-[#C5A059]' },
   ];
 
   const navItems: TooltipNavbarItem[] = [

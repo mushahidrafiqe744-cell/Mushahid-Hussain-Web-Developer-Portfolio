@@ -103,8 +103,17 @@ export const CoursesSection: React.FC<CoursesSectionProps> = ({ courses }) => {
                     <div className="relative mb-5 rounded-xl overflow-hidden bg-[#11261B] p-4 flex flex-col items-center justify-center border border-[#C5A059]/30 shadow-inner group/img">
                       <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full p-1.5 bg-gradient-to-tr from-[#C5A059] via-amber-200 to-[#11261B] shadow-2xl transition-transform duration-500 group-hover/img:scale-108">
                         <img
-                          src={course.badgeImage}
+                          src={
+                            typeof course.badgeImage === 'object' && (course.badgeImage as any)?.src
+                              ? (course.badgeImage as any).src
+                              : course.badgeImage || '/assets/images/claude_badge_dev_1790595243034.jpg'
+                          }
                           alt={`${course.title} Badge`}
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/assets/images/claude_badge_dev_1790595243034.jpg';
+                          }}
                           className="w-full h-full object-cover rounded-full shadow-md"
                         />
                         <button

@@ -151,7 +151,10 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate }) => {
             src={heroForm.avatarUrl || LOCAL_ADMIN_IMAGE}
             alt={heroForm.name}
             referrerPolicy="no-referrer"
-            onError={(e) => { e.currentTarget.src = LOCAL_ADMIN_IMAGE; }}
+            onError={(e) => { 
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = LOCAL_ADMIN_IMAGE; 
+            }}
             className="w-16 h-16 rounded-full object-cover border-2 border-[#50E364] shadow-sm"
           />
           <div>

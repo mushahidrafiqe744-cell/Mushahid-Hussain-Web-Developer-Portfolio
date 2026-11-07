@@ -186,8 +186,17 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
                 
                 {/* Hero Developer Portrait */}
                 <img
-                  src={(homePinterestImg as any)?.src || homePinterestImg || (heroPortrait as any)?.src || heroPortrait}
+                  src={
+                    (homePinterestImg as any)?.src ||
+                    (typeof homePinterestImg === 'string' ? homePinterestImg : '') ||
+                    '/assets/images/home_pinterest_image.jpg'
+                  }
                   alt={profile.name}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/assets/images/home_pinterest_image.jpg';
+                  }}
                   className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                 />
 

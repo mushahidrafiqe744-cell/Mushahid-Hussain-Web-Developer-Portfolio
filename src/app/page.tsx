@@ -38,13 +38,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const SECTION_HASH_MAP: Record<string, SectionId> = {
   hero: 'hero', home: 'hero', about: 'about', services: 'services',
   skills: 'skills', experience: 'experience', courses: 'courses',
-  'why-choose-me': 'why-choose-me', testimonials: 'testimonials',
-  projects: 'projects', resume: 'resume', contact: 'contact', all: 'all',
+  'why-choose-me': 'why-choose-me', 'why-us': 'why-choose-me',
+  testimonials: 'testimonials', reviews: 'testimonials',
+  projects: 'projects', resume: 'resume', contact: 'contact',
 };
 
 const SECTIONS_ORDER: { id: SectionId; name: string }[] = [
   { id: 'hero', name: 'Home' },
-  { id: 'about', name: 'About Me' },
+  { id: 'about', name: 'About' },
   { id: 'services', name: 'Services' },
   { id: 'skills', name: 'Skills' },
   { id: 'experience', name: 'Experience' },
@@ -52,7 +53,7 @@ const SECTIONS_ORDER: { id: SectionId; name: string }[] = [
   { id: 'why-choose-me', name: 'Why Us' },
   { id: 'projects', name: 'Projects' },
   { id: 'testimonials', name: 'Reviews' },
-  { id: 'resume', name: 'CV & Resume' },
+  { id: 'resume', name: 'Resume' },
   { id: 'contact', name: 'Contact' },
 ];
 
@@ -76,7 +77,6 @@ export default function HomePage() {
   });
   const [settings, setSettings] = useState<any>(null);
   const [activeSection, setActiveSection] = useState<SectionId>('hero');
-  const [viewMode, setViewMode] = useState<'single' | 'all'>('single');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
@@ -167,49 +167,35 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      const sec = getInitialSection();
-      if (sec) {
-        if (sec === 'all') {
-          setViewMode('all');
-          setActiveSection('all');
-        } else {
-          setActiveSection(sec);
-          if (viewMode === 'all') {
-            const el = document.getElementById(sec);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }
-        }
+      const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase().trim();
+      if (!hash) return;
+      const mapped = SECTION_HASH_MAP[hash] || (hash as SectionId);
+      if (mapped) {
+        setActiveSection(mapped);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
+
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [viewMode]);
+  }, []);
 
   const handleSelectSection = (section: SectionId) => {
-    if (section === 'all') {
-      setViewMode('all');
-      setActiveSection('all');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
     setActiveSection(section);
-    if (viewMode === 'all') {
-      setTimeout(() => {
-        const el = document.getElementById(section);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 50);
-    } else {
+    if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      try {
+        if (section === 'hero') {
+          window.history.replaceState(null, '', ' ');
+        } else {
+          window.history.replaceState(null, '', `#${section}`);
+        }
+      } catch (_) {}
     }
   };
 
-  const currentSectionIdx = SECTIONS_ORDER.findIndex(s => s.id === activeSection);
+  const currentSectionIdx = Math.max(0, SECTIONS_ORDER.findIndex(s => s.id === activeSection));
 
   const navigateNext = () => {
     if (currentSectionIdx < SECTIONS_ORDER.length - 1) {
@@ -223,7 +209,7 @@ export default function HomePage() {
     }
   };
 
-  const renderSingleSection = () => {
+  const renderCurrentSection = () => {
     switch (activeSection) {
       case 'hero':
         return <Hero profile={profile} onOpenSection={handleSelectSection} onOpenResume={() => setIsResumeModalOpen(true)} />;
@@ -263,67 +249,59 @@ export default function HomePage() {
         customLinks={settings?.navbarItems}
       />
 
+      <main className="flex-1 space-y-0 relative min-h-[70vh]">
+        {/* Isolated Section Container */}
+        <div key={activeSection} className="animate-fade-in">
+          {renderCurrentSection()}
+        </div>
 
-      <main className="flex-1 space-y-0 relative">
-        {viewMode === 'single' ? (
-          <div>
-            {renderSingleSection()}
+        {/* Section Navigation Controller (Previous / Next) */}
+        <div className="max-w-4xl mx-auto my-8 px-4">
+          <div className="bg-white/90 backdrop-blur-md border border-[#11261B]/15 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-4 flex-wrap">
+            <button
+              onClick={navigatePrev}
+              disabled={currentSectionIdx <= 0}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                currentSectionIdx <= 0
+                  ? 'opacity-30 cursor-not-allowed border-gray-200 text-gray-400'
+                  : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059] cursor-pointer'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span>
+                {currentSectionIdx > 0
+                  ? `Previous: ${SECTIONS_ORDER[currentSectionIdx - 1]?.name}`
+                  : 'Previous'}
+              </span>
+            </button>
 
-            {/* Bottom Navigation Control for Single Section View */}
-            <div className="max-w-4xl mx-auto my-8 px-4">
-              <div className="bg-white/80 backdrop-blur-md border border-[#11261B]/15 rounded-2xl p-4 shadow-sm flex items-center justify-between gap-4 flex-wrap">
-                <button
-                  onClick={navigatePrev}
-                  disabled={currentSectionIdx <= 0}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
-                    currentSectionIdx <= 0
-                      ? 'opacity-40 cursor-not-allowed border-gray-200 text-gray-400'
-                      : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059]'
-                  }`}
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                  <span>Previous Section</span>
-                </button>
-
-                <div className="text-center">
-                  <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider block">
-                    {SECTIONS_ORDER[currentSectionIdx]?.name || 'Section'}
-                  </span>
-                  <span className="text-[10px] text-[#5C6E61] font-semibold">
-                    Section {Math.max(1, currentSectionIdx + 1)} of {SECTIONS_ORDER.length}
-                  </span>
-                </div>
-
-                <button
-                  onClick={navigateNext}
-                  disabled={currentSectionIdx >= SECTIONS_ORDER.length - 1}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
-                    currentSectionIdx >= SECTIONS_ORDER.length - 1
-                      ? 'opacity-40 cursor-not-allowed border-gray-200 text-gray-400'
-                      : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059]'
-                  }`}
-                >
-                  <span>Next Section</span>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+            <div className="text-center">
+              <span className="text-xs font-bold text-[#C5A059] uppercase tracking-wider block">
+                {SECTIONS_ORDER[currentSectionIdx]?.name || 'Section'}
+              </span>
+              <span className="text-[11px] text-[#5C6E61] font-semibold">
+                Section {Math.max(1, currentSectionIdx + 1)} of {SECTIONS_ORDER.length}
+              </span>
             </div>
+
+            <button
+              onClick={navigateNext}
+              disabled={currentSectionIdx >= SECTIONS_ORDER.length - 1}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                currentSectionIdx >= SECTIONS_ORDER.length - 1
+                  ? 'opacity-30 cursor-not-allowed border-gray-200 text-gray-400'
+                  : 'border-[#11261B]/15 text-[#11261B] hover:bg-[#11261B] hover:text-[#C5A059] cursor-pointer'
+              }`}
+            >
+              <span>
+                {currentSectionIdx < SECTIONS_ORDER.length - 1
+                  ? `Next: ${SECTIONS_ORDER[currentSectionIdx + 1]?.name}`
+                  : 'Next'}
+              </span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-        ) : (
-          <>
-            <Hero profile={profile} onOpenSection={handleSelectSection} onOpenResume={() => setIsResumeModalOpen(true)} />
-            <AboutSection profile={profile} />
-            <ServicesSection services={services} adminPhone={profile?.whatsapp || profile?.phone} />
-            <SkillsSection skillGroups={skills} />
-            <ExperienceSection profile={profile} experiences={experiences} />
-            <CoursesSection courses={courses} />
-            <WhyChooseMeSection pillars={whyUs.pillars} workflow={whyUs.workflow} />
-            <ProjectsSection projects={projects.filter((p: any) => !p.hidden)} onSelectProject={setSelectedProject} />
-            <TestimonialsSection testimonials={testimonials} onOpenContact={() => handleSelectSection('contact')} onOpenFeedback={() => setIsFeedbackModalOpen(true)} />
-            <ResumeSection profile={profile} projects={projects.filter((p: any) => !p.hidden)} skillGroups={skills} experiences={experiences} courses={courses} onOpenFullModal={() => setIsResumeModalOpen(true)} />
-            <ContactSection profile={profile} onOpenResume={() => setIsResumeModalOpen(true)} />
-          </>
-        )}
+        </div>
       </main>
       <Footer profile={profile} onSelectSection={handleSelectSection} />
       <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />

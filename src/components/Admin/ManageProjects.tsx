@@ -306,7 +306,7 @@ export const ManageProjects: React.FC = () => {
                   alt="Preview"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
-                    e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+                    e.currentTarget.src = '/assets/images/biztop_preview_1790852688158.jpg';
                   }}
                   className="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0"
                 />
@@ -393,15 +393,19 @@ export const ManageProjects: React.FC = () => {
                 <div className="flex items-center gap-4 min-w-0">
                   <img
                     src={
-                      proj.imageUrl ||
-                      proj.image ||
-                      proj.image_url ||
-                      '/assets/images/biztop_full_web_1790852703068.jpg'
+                      typeof proj.imageUrl === 'object' && proj.imageUrl?.src
+                        ? proj.imageUrl.src
+                        : typeof proj.image === 'object' && proj.image?.src
+                        ? proj.image.src
+                        : proj.imageUrl ||
+                          proj.image ||
+                          proj.image_url ||
+                          '/assets/images/biztop_preview_1790852688158.jpg'
                     }
                     alt={proj.title}
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+                      e.currentTarget.src = '/assets/images/biztop_preview_1790852688158.jpg';
                     }}
                     className="w-16 h-12 rounded-xl object-cover border border-gray-200 shrink-0"
                   />

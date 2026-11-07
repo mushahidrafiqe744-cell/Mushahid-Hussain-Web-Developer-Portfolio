@@ -1,19 +1,19 @@
 import { CourseCertification, DeveloperProfile, Project, Service, SkillGroup, Testimonial } from '../types/portfolio';
 import heroPortrait from '../assets/images/mushahid_hero_portrait_1790420656343.jpg';
-import biztopFullImg from '../assets/images/biztop_full_web_1790852703068.jpg';
-import meerRoyalDecorImg from '../assets/images/meer_royal_decor_full_web_1791025431587.jpg';
-import mbaAcademyImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
-import aqsaRamzanImg from '../assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
-import raheemRehabImg from '../assets/images/raheem_rehab_full_web_1790428879741.jpg';
-import grandPavilionImg from '../assets/images/grand_pavilion_full_web_1790428751763.jpg';
-import novaraStoreImg from '../assets/images/novara_store_full_web_1790428808211.jpg';
-import quaidTributeImg from '../assets/images/quaid_tribute_full_web_1790428772996.jpg';
-import alQuranImg from '../assets/images/al_quran_full_web_1790428789923.jpg';
-import alNoorTextileImg from '../assets/images/al_noor_textile_full_web_1790428824308.jpg';
-import realEstateImg from '../assets/images/real_estate_web_1791805973161.jpg';
-import restaurantImg from '../assets/images/restaurant_web_1791805986623.jpg';
-import fintechImg from '../assets/images/fintech_web_1791806009333.jpg';
-import cloudApiImg from '../assets/images/cloud_api_web_1791806022294.jpg';
+import biztopFullWebImg from '../assets/images/biztop_full_web_1790852703068.jpg';
+import meerRoyalDecorFullWebImg from '../assets/images/meer_royal_decor_full_web_1791025431587.jpg';
+import aqsaRamzanFullWebImg from '../assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
+import novaraStoreFullWebImg from '../assets/images/novara_store_full_web_1790428808211.jpg';
+import grandPavilionFullWebImg from '../assets/images/grand_pavilion_full_web_1790428751763.jpg';
+import quaidTributeFullWebImg from '../assets/images/quaid_tribute_full_web_1790428772996.jpg';
+import alQuranFullWebImg from '../assets/images/al_quran_full_web_1790428789923.jpg';
+import mbaAcademyFullWebImg from '../assets/images/mba_academy_full_web_1790428843333.jpg';
+import raheemRehabFullWebImg from '../assets/images/raheem_rehab_full_web_1790428879741.jpg';
+import alNoorTextileFullWebImg from '../assets/images/al_noor_textile_full_web_1790428824308.jpg';
+import realEstateWebImg from '../assets/images/real_estate_web_1791805973161.jpg';
+import restaurantWebImg from '../assets/images/restaurant_web_1791805986623.jpg';
+import fintechWebImg from '../assets/images/fintech_web_1791806009333.jpg';
+import cloudApiWebImg from '../assets/images/cloud_api_web_1791806022294.jpg';
 import claudeBadgeDevImg from '../assets/images/claude_badge_dev_1790595243034.jpg';
 import claudeBadgeAiImg from '../assets/images/claude_badge_ai_1790595259009.jpg';
 import weversityBadgeImg from '../assets/images/weversity_badge_1790595272249.jpg';
@@ -37,7 +37,7 @@ export const initialProfile: DeveloperProfile = {
   linkedin: 'https://www.linkedin.com/in/mushahid-rafiqe-5b3259425/',
   tiktok: 'https://www.tiktok.com/@mushahidrafiqe699',
   twitter: 'https://twitter.com/mushahiddev',
-  avatarUrl: 'https://i.pinimg.com/736x/69/0e/ee/690eee1da722bcf952fa4893995ac008.jpg',
+  avatarUrl: '/assets/images/about_new_portrait_2.jpg',
   yearsOfExperience: '8+ Years',
   projectsCompleted: '50+',
   happyClients: '99%',
@@ -164,8 +164,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: '99.9% Uptime',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Node.js'],
-    image: biztopFullImg,
-    imageUrl: biztopFullImg,
+    image: (biztopFullWebImg as any)?.src || biztopFullWebImg,
+    imageUrl: (biztopFullWebImg as any)?.src || biztopFullWebImg,
     liveUrl: 'https://biztop.org/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -180,8 +180,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: '₨ 1.2M+ Sales',
     technologies: ['Next.js', 'Tailwind CSS', 'Framer Motion'],
-    image: meerRoyalDecorImg,
-    imageUrl: meerRoyalDecorImg,
+    image: (meerRoyalDecorFullWebImg as any)?.src || meerRoyalDecorFullWebImg,
+    imageUrl: (meerRoyalDecorFullWebImg as any)?.src || meerRoyalDecorFullWebImg,
     liveUrl: 'https://meerroyaldecor.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -196,8 +196,8 @@ export const initialProjects: Project[] = [
     year: '2024',
     metrics: '5,000+ Bookings',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'REST API'],
-    image: aqsaRamzanImg,
-    imageUrl: aqsaRamzanImg,
+    image: (aqsaRamzanFullWebImg as any)?.src || aqsaRamzanFullWebImg,
+    imageUrl: (aqsaRamzanFullWebImg as any)?.src || aqsaRamzanFullWebImg,
     liveUrl: 'https://draqsaramzan.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -212,8 +212,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: 'Stripe & Global Cart',
     technologies: ['React', 'Tailwind CSS', 'Stripe', 'Node.js'],
-    image: novaraStoreImg,
-    imageUrl: novaraStoreImg,
+    image: (novaraStoreFullWebImg as any)?.src || novaraStoreFullWebImg,
+    imageUrl: (novaraStoreFullWebImg as any)?.src || novaraStoreFullWebImg,
     liveUrl: 'https://novarastore.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -228,8 +228,8 @@ export const initialProjects: Project[] = [
     year: '2024',
     metrics: 'Interactive 3D Booking',
     technologies: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
-    image: grandPavilionImg,
-    imageUrl: grandPavilionImg,
+    image: (grandPavilionFullWebImg as any)?.src || grandPavilionFullWebImg,
+    imageUrl: (grandPavilionFullWebImg as any)?.src || grandPavilionFullWebImg,
     liveUrl: 'https://grandpavilion.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -244,8 +244,8 @@ export const initialProjects: Project[] = [
     year: '2024',
     metrics: '100k+ Visitors',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Audio API'],
-    image: quaidTributeImg,
-    imageUrl: quaidTributeImg,
+    image: (quaidTributeFullWebImg as any)?.src || quaidTributeFullWebImg,
+    imageUrl: (quaidTributeFullWebImg as any)?.src || quaidTributeFullWebImg,
     liveUrl: 'https://quaidtribute.org/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -260,8 +260,8 @@ export const initialProjects: Project[] = [
     year: '2024',
     metrics: 'Offline Audio Sync',
     technologies: ['Next.js', 'React', 'Tailwind CSS', 'Audio Stream'],
-    image: alQuranImg,
-    imageUrl: alQuranImg,
+    image: (alQuranFullWebImg as any)?.src || alQuranFullWebImg,
+    imageUrl: (alQuranFullWebImg as any)?.src || alQuranFullWebImg,
     liveUrl: 'https://alquranportal.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -276,8 +276,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: '4.9/5 Rating',
     technologies: ['React 19', 'TypeScript', 'Node.js', 'MongoDB'],
-    image: mbaAcademyImg,
-    imageUrl: mbaAcademyImg,
+    image: (mbaAcademyFullWebImg as any)?.src || mbaAcademyFullWebImg,
+    imageUrl: (mbaAcademyFullWebImg as any)?.src || mbaAcademyFullWebImg,
     liveUrl: 'https://mbaacademy.edu/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -292,8 +292,8 @@ export const initialProjects: Project[] = [
     year: '2024',
     metrics: 'Patient EHR Portal',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Express'],
-    image: raheemRehabImg,
-    imageUrl: raheemRehabImg,
+    image: (raheemRehabFullWebImg as any)?.src || raheemRehabFullWebImg,
+    imageUrl: (raheemRehabFullWebImg as any)?.src || raheemRehabFullWebImg,
     liveUrl: 'https://raheemrehab.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -308,8 +308,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: 'Bulk RFP Engine',
     technologies: ['Next.js', 'React', 'PostgreSQL', 'Tailwind CSS'],
-    image: alNoorTextileImg,
-    imageUrl: alNoorTextileImg,
+    image: (alNoorTextileFullWebImg as any)?.src || alNoorTextileFullWebImg,
+    imageUrl: (alNoorTextileFullWebImg as any)?.src || alNoorTextileFullWebImg,
     liveUrl: 'https://alnoortextiles.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -324,8 +324,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: 'Dynamic Maps & Tours',
     technologies: ['React', 'TypeScript', 'Leaflet / Maps', 'Tailwind CSS'],
-    image: realEstateImg,
-    imageUrl: realEstateImg,
+    image: (realEstateWebImg as any)?.src || realEstateWebImg,
+    imageUrl: (realEstateWebImg as any)?.src || realEstateWebImg,
     liveUrl: 'https://horizonluxuryrealestate.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -340,8 +340,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: 'Live Table Booking',
     technologies: ['React', 'Node.js', 'Tailwind CSS', 'Framer Motion'],
-    image: restaurantImg,
-    imageUrl: restaurantImg,
+    image: (restaurantWebImg as any)?.src || restaurantWebImg,
+    imageUrl: (restaurantWebImg as any)?.src || restaurantWebImg,
     liveUrl: 'https://maisongourmet.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -356,8 +356,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: '< 15ms Latency',
     technologies: ['React 19', 'TypeScript', 'Chart.js', 'Express API'],
-    image: fintechImg,
-    imageUrl: fintechImg,
+    image: (fintechWebImg as any)?.src || fintechWebImg,
+    imageUrl: (fintechWebImg as any)?.src || fintechWebImg,
     liveUrl: 'https://finedgewealth.com/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,
@@ -372,8 +372,8 @@ export const initialProjects: Project[] = [
     year: '2025',
     metrics: '99.99% Reliability',
     technologies: ['Next.js', 'Node.js', 'REST & GraphQL', 'Tailwind'],
-    image: cloudApiImg,
-    imageUrl: cloudApiImg,
+    image: (cloudApiWebImg as any)?.src || cloudApiWebImg,
+    imageUrl: (cloudApiWebImg as any)?.src || cloudApiWebImg,
     liveUrl: 'https://cloudpulseapi.io/',
     githubUrl: 'https://github.com/mushahidhussain',
     featured: true,

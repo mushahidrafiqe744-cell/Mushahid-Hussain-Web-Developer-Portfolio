@@ -76,7 +76,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             src={adminAvatar || ADMIN_IMAGE_URL}
             alt="Mushahid Hussain"
             referrerPolicy="no-referrer"
-            onError={(e) => { e.currentTarget.src = ADMIN_IMAGE_URL; }}
+            onError={(e) => { 
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = ADMIN_IMAGE_URL; 
+            }}
             className="w-11 h-11 rounded-full object-cover border-2 border-[#50E364] shadow-sm"
           />
           <div>
@@ -181,7 +184,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                  src={adminAvatar || ADMIN_IMAGE_URL}
                  alt="Admin Avatar"
                  referrerPolicy="no-referrer"
-                 onError={(e) => { e.currentTarget.src = ADMIN_IMAGE_URL; }}
+                 onError={(e) => { 
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = ADMIN_IMAGE_URL; 
+                }}
                  className="w-9 h-9 rounded-full object-cover border border-[#50E364]"
                />
              </div>

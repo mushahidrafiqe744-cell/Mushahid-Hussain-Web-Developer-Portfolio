@@ -7,6 +7,58 @@ interface ProjectsSectionProps {
   onSelectProject: (project: Project) => void;
 }
 
+const resolveProjectImage = (project: Project): string => {
+  const rawUrl =
+    typeof project.imageUrl === 'object' && (project.imageUrl as any)?.src
+      ? (project.imageUrl as any).src
+      : typeof project.image === 'object' && (project.image as any)?.src
+      ? (project.image as any).src
+      : typeof project.imageUrl === 'string' && project.imageUrl
+      ? project.imageUrl
+      : typeof project.image === 'string' && project.image
+      ? project.image
+      : '';
+
+  const titleLower = (project.title || '').toLowerCase();
+  if (titleLower.includes('quran')) return '/assets/images/al_quran_full_web_1790428789923.jpg';
+  if (titleLower.includes('gourmet') || titleLower.includes('restaurant')) return '/assets/images/restaurant_web_1791805986623.jpg';
+  if (titleLower.includes('mba') || titleLower.includes('academy')) return '/assets/images/mba_academy_full_web_1790428843333.jpg';
+  if (titleLower.includes('textile') || titleLower.includes('noor')) return '/assets/images/al_noor_textile_full_web_1790428824308.jpg';
+  if (titleLower.includes('rehab') || titleLower.includes('raheem')) return '/assets/images/raheem_rehab_full_web_1790428879741.jpg';
+  if (titleLower.includes('pavilion')) return '/assets/images/grand_pavilion_full_web_1790428751763.jpg';
+  if (titleLower.includes('quaid') || titleLower.includes('25th')) return '/assets/images/quaid_tribute_full_web_1790428772996.jpg';
+  if (titleLower.includes('aqsa')) return '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
+  if (titleLower.includes('novara')) return '/assets/images/novara_store_full_web_1790428808211.jpg';
+  if (titleLower.includes('meer') || titleLower.includes('decor')) return '/assets/images/meer_royal_decor_full_web_1791025431587.jpg';
+  if (titleLower.includes('estate') || titleLower.includes('horizon')) return '/assets/images/real_estate_web_1791805973161.jpg';
+  if (titleLower.includes('finedge') || titleLower.includes('wealth')) return '/assets/images/fintech_web_1791806009333.jpg';
+  if (titleLower.includes('cloudpulse') || titleLower.includes('microservice')) return '/assets/images/cloud_api_web_1791806022294.jpg';
+  if (titleLower.includes('biztop')) return '/assets/images/biztop_full_web_1790852703068.jpg';
+
+  const PROJECT_ID_MAP: Record<string, string> = {
+    'proj-1': '/assets/images/biztop_full_web_1790852703068.jpg',
+    'proj-2': '/assets/images/meer_royal_decor_full_web_1791025431587.jpg',
+    'proj-3': '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg',
+    'proj-4': '/assets/images/novara_store_full_web_1790428808211.jpg',
+    'proj-5': '/assets/images/grand_pavilion_full_web_1790428751763.jpg',
+    'proj-6': '/assets/images/quaid_tribute_full_web_1790428772996.jpg',
+    'proj-7': '/assets/images/al_quran_full_web_1790428789923.jpg',
+    'proj-8': '/assets/images/mba_academy_full_web_1790428843333.jpg',
+    'proj-9': '/assets/images/raheem_rehab_full_web_1790428879741.jpg',
+    'proj-10': '/assets/images/al_noor_textile_full_web_1790428824308.jpg',
+    'proj-11': '/assets/images/real_estate_web_1791805973161.jpg',
+    'proj-12': '/assets/images/restaurant_web_1791805986623.jpg',
+    'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
+    'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
+  };
+
+  if (PROJECT_ID_MAP[project.id]) {
+    return PROJECT_ID_MAP[project.id];
+  }
+
+  return rawUrl || '/assets/images/biztop_full_web_1790852703068.jpg';
+};
+
 const ProjectCard: React.FC<{
   project: Project;
   index: number;
@@ -44,6 +96,21 @@ const ProjectCard: React.FC<{
 
   const formattedNum = String(currentNum).padStart(2, '0');
 
+  const cleanDomain = (() => {
+    const url = project.liveUrl || (project as any).link || '';
+    if (url) {
+      try {
+        const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+        return parsed.hostname.replace(/^www\./, '');
+      } catch (_) {
+        return url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      }
+    }
+    return `${project.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
+  })();
+
+  const imageSrc = resolveProjectImage(project);
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -51,63 +118,70 @@ const ProjectCard: React.FC<{
       className="group bg-[#F2EDE2] rounded-2xl border border-[#11261B]/10 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5 animate-shimmer"
     >
       <div>
-        {/* Project Media Frame with Full Webpage Scroll on Hover */}
-        <div
-          onClick={() => onSelectProject(project)}
-          className="relative h-64 sm:h-72 overflow-hidden bg-[#0d1e13] cursor-pointer group/frame"
-        >
-          {/* Realistic Browser Window Top Bar */}
-          <div className="absolute top-0 left-0 right-0 h-7 bg-[#11261B]/95 backdrop-blur-md border-b border-[#C5A059]/20 z-20 flex items-center px-3 justify-between">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-rose-500/90 inline-block" />
-              <span className="w-2 h-2 rounded-full bg-amber-500/90 inline-block" />
-              <span className="w-2 h-2 rounded-full bg-emerald-500/90 inline-block" />
+        {/* Realistic Browser Mockup Frame */}
+        <div className="relative overflow-hidden bg-[#07130A] border-b border-[#11261B]/15">
+          {/* Top Browser Bar */}
+          <div className="bg-[#0C1F15] px-3.5 py-2 flex items-center justify-between border-b border-white/5 select-none">
+            {/* macOS Window Traffic Lights */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] inline-block shadow-2xs" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] inline-block shadow-2xs" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F] inline-block shadow-2xs" />
             </div>
-            <div className="text-[9px] font-mono text-[#DFC285]/90 truncate max-w-[150px] sm:max-w-[200px]">
-              {project.liveUrl ? project.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') : project.title}
+
+            {/* Address Bar Pill */}
+            <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/40 border border-white/5 text-[10px] font-mono text-[#DFC285]/90 max-w-[170px] sm:max-w-[210px] truncate shadow-inner">
+              <span className="text-[8px] text-[#5C6E61]">🔒</span>
+              <span className="truncate">{cleanDomain}</span>
             </div>
-            <div className="text-[8px] font-bold text-[#DFC285] bg-white/10 px-1.5 py-0.5 rounded tracking-wider uppercase flex items-center gap-1">
-              <span className={`w-1.5 h-1.5 rounded-full ${isHovered ? 'bg-emerald-400 animate-pulse' : 'bg-[#DFC285]'}`} />
-              <span>{isHovered ? 'Full Scroll ▾' : 'Hover to Scroll'}</span>
+
+            {/* Hover to Scroll Pulsing Badge */}
+            <div className="flex items-center gap-1 text-[9px] font-bold tracking-wider uppercase text-[#C5A059] bg-[#11261B] px-2 py-0.5 rounded border border-[#C5A059]/30 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-ping" />
+              <span>HOVER TO SCROLL</span>
             </div>
           </div>
 
-          {/* Scrolling Webpage Container (Whole Website Scroll from Top Header to Bottom Footer) */}
+          {/* Smooth Vertical Scrolling Screenshot Window */}
           <div
-            className="w-full pt-7 will-change-transform"
-            style={{
-              transform: isHovered ? 'translateY(calc(-100% + 288px))' : 'translateY(0%)',
-              transition: isHovered
-                ? 'transform 6.5s cubic-bezier(0.25, 0.1, 0.25, 1)'
-                : 'transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
-            }}
+            onClick={() => onSelectProject(project)}
+            className="relative h-60 sm:h-64 overflow-hidden bg-[#07130A] cursor-pointer group/frame"
           >
             <img
-              src={project.image || project.imageUrl || '/assets/images/biztop_full_web_1790852703068.jpg'}
+              src={imageSrc}
               alt={project.title}
               referrerPolicy="no-referrer"
+              className="w-full h-auto block select-none will-change-transform"
+              style={{
+                transform: isHovered ? 'translateY(calc(-100% + 240px))' : 'translateY(0%)',
+                transition: isHovered
+                  ? 'transform 7s cubic-bezier(0.25, 0.1, 0.25, 1)'
+                  : 'transform 1.8s ease-out',
+              }}
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
               }}
-              className="w-full h-auto block select-none pointer-events-none"
             />
-          </div>
 
-          {/* Category Label at bottom-left */}
-          <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30 z-20 shadow-md">
-            {project.categoryLabel || project.category}
-          </div>
+            {/* Subtle gradient overlay at bottom for badge readability */}
+            <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#11261B]/80 to-transparent pointer-events-none z-10" />
 
-          {/* Number Badge Index at bottom-right */}
-          <div
-            className={`absolute bottom-3 right-3 text-xs font-mono font-bold px-2 py-0.5 rounded-lg border shadow-md transition-all duration-300 select-none z-20 ${
-              isHovered
-                ? 'bg-[#C5A059] text-[#11261B] border-[#DFC285] scale-105 shadow-lg shadow-[#C5A059]/30'
-                : 'bg-[#11261B]/90 text-[#DFC285]/80 border-[#C5A059]/40'
-            }`}
-          >
-            #{formattedNum}
+            {/* Category Label at bottom-left */}
+            <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border border-[#C5A059]/30 z-20 shadow-md">
+              {project.categoryLabel || project.category}
+            </div>
+
+            {/* Number Badge Index at bottom-right */}
+            <div
+              className={`absolute bottom-3 right-3 text-xs font-mono font-bold px-2 py-0.5 rounded-lg border shadow-md transition-all duration-300 select-none z-20 ${
+                isHovered
+                  ? 'bg-[#C5A059] text-[#11261B] border-[#DFC285] scale-105 shadow-lg shadow-[#C5A059]/30'
+                  : 'bg-[#11261B]/90 text-[#DFC285]/80 border-[#C5A059]/40'
+              }`}
+            >
+              #{formattedNum}
+            </div>
           </div>
         </div>
 

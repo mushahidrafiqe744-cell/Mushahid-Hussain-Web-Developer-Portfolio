@@ -7,6 +7,58 @@ interface ProjectModalProps {
   onClose: () => void;
 }
 
+const resolveProjectImage = (project: Project): string => {
+  const rawUrl =
+    typeof project.imageUrl === 'object' && (project.imageUrl as any)?.src
+      ? (project.imageUrl as any).src
+      : typeof project.image === 'object' && (project.image as any)?.src
+      ? (project.image as any).src
+      : typeof project.imageUrl === 'string' && project.imageUrl
+      ? project.imageUrl
+      : typeof project.image === 'string' && project.image
+      ? project.image
+      : '';
+
+  const titleLower = (project.title || '').toLowerCase();
+  if (titleLower.includes('quran')) return '/assets/images/al_quran_full_web_1790428789923.jpg';
+  if (titleLower.includes('gourmet') || titleLower.includes('restaurant')) return '/assets/images/restaurant_web_1791805986623.jpg';
+  if (titleLower.includes('mba') || titleLower.includes('academy')) return '/assets/images/mba_academy_full_web_1790428843333.jpg';
+  if (titleLower.includes('textile') || titleLower.includes('noor')) return '/assets/images/al_noor_textile_full_web_1790428824308.jpg';
+  if (titleLower.includes('rehab') || titleLower.includes('raheem')) return '/assets/images/raheem_rehab_full_web_1790428879741.jpg';
+  if (titleLower.includes('pavilion')) return '/assets/images/grand_pavilion_full_web_1790428751763.jpg';
+  if (titleLower.includes('quaid') || titleLower.includes('25th')) return '/assets/images/quaid_tribute_full_web_1790428772996.jpg';
+  if (titleLower.includes('aqsa')) return '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg';
+  if (titleLower.includes('novara')) return '/assets/images/novara_store_full_web_1790428808211.jpg';
+  if (titleLower.includes('meer') || titleLower.includes('decor')) return '/assets/images/meer_royal_decor_full_web_1791025431587.jpg';
+  if (titleLower.includes('estate') || titleLower.includes('horizon')) return '/assets/images/real_estate_web_1791805973161.jpg';
+  if (titleLower.includes('finedge') || titleLower.includes('wealth')) return '/assets/images/fintech_web_1791806009333.jpg';
+  if (titleLower.includes('cloudpulse') || titleLower.includes('microservice')) return '/assets/images/cloud_api_web_1791806022294.jpg';
+  if (titleLower.includes('biztop')) return '/assets/images/biztop_full_web_1790852703068.jpg';
+
+  const PROJECT_ID_MAP: Record<string, string> = {
+    'proj-1': '/assets/images/biztop_full_web_1790852703068.jpg',
+    'proj-2': '/assets/images/meer_royal_decor_full_web_1791025431587.jpg',
+    'proj-3': '/assets/images/aqsa_ramzan_full_web_1790428861081.jpg',
+    'proj-4': '/assets/images/novara_store_full_web_1790428808211.jpg',
+    'proj-5': '/assets/images/grand_pavilion_full_web_1790428751763.jpg',
+    'proj-6': '/assets/images/quaid_tribute_full_web_1790428772996.jpg',
+    'proj-7': '/assets/images/al_quran_full_web_1790428789923.jpg',
+    'proj-8': '/assets/images/mba_academy_full_web_1790428843333.jpg',
+    'proj-9': '/assets/images/raheem_rehab_full_web_1790428879741.jpg',
+    'proj-10': '/assets/images/al_noor_textile_full_web_1790428824308.jpg',
+    'proj-11': '/assets/images/real_estate_web_1791805973161.jpg',
+    'proj-12': '/assets/images/restaurant_web_1791805986623.jpg',
+    'proj-13': '/assets/images/fintech_web_1791806009333.jpg',
+    'proj-14': '/assets/images/cloud_api_web_1791806022294.jpg',
+  };
+
+  if (PROJECT_ID_MAP[project.id]) {
+    return PROJECT_ID_MAP[project.id];
+  }
+
+  return rawUrl || '/assets/images/biztop_full_web_1790852703068.jpg';
+};
+
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
   const [isImgHovered, setIsImgHovered] = useState(false);
 
@@ -21,6 +73,21 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
   }, [onClose]);
 
   if (!project) return null;
+
+  const cleanDomain = (() => {
+    const url = project.liveUrl || (project as any).link || '';
+    if (url) {
+      try {
+        const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+        return parsed.hostname.replace(/^www\./, '');
+      } catch (_) {
+        return url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      }
+    }
+    return `${project.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
+  })();
+
+  const modalImg = resolveProjectImage(project);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#11261B]/80 backdrop-blur-sm animate-fade-in">
@@ -50,56 +117,46 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         {/* Modal Body */}
         <div className="p-6 sm:p-8 max-h-[80vh] overflow-y-auto">
           
-          {/* Project Image with Interactive Browser Mockup & Full Webpage Scroll */}
-          <div
-            onMouseEnter={() => setIsImgHovered(true)}
-            onMouseLeave={() => setIsImgHovered(false)}
-            className="relative rounded-2xl overflow-hidden mb-6 h-80 sm:h-[460px] bg-[#0d1e13] border border-[#C5A059]/30 shadow-xl cursor-pointer group"
-          >
+          {/* Project Image with Interactive Browser Mockup */}
+          <div className="rounded-2xl overflow-hidden mb-6 bg-[#07130A] border border-[#C5A059]/30 shadow-xl">
             {/* Top Browser Bar */}
-            <div className="absolute top-0 left-0 right-0 h-7 bg-[#11261B]/95 backdrop-blur-md border-b border-[#C5A059]/20 z-20 flex items-center px-3.5 justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/90 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/90 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/90 inline-block" />
+            <div className="bg-[#0C1F15] px-4 py-2.5 flex items-center justify-between border-b border-white/5 select-none">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] inline-block shadow-2xs" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] inline-block shadow-2xs" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F] inline-block shadow-2xs" />
               </div>
-              <div className="text-[10px] font-mono text-[#DFC285] truncate max-w-[240px]">
-                {project.liveUrl || project.title}
+
+              <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/40 border border-white/5 text-[11px] font-mono text-[#DFC285]/90 max-w-[240px] truncate shadow-inner">
+                <span className="text-[9px] text-[#5C6E61]">🔒</span>
+                <span className="truncate">{cleanDomain}</span>
               </div>
-              <div className="text-[9px] font-bold text-[#DFC285] bg-white/10 px-2 py-0.5 rounded tracking-wider uppercase flex items-center gap-1">
-                <span className={`w-1.5 h-1.5 rounded-full ${isImgHovered ? 'bg-emerald-400 animate-pulse' : 'bg-[#DFC285]'}`} />
-                <span>{isImgHovered ? 'Full Website Scrolling ▾' : 'Hover to Scroll Full Page'}</span>
+
+              <div className="text-[9px] font-bold tracking-wider uppercase text-[#C5A059] bg-[#11261B] px-2 py-0.5 rounded border border-[#C5A059]/30">
+                FULL PREVIEW
               </div>
             </div>
 
-            {/* Scrolling Viewport (Whole Website from Header to Footer) */}
-            <div
-              className="w-full pt-7 will-change-transform"
-              style={{
-                transform: isImgHovered ? 'translateY(calc(-100% + 460px))' : 'translateY(0%)',
-                transition: isImgHovered
-                  ? 'transform 7.5s cubic-bezier(0.25, 0.1, 0.25, 1)'
-                  : 'transform 2.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
-              }}
-            >
+            {/* Scrollable image viewport */}
+            <div className="relative max-h-[440px] overflow-y-auto bg-[#07130A] scrollbar-thin">
               <img
-                src={project.image || project.imageUrl || '/assets/images/biztop_full_web_1790852703068.jpg'}
+                src={modalImg}
                 alt={project.title}
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = '/assets/images/biztop_full_web_1790852703068.jpg';
+                  e.currentTarget.src = modalImg;
                 }}
-                className="w-full h-auto block pointer-events-none select-none"
+                className="w-full h-auto block select-none"
               />
-            </div>
 
-            {project.metrics && (
-              <div className="absolute bottom-3 left-3 bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#C5A059]/40 flex items-center gap-1.5 z-20 shadow-md">
-                <Zap className="w-3.5 h-3.5" />
-                <span>{project.metrics}</span>
-              </div>
-            )}
+              {project.metrics && (
+                <div className="sticky bottom-3 left-3 inline-flex bg-[#11261B]/90 backdrop-blur-xs text-[#C5A059] text-xs font-bold px-3 py-1.5 rounded-lg border border-[#C5A059]/40 items-center gap-1.5 z-20 shadow-md ml-3 mb-3">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>{project.metrics}</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Title & Tagline */}

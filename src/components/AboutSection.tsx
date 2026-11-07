@@ -227,8 +227,18 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ profile }) => {
               
               {/* Portrait Image */}
               <img 
-                src={profile.avatarUrl || cvPortrait} 
+                src={
+                  (cvPortrait as any)?.src ||
+                  cvPortrait ||
+                  profile.avatarUrl ||
+                  '/assets/images/about_new_portrait_2.jpg'
+                } 
                 alt={`${profile.name} Portrait`} 
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/assets/images/about_new_portrait_2.jpg';
+                }}
                 className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-108"
               />
 
