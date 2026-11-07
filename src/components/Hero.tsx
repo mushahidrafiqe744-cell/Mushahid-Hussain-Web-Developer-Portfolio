@@ -25,7 +25,7 @@ export const Hero: React.FC<HeroProps> = ({ profile, onOpenSection, onOpenResume
   const satisfactionCount = parseInt(profile.happyClients.replace(/\D/g, ''), 10) || 99;
 
   return (
-    <section className="relative pt-8 pb-14 md:pt-12 md:pb-20 overflow-hidden">
+    <section id="hero" className="relative pt-8 pb-14 md:pt-12 md:pb-20 overflow-hidden">
       {/* Background Animated Floating Ambient Orbs */}
       <div className="absolute top-10 left-1/4 w-72 h-72 bg-[#C5A059]/10 rounded-full blur-3xl animate-float-slow pointer-events-none -z-10" />
       <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-[#11261B]/15 rounded-full blur-3xl animate-float-delayed pointer-events-none -z-10" />

@@ -165,14 +165,42 @@ function PortfolioMain() {
   }, []);
 
   useEffect(() => {
-    const handleHashChange = () => setActiveSection(getInitialSection());
+    const section = getInitialSection();
+    if (section && section !== 'hero') {
+      setTimeout(() => {
+        const elem = document.getElementById(section);
+        if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const sec = getInitialSection();
+      setActiveSection(sec);
+      if (sec === 'hero') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const elem = document.getElementById(sec);
+        if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   const handleSelectSection = (section: SectionId) => {
     setActiveSection(section);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (section === 'hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const elem = document.getElementById(section);
+      if (elem) {
+        elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
   };
 
   return (
@@ -186,17 +214,17 @@ function PortfolioMain() {
         customLinks={settings?.navbarItems} 
       />
       <main className="flex-1">
-        {activeSection === 'hero' && <Hero profile={profile} onOpenSection={handleSelectSection} onOpenResume={() => setIsResumeModalOpen(true)} />}
-        {activeSection === 'about' && <AboutSection profile={profile} />}
-        {activeSection === 'services' && <ServicesSection services={services} adminPhone={profile.whatsapp || profile.phone} />}
-        {activeSection === 'skills' && <SkillsSection skillGroups={skills} />}
-        {activeSection === 'experience' && <ExperienceSection profile={profile} experiences={experiences} />}
-        {activeSection === 'courses' && <CoursesSection courses={courses} />}
-        {activeSection === 'why-choose-me' && <WhyChooseMeSection pillars={whyUs.pillars} workflow={whyUs.workflow} />}
-        {activeSection === 'testimonials' && <TestimonialsSection testimonials={testimonials} onOpenContact={() => handleSelectSection('contact')} onOpenFeedback={() => setIsFeedbackModalOpen(true)} />}
-        {activeSection === 'projects' && <ProjectsSection projects={projects.filter((p: any) => !p.hidden)} onSelectProject={setSelectedProject} />}
-        {activeSection === 'resume' && <ResumeSection profile={profile} projects={projects.filter((p: any) => !p.hidden)} skillGroups={skills} experiences={experiences} courses={courses} onOpenFullModal={() => setIsResumeModalOpen(true)} />}
-        {activeSection === 'contact' && <ContactSection profile={profile} onOpenResume={() => setIsResumeModalOpen(true)} />}
+        <Hero profile={profile} onOpenSection={handleSelectSection} onOpenResume={() => setIsResumeModalOpen(true)} />
+        <AboutSection profile={profile} />
+        <ServicesSection services={services} adminPhone={profile.whatsapp || profile.phone} />
+        <SkillsSection skillGroups={skills} />
+        <ExperienceSection profile={profile} experiences={experiences} />
+        <CoursesSection courses={courses} />
+        <WhyChooseMeSection pillars={whyUs.pillars} workflow={whyUs.workflow} />
+        <ProjectsSection projects={projects.filter((p: any) => !p.hidden)} onSelectProject={setSelectedProject} />
+        <TestimonialsSection testimonials={testimonials} onOpenContact={() => handleSelectSection('contact')} onOpenFeedback={() => setIsFeedbackModalOpen(true)} />
+        <ResumeSection profile={profile} projects={projects.filter((p: any) => !p.hidden)} skillGroups={skills} experiences={experiences} courses={courses} onOpenFullModal={() => setIsResumeModalOpen(true)} />
+        <ContactSection profile={profile} onOpenResume={() => setIsResumeModalOpen(true)} />
       </main>
       <Footer profile={profile} onSelectSection={handleSelectSection} />
       <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />
